@@ -1,0 +1,66 @@
+package com.mis.backend.entity;
+
+import java.math.BigDecimal;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.IdType;
+import java.time.LocalDateTime;
+import com.baomidou.mybatisplus.annotation.TableId;
+import java.io.Serializable;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
+
+/**
+ * <p>
+ * 课程表
+ * </p>
+ *
+ * @author aer
+ * @since 2025-05-05
+ */
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Accessors(chain = true)
+@TableName("course")
+public class Course implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 课程编号
+     */
+    @TableId(value = "course_id", type = IdType.AUTO)
+    private String courseId;
+
+    /**
+     * 课程名称
+     */
+    private String name;
+
+    /**
+     * 学分
+     */
+    private BigDecimal credit;
+
+    /**
+     * 开课年级
+     */
+    private Integer gradeRequirement;
+
+    /**
+     * 停课年份
+     */
+    private Integer discontinueYear;
+
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createTime;
+
+    /**
+     * 更新时间
+     */
+    private LocalDateTime updateTime;
+
+
+}

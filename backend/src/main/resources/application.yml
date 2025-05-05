@@ -1,0 +1,51 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  datasource:
+    druid:
+      driver-class-name: ${sky.datasource.driver-class-name}
+      url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      username: ${sky.datasource.username}
+      password: ${sky.datasource.password}
+mybatis-plus:
+  mapper-locations: classpath*:mapper/*.xml
+  type-aliases-package: com.itheima.mp.domain.po
+  type-handlers-package: com.baomidou.mybatisplus.extension.handlers
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-field: deleted   #??????
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+      update-strategy: not_null # ??????
+      insert-strategy: not_null # ????
+      where-strategy: not_null  # ??????
+  configuration:
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler #?????
+
+
+
+logging:
+  level:
+    com:
+      sky:
+        mapper: debug
+        service: info
+        controller: info
+
+sky:
+  jwt:
+    # ??jwt??????????
+    admin-secret-key: aer
+    # ??jwt????
+    admin-ttl: 7200000
+    # ?????????????
+    admin-token-name: token
+    user-secret-key: aer
+    user-ttl: 7200000
+    user-token-name: authentication
