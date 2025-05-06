@@ -1,5 +1,6 @@
 package com.mis.backend.service;
 
+import com.mis.backend.dto.UserLoginDTO;
 import com.mis.backend.entity.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IUserService extends IService<User> {
 
+    User login(UserLoginDTO userLoginDTO);
 }

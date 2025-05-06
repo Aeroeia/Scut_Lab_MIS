@@ -19,9 +19,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-      logic-delete-field: deleted
-      logic-delete-value: 1
-      logic-not-delete-value: 0
       update-strategy: not_null
       insert-strategy: not_null
       where-strategy: not_null
@@ -40,12 +37,6 @@ logging:
 
 sky:
   jwt:
-
-    admin-secret-key: aer
-
-    admin-ttl: 7200000
-
-    admin-token-name: token
-    user-secret-key: aer
-    user-ttl: 7200000
-    user-token-name: authentication
+    secret-key: aer
+    ttl: 7200000
+    token-name: token

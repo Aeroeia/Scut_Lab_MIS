@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import java.time.LocalDateTime;
 import java.io.Serializable;
+
+import com.mis.backend.enums.UserRole;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -44,7 +46,7 @@ public class User implements Serializable {
     /**
      * 角色类型
      */
-    private Integer type;
+    private UserRole type;
 
     /**
      * 实际ID (学生学号/教师编号)
