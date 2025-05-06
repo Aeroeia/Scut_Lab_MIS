@@ -19,9 +19,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
-      update-strategy: not_null
-      insert-strategy: not_null
-      where-strategy: not_null
   configuration:
     default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
 

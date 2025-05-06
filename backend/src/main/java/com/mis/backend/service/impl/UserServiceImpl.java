@@ -1,7 +1,6 @@
 package com.mis.backend.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mis.backend.dto.UserLoginDTO;
 import com.mis.backend.entity.User;
 import com.mis.backend.mapper.UserMapper;
@@ -34,4 +33,5 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         return list.get(0);
     }
+
 }
