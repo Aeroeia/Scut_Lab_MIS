@@ -3,8 +3,8 @@ package com.mis.backend.entity;
 import java.math.BigDecimal;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
+import java.time.LocalDateTime;
 import java.io.Serializable;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author aer
- * @since 2025-05-05
+ * @since 2025-05-06
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -27,9 +27,14 @@ public class Course implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 主键
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
+    /**
      * 课程编号
      */
-    @TableId(value = "course_id", type = IdType.AUTO)
     private String courseId;
 
     /**

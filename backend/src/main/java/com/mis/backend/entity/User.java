@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author aer
- * @since 2025-05-05
+ * @since 2025-05-06
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -42,9 +42,9 @@ public class User implements Serializable {
     private String password;
 
     /**
-     * 角色ID
+     * 角色类型
      */
-    private Integer roleId;
+    private Integer type;
 
     /**
      * 实际ID (学生学号/教师编号)
