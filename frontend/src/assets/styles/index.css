@@ -1,0 +1,442 @@
+/* 全局样式 */
+html, body, #app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+}
+
+/* 主题色调 */
+:root {
+  --primary-color: #1890ff; /* 主色调 - 蓝色 */
+  --primary-light: #40a9ff; /* 浅蓝色 */
+  --primary-dark: #096dd9; /* 深蓝色 */
+  --success-color: #52c41a; /* 成功色 */
+  --warning-color: #faad14; /* 警告色 */
+  --error-color: #f5222d; /* 错误色 */
+  --font-color: #333; /* 主文字颜色 */
+  --border-color: #ebeef5; /* 边框颜色 */
+  --bg-color: #f0f2f5; /* 背景色 */
+}
+
+/* 通用样式 */
+.container {
+  padding: 20px;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-10 {
+  margin-top: 10px;
+}
+
+.mt-20 {
+  margin-top: 20px;
+}
+
+.mb-10 {
+  margin-bottom: 10px;
+}
+
+.mb-20 {
+  margin-bottom: 20px;
+}
+
+.ml-10 {
+  margin-left: 10px;
+}
+
+.mr-10 {
+  margin-right: 10px;
+}
+
+/* 覆盖element-ui样式 */
+.el-card {
+  margin-bottom: 20px;
+  border-radius: 4px;
+}
+
+.el-table th {
+  background-color: #f5f7fa !important;
+}
+
+.el-pagination {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* 去除菜单项激活时的红线 */
+.el-menu-item.is-active,
+.el-submenu.is-active .el-submenu__title {
+  border-bottom: none !important;
+  border-bottom-color: transparent !important;
+  color: #409EFF !important;
+  text-decoration: none !important;
+}
+
+/* 修复菜单项红线问题 - 添加更全面的选择器 */
+.el-menu-item:before,
+.el-menu-item:after,
+.el-menu-item.is-active:before,
+.el-menu-item.is-active:after,
+.el-submenu__title:before,
+.el-submenu__title:after,
+.el-submenu.is-active .el-submenu__title:before,
+.el-submenu.is-active .el-submenu__title:after {
+  display: none !important;
+  background-color: transparent !important;
+  text-decoration: none !important;
+  border: none !important;
+}
+
+.el-menu-item:focus, 
+.el-menu-item:hover,
+.el-submenu__title:hover {
+  outline: none !important;
+  background-color: #263445 !important;
+  border-bottom: none !important;
+  text-decoration: none !important;
+}
+
+/* 去除所有可能的菜单边框和下划线 */
+.el-menu,
+.el-menu--horizontal,
+.el-menu--horizontal > .el-menu-item,
+.el-menu--horizontal > .el-submenu .el-submenu__title,
+.el-menu--horizontal > .el-submenu.is-active .el-submenu__title,
+.el-menu--horizontal > .el-menu-item.is-active {
+  border-bottom: none !important;
+  text-decoration: none !important;
+}
+
+/* 解决垂直菜单的红线问题 */
+.el-menu--vertical .el-menu-item.is-active,
+.el-menu--vertical .el-menu-item:focus {
+  background-color: #263445 !important;
+  color: #409EFF !important;
+  border-right: none !important;
+}
+
+/* 确保移除所有子菜单的红线 */
+.nest-menu .el-menu-item,
+.nest-menu .el-menu-item.is-active,
+.nest-menu .el-menu-item:hover,
+.nest-menu .el-menu-item:focus {
+  border-bottom: none !important;
+  border-right: none !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+
+/* 彻底移除菜单项的所有边框线和装饰效果 */
+.el-menu,
+.el-menu-item,
+.el-submenu,
+.el-submenu__title,
+.el-menu--horizontal,
+.el-menu--vertical,
+.el-menu--collapse,
+.el-menu--popup {
+  border: none !important;
+  border-bottom: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: none !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* 处理所有菜单项状态 */
+.el-menu-item,
+.el-menu-item.is-active,
+.el-menu-item:focus,
+.el-menu-item:hover,
+.el-menu-item:active,
+.el-submenu__title,
+.el-submenu__title:hover,
+.el-submenu__title:focus,
+.el-submenu__title:active,
+.el-submenu.is-active .el-submenu__title {
+  border: none !important;
+  border-bottom: none !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: none !important;
+  outline: none !important;
+  text-decoration: none !important;
+  -webkit-box-shadow: none !important;
+  box-shadow: none !important;
+}
+
+/* 彻底禁用所有伪元素 */
+.el-menu *::before,
+.el-menu *::after,
+.el-menu-item::before,
+.el-menu-item::after,
+.el-menu-item.is-active::before,
+.el-menu-item.is-active::after,
+.el-submenu__title::before,
+.el-submenu__title::after,
+.el-submenu.is-active .el-submenu__title::before,
+.el-submenu.is-active .el-submenu__title::after {
+  display: none !important;
+  opacity: 0 !important;
+  content: none !important;
+  border: none !important;
+  background: transparent !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* 处理点击和活动状态 */
+.el-menu-item:active,
+.el-menu-item.is-active,
+.el-menu-item:focus,
+.el-menu-item:focus-visible,
+.el-menu-item:focus-within,
+.el-submenu__title:active,
+.el-submenu.is-active .el-submenu__title,
+.el-submenu__title:focus,
+.el-submenu__title:focus-visible,
+.el-submenu__title:focus-within {
+  border: none !important;
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+}
+
+/* 确保移除所有子菜单的红线和线条 */
+.nest-menu .el-menu-item,
+.nest-menu .el-menu-item.is-active,
+.nest-menu .el-menu-item:hover,
+.nest-menu .el-menu-item:focus {
+  border-bottom: none !important;
+  border-right: none !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+
+/* 解决垂直菜单的红线问题 */
+.el-menu--vertical .el-menu-item.is-active,
+.el-menu--vertical .el-menu-item:focus {
+  background-color: #263445 !important;
+  color: #409EFF !important;
+  border-right: none !important;
+}
+
+/* 清除Element UI默认的focus轮廓和线条 */
+:focus {
+  outline: none !important;
+}
+
+:focus-visible {
+  outline: none !important;
+}
+
+/* 移除可能存在的原生浏览器focus样式 */
+.el-menu *:focus,
+.el-menu *:focus-visible,
+.el-menu *:focus-within {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 特别处理点击时可能出现的线条效果 */
+.el-menu-item::before,
+.el-menu-item::after {
+  opacity: 0 !important;
+  display: none !important;
+  border: 0 none !important;
+  background: transparent !important;
+}
+
+/* 针对Element UI特有的点击效果 */
+.el-menu li::before,
+.el-menu li::after,
+.el-menu-item::before,
+.el-menu-item::after,
+.el-menu .is-active::before,
+.el-menu .is-active::after,
+li.el-menu-item::before,
+li.el-menu-item::after {
+  content: none !important;
+  display: none !important;
+  opacity: 0 !important;
+  border: none !important;
+  border-bottom: none !important;
+  text-decoration: none !important;
+  background-color: transparent !important;
+}
+
+/* 精确覆盖Element UI原始菜单边框样式 */
+.el-menu--horizontal > .el-menu-item.is-active,
+.el-menu--horizontal > .el-submenu.is-active .el-submenu__title {
+  border-bottom: 0 none !important;
+  border: none !important;
+}
+
+.el-menu--horizontal > .el-menu-item,
+.el-menu--horizontal > .el-submenu .el-submenu__title {
+  border-bottom: 0 none !important;
+}
+
+.el-menu--horizontal > .el-menu-item:not(.is-disabled):focus,
+.el-menu--horizontal > .el-menu-item:not(.is-disabled):hover,
+.el-menu--horizontal > .el-submenu:focus .el-submenu__title,
+.el-menu--horizontal > .el-submenu:hover .el-submenu__title {
+  border-bottom: 0 none !important;
+}
+
+/* 强制移除所有可能的边框 */
+.el-menu *,
+.el-menu--horizontal *,
+.el-menu--vertical *,
+.el-menu--collapse *,
+.el-menu--popup * {
+  border: none !important;
+  border-bottom: none !important;
+  border-top: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+/* 主页面布局 */
+.app-wrapper {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.main-container {
+  min-height: 100%;
+  transition: margin-left 0.3s;
+  position: relative;
+}
+
+/* 侧边栏 */
+.sidebar-container {
+  transition: width 0.3s;
+  width: 210px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1001;
+  overflow: hidden;
+  background-color: #304156;
+}
+
+.sidebar-container .el-menu {
+  border-right: none;
+}
+
+.sidebar-logo {
+  position: relative;
+  width: 100%;
+  height: 60px;
+  line-height: 60px;
+  background: #2b2f3a;
+  text-align: center;
+  overflow: hidden;
+}
+
+.sidebar-logo .logo-title {
+  display: inline-block;
+  color: #fff;
+  font-weight: 600;
+  line-height: 60px;
+  font-size: 16px;
+  font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
+  vertical-align: middle;
+  margin-left: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* 顶栏 */
+.navbar {
+  height: 60px;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0,21,41,.08);
+}
+
+.hamburger-container {
+  line-height: 60px;
+  height: 100%;
+  float: left;
+  padding: 0 15px;
+  cursor: pointer;
+  transition: background .3s;
+}
+
+.hamburger-container:hover {
+  background: rgba(0, 0, 0, .025);
+}
+
+.navbar .right-menu {
+  float: right;
+  height: 100%;
+  line-height: 60px;
+}
+
+.navbar .right-menu .right-menu-item {
+  display: inline-block;
+  padding: 0 12px;
+  height: 100%;
+  font-size: 18px;
+  color: #5a5e66;
+  vertical-align: middle;
+}
+
+.navbar .right-menu .right-menu-item:hover {
+  background: rgba(0, 0, 0, .025);
+  cursor: pointer;
+}
+
+/* 表格操作按钮 */
+.table-operation .el-button {
+  padding: 4px 10px;
+}
+
+/* 面包屑 */
+.app-breadcrumb.el-breadcrumb {
+  display: inline-block;
+  line-height: 60px;
+  margin-left: 10px;
+}
+
+/* 登录页 */
+.login-container {
+  min-height: 100%;
+  width: 100%;
+  background-color: #2d3a4b;
+  overflow: hidden;
+}
+
+.login-form {
+  position: relative;
+  width: 520px;
+  max-width: 100%;
+  padding: 160px 35px 0;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.login-title {
+  color: #fff;
+  text-align: center;
+  margin-bottom: 30px;
+  font-weight: bold;
+  font-size: 26px;
+} 
