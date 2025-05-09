@@ -1,5 +1,6 @@
 package com.mis.backend.service;
 
+import com.mis.backend.dto.StudentDTO;
 import com.mis.backend.dto.StudentPageQueryDTO;
 import com.mis.backend.entity.Student;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -19,4 +20,8 @@ import java.util.List;
 public interface IStudentService extends IService<Student> {
 
     PageQueryVO<StudentVO> pageQuery(StudentPageQueryDTO userPageQueryDTO);
+
+    StudentVO getDetails(String studentId,Integer year);
+
+    void updateByStuId(String studentId, StudentDTO studentDTO);
 }
