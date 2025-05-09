@@ -40,10 +40,13 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
         Page<Student> mpPage = studentPageQueryDTO.toMpPage();
         String name = studentPageQueryDTO.getName();
         String clazz = studentPageQueryDTO.getClazz();
+        String studentId = studentPageQueryDTO.getStudentId();
         //查询
         Page<Student> page = lambdaQuery()
                 .like(StrUtil.isNotEmpty(name), Student::getName, name)
-                .like(StrUtil.isNotEmpty(clazz), Student::getClazz, clazz)
+                .eq(StrUtil.isNotEmpty(clazz),
+                        Student::getClazz, clazz)
+                .eq(StrUtil.isNotEmpty(studentId), Student::getStudentId, studentId)
                 .page(mpPage);
         List<Student> records = page.getRecords();
         //类型转换
