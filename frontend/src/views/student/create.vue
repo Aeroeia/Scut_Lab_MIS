@@ -5,7 +5,7 @@
         <span>Add Student</span>
       </div>
       
-      <el-form :model="studentForm" :rules="rules" ref="studentForm" label-width="100px" class="studentForm">
+      <el-form :model="studentForm" :rules="rules" ref="studentForm" label-width="150px" class="studentForm">
         <el-form-item label="Student ID" prop="studentId">
           <el-input v-model="studentForm.studentId" placeholder="Enter student ID"></el-input>
         </el-form-item>

@@ -3,7 +3,7 @@
     <!-- Sidebar -->
     <div class="sidebar-container">
       <div class="sidebar-logo">
-        <span class="logo-title">School of Computer Science, SCUT</span>
+        <span class="logo-title">华南理工大学计算机学院</span>
       </div>
       
       <!-- Menu -->

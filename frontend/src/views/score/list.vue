@@ -33,11 +33,10 @@
       
       <!-- Data Table -->
       <el-table v-loading="loading" :data="scoreList" border style="width: 100%">
-        <el-table-column prop="id" label="Selection ID" width="80" align="center"></el-table-column>
         <el-table-column prop="studentId" label="Student ID" width="120" align="center"></el-table-column>
         <el-table-column prop="studentName" label="Student Name" width="120" align="center"></el-table-column>
         <el-table-column prop="courseId" label="Course ID" width="120" align="center"></el-table-column>
-        <el-table-column prop="courseName" label="Course Name" min-width="150" align="center"></el-table-column>
+        <el-table-column prop="courseName" label="Course Name" min-width="120" align="center"></el-table-column>
         <el-table-column prop="credit" label="Credits" width="80" align="center"></el-table-column>
         <el-table-column prop="score" label="Score" width="100" align="center">
           <template slot-scope="scope">
@@ -47,7 +46,7 @@
             <el-tag v-else type="info">Not entered</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="selectionYear" label="Selection Year" width="100" align="center"></el-table-column>
+        <el-table-column prop="selectionYear" label="Selection Year" width="120" align="center"></el-table-column>
         <el-table-column label="Actions" align="center" width="120">
           <template slot-scope="scope">
             <el-button 
