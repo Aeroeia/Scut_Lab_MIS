@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author aer
- * @since 2025-05-06
+ * @since 2025-05-12
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -47,6 +47,36 @@ public class Teacher implements Serializable {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
+    /**
+     * 性别
+     */
+    private String gender;
+
+    /**
+     * 职称
+     */
+    private String title;
+
+    /**
+     * 所属院系
+     */
+    private String department;
+
+    /**
+     * 邮箱
+     */
+    private String email;
+
+    /**
+     * 入职日期
+     */
+    private String hireDate;
+
+    /**
+     * 手机号
+     */
+    private String phone;
 
 
 }

@@ -117,14 +117,15 @@ export default {
   outline: none !important;
 }
 
-.el-menu-item::before,
-.el-menu-item::after,
-.el-submenu__title::before,
-.el-submenu__title::after {
-  display: none !important;
-  content: none !important;
-  border: none !important;
-  background-color: transparent !important;
+/* 确保菜单图标正常显示 */
+.el-menu-item i,
+.el-submenu__title i {
+  margin-right: 5px;
+  width: 24px;
+  text-align: center;
+  font-size: 18px;
+  display: inline-block !important;
+  vertical-align: middle;
 }
 
 /* 确保菜单项在不同状态下不会有边框和线条 */

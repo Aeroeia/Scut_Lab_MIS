@@ -47,7 +47,7 @@ export const asyncRoutes = [
         path: 'list',
         name: 'StudentList',
         component: () => import('@/views/student/list'),
-        meta: { title: '学生列表', icon: 'el-icon-user' }
+        meta: { title: '学生列表', icon: 'el-icon-user-solid' }
       },
       {
         path: 'create',
@@ -59,14 +59,14 @@ export const asyncRoutes = [
         path: 'edit/:id',
         name: 'StudentEdit',
         component: () => import('@/views/student/edit'),
-        meta: { title: '编辑学生', activeMenu: '/student/list' },
+        meta: { title: '编辑学生', icon: 'el-icon-edit', activeMenu: '/student/list' },
         hidden: true
       },
       {
         path: 'detail/:id',
         name: 'StudentDetail',
         component: () => import('@/views/student/detail'),
-        meta: { title: '学生详情', activeMenu: '/student/list' },
+        meta: { title: '学生详情', icon: 'el-icon-view', activeMenu: '/student/list' },
         hidden: true
       }
     ]
@@ -83,7 +83,7 @@ export const asyncRoutes = [
         path: 'list',
         name: 'TeacherList',
         component: () => import('@/views/teacher/list'),
-        meta: { title: '教师列表', icon: 'el-icon-s-custom' }
+        meta: { title: '教师列表', icon: 'el-icon-s-check' }
       },
       {
         path: 'create',
@@ -95,14 +95,14 @@ export const asyncRoutes = [
         path: 'edit/:id',
         name: 'TeacherEdit',
         component: () => import('@/views/teacher/edit'),
-        meta: { title: '编辑教师', activeMenu: '/teacher/list' },
+        meta: { title: '编辑教师', icon: 'el-icon-edit', activeMenu: '/teacher/list' },
         hidden: true
       },
       {
         path: 'detail/:id',
         name: 'TeacherDetail',
         component: () => import('@/views/teacher/detail'),
-        meta: { title: '教师详情', activeMenu: '/teacher/list' },
+        meta: { title: '教师详情', icon: 'el-icon-view', activeMenu: '/teacher/list' },
         hidden: true
       }
     ]
@@ -119,7 +119,7 @@ export const asyncRoutes = [
         path: 'list',
         name: 'CourseList',
         component: () => import('@/views/course/list'),
-        meta: { title: '课程列表', icon: 'el-icon-reading' }
+        meta: { title: '课程列表', icon: 'el-icon-notebook-2' }
       },
       {
         path: 'create',
@@ -131,14 +131,14 @@ export const asyncRoutes = [
         path: 'edit/:id',
         name: 'CourseEdit',
         component: () => import('@/views/course/edit'),
-        meta: { title: '编辑课程', activeMenu: '/course/list' },
+        meta: { title: '编辑课程', icon: 'el-icon-edit', activeMenu: '/course/list' },
         hidden: true
       },
       {
         path: 'detail/:id',
         name: 'CourseDetail',
         component: () => import('@/views/course/detail'),
-        meta: { title: '课程详情', activeMenu: '/course/list' },
+        meta: { title: '课程详情', icon: 'el-icon-view', activeMenu: '/course/list' },
         hidden: true
       }
     ]
@@ -155,7 +155,7 @@ export const asyncRoutes = [
         path: 'list',
         name: 'CourseSelectionList',
         component: () => import('@/views/course-selection/list'),
-        meta: { title: '选课列表', icon: 'el-icon-notebook-1' }
+        meta: { title: '选课列表', icon: 'el-icon-document' }
       },
       {
         path: 'create',
@@ -177,13 +177,13 @@ export const asyncRoutes = [
         path: 'list',
         name: 'ScoreList',
         component: () => import('@/views/score/list'),
-        meta: { title: '成绩列表', icon: 'el-icon-s-data' }
+        meta: { title: '成绩列表', icon: 'el-icon-document-checked' }
       },
       {
         path: 'edit/:id',
         name: 'ScoreEdit',
         component: () => import('@/views/score/edit'),
-        meta: { title: '编辑成绩', activeMenu: '/score/list', roles: ['2'] }, // 只有教师可编辑成绩
+        meta: { title: '编辑成绩', icon: 'el-icon-edit', activeMenu: '/score/list', roles: ['2'] }, // 只有教师可编辑成绩
         hidden: true
       }
     ]
