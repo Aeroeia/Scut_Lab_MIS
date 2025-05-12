@@ -1,4 +1,4 @@
-import { getStudents, getStudentById, addStudent, updateStudent, deleteStudent, getStudentCourses } from '@/api/student'
+import { getStudents, getStudentById, addStudent, updateStudent, deleteStudent,  } from '@/api/student'
 
 const state = {
   students: [],
@@ -91,19 +91,19 @@ const actions = {
   },
 
   // 获取学生选课信息
-  getStudentCourses({ commit }, { studentId, params }) {
-    return new Promise((resolve, reject) => {
-      getStudentCourses(studentId, params)
-        .then(response => {
-          const { data } = response
-          commit('SET_STUDENT_COURSES', data.courses || [])
-          resolve(data)
-        })
-        .catch(error => {
-          reject(error)
-        })
-    })
-  }
+  // getStudentCourses({ commit }, { studentId, params }) {
+  //   return new Promise((resolve, reject) => {
+  //     getStudentCourses(studentId, params)
+  //       .then(response => {
+  //         const { data } = response
+  //         commit('SET_STUDENT_COURSES', data.courses || [])
+  //         resolve(data)
+  //       })
+  //       .catch(error => {
+  //         reject(error)
+  //       })
+  //   })
+  // }
 }
 
 export default {

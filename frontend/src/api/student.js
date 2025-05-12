@@ -44,10 +44,10 @@ export function deleteStudent(studentId) {
 }
 
 // 获取学生选课信息
-export function getStudentCourses(studentId, params) {
-  return request({
-    url: `/students/${studentId}/courses`,
-    method: 'get',
-    params
-  })
-} 
+// export function getStudentCourses(studentId, params) {
+//   return request({
+//     url: `/students/${studentId}/courses`,
+//     method: 'get',
+//     params
+//   })
+// }

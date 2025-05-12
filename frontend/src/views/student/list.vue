@@ -11,7 +11,7 @@
         <el-form-item label="Student ID">
           <el-input v-model="searchForm.studentId" placeholder="Enter student ID" clearable></el-input>
         </el-form-item>
-        <el-form-item label="Name">
+        <el-form-item label="Name" >
           <el-input v-model="searchForm.name" placeholder="Enter name" clearable></el-input>
         </el-form-item>
         <el-form-item label="Class">
@@ -26,7 +26,7 @@
       <!-- Data Table -->
       <el-table v-loading="loading" :data="studentList" border style="width: 100%">
         <el-table-column prop="studentId" label="Student ID" width="120" align="center"></el-table-column>
-        <el-table-column prop="name" label="Name" width="120" align="center"></el-table-column>
+        <el-table-column prop="name" label="Name" width="130" align="center"></el-table-column>
         <el-table-column prop="gender" label="Gender" width="80" align="center"></el-table-column>
         <el-table-column prop="class" label="Class" width="120" align="center"></el-table-column>
         <el-table-column prop="enrollmentYear" label="Enroll Year" width="120" align="center"></el-table-column>

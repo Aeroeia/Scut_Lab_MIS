@@ -5,11 +5,15 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.mis.backend.dto.StudentDTO;
 import com.mis.backend.dto.StudentPageQueryDTO;
+import com.mis.backend.entity.CourseSelection;
 import com.mis.backend.entity.Student;
+import com.mis.backend.entity.User;
+import com.mis.backend.enums.UserRole;
 import com.mis.backend.mapper.StudentMapper;
 import com.mis.backend.service.ICourseSelectionService;
 import com.mis.backend.service.IStudentService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.mis.backend.service.IUserService;
 import com.mis.backend.vo.CourseSelectionVO;
 import com.mis.backend.vo.PageQueryVO;
 import com.mis.backend.vo.StudentVO;
@@ -34,6 +38,8 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
     }
     @Autowired
     private ICourseSelectionService courseSelectionService;
+    @Autowired
+    private IUserService userService;
     @Override
     public PageQueryVO<StudentVO> pageQuery(StudentPageQueryDTO studentPageQueryDTO) {
         //设置分页
@@ -69,5 +75,17 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
     public void updateByStuId(String studentId, StudentDTO studentDTO) {
         Student student = BeanUtil.copyProperties(studentDTO, Student.class);
         lambdaUpdate().eq(Student::getStudentId, studentId).update(student);
+    }
+
+    @Override
+    public void add(StudentDTO studentDTO) {
+        Student student = BeanUtil.copyProperties(studentDTO, Student.class);
+        this.save(student);
+        User build = User.builder()
+                .username(student.getName())
+                .type(UserRole.Student)
+                .realId(student.getStudentId())
+                .build();
+        userService.save(build);
     }
 }

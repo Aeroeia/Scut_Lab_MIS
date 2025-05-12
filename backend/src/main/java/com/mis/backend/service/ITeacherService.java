@@ -1,5 +1,6 @@
 package com.mis.backend.service;
 
+import com.mis.backend.dto.TeacherDTO;
 import com.mis.backend.entity.Teacher;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITeacherService extends IService<Teacher> {
 
+    void add(TeacherDTO teacherDTO);
 }

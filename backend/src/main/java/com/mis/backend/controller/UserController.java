@@ -44,7 +44,7 @@ public class UserController {
         UserLoginVO userLoginVO = UserLoginVO.builder()
                 .realId(user.getRealId())
                 .token(token)
-                .role(user.getType().getVal())
+                .role(user.getType())
                 .roleName(user.getUsername())
                 .build();
         return Result.success(userLoginVO);

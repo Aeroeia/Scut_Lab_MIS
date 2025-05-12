@@ -40,7 +40,7 @@
           <el-table-column prop="teacherId" label="Teacher ID" width="120" align="center"></el-table-column>
           <el-table-column prop="teacherName" label="Teacher Name" width="120" align="center"></el-table-column>
           <el-table-column prop="credit" label="Credits" width="80" align="center"></el-table-column>
-          <el-table-column prop="selectionYear" label="Registration Year" width="100" align="center"></el-table-column>
+          <el-table-column prop="selectionYear" label="Registration Year" width="150" align="center"></el-table-column>
           <el-table-column prop="score" label="Score" width="100" align="center">
             <template slot-scope="scope">
               <span>{{ scope.row.score !== null ? scope.row.score : 'Not entered' }}</span>
@@ -70,9 +70,9 @@ export default {
       pageLoading: false,
       studentId: '',
       studentInfo: null,
-      courseList: [],
-      selectedYear: new Date().getFullYear(),
-      yearOptions: []
+      selectedYear: "",
+      yearOptions: [],
+      courseList:{}
     }
   },
   created() {
@@ -81,7 +81,7 @@ export default {
     this.loadData()
   },
   methods: {
-    ...mapActions('student', ['getStudentDetail', 'getStudentCourses']),
+    ...mapActions('student', ['getStudentDetail']),
     
     initYearOptions() {
       const currentYear = new Date().getFullYear()
@@ -102,7 +102,7 @@ export default {
       this.getStudentDetail(this.studentId)
         .then(data => {
           this.studentInfo = data
-          this.fetchCourses()
+          this.courseList = data.courses
         })
         .catch(() => {
           this.$message.error('Failed to get student information')
@@ -112,20 +112,20 @@ export default {
           this.pageLoading = false
         })
     },
-    
-    fetchCourses() {
-      this.getStudentCourses({
-        studentId: this.studentId,
-        params: { year: this.selectedYear }
-      })
-        .then(data => {
-          this.courseList = data.courses || []
-        })
-        .catch(() => {
-          this.$message.error('Failed to get course registration information')
-        })
-    },
-    
+
+    // fetchCourses() {
+    //   this.getStudentCourses({
+    //     studentId: this.studentId,
+    //     params: { year: this.selectedYear }
+    //   })
+    //     .then(data => {
+    //       this.courseList = data.courses || []
+    //     })
+    //     .catch(() => {
+    //       this.$message.error('Failed to get course registration information')
+    //     })
+    // },
+    //
     goEdit() {
       this.$router.push(`/student/edit/${this.studentId}`)
     },

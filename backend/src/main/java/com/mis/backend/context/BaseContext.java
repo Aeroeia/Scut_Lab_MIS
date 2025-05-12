@@ -1,5 +1,7 @@
 package com.mis.backend.context;
 
+import com.mis.backend.enums.UserRole;
+
 public class BaseContext {
 
     public static ThreadLocal<Long> localid = new ThreadLocal<>();

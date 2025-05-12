@@ -106,24 +106,24 @@ export default {
   },
   methods: {
     ...mapActions({
-      getTeacher: 'teacher/getTeacher',
-      getTeacherCourses: 'teacher/getTeacherCourses'
+      getTeacherDetail: 'teacher/getTeacherDetail',
     }),
     
     fetchData() {
       this.loading = true
       
       // Get teacher information
-      const teacherPromise = this.getTeacher(this.teacherId)
+      const teacherPromise = this.getTeacherDetail(this.teacherId)
         .then(data => {
           this.teacherInfo = data
+          this.teacherCourses = data.courses
         })
       
       // Get teacher courses
-      const coursesPromise = this.getTeacherCourses(this.teacherId)
-        .then(data => {
-          this.teacherCourses = data || []
-        })
+      // const coursesPromise = this.getTeacherCourses(this.teacherId)
+      //   .then(data => {
+      //     this.teacherCourses = data || []
+      //   })
       
       // Wait for all requests to complete
       Promise.all([teacherPromise, coursesPromise])

@@ -7,4 +7,6 @@ import lombok.Data;
 public class TeacherPageQueryDTO extends PageQueryDTO {
     //教师姓名
     private String name;
+    private String teacherId;
+    private String title;
 }

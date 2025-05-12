@@ -10,7 +10,7 @@ export function getTeachers(params) {
 }
 
 // 获取教师详情
-export function getTeacherById(teacherId) {
+export function getTeacherDetail(teacherId) {
   return request({
     url: `/teachers/${teacherId}`,
     method: 'get'
@@ -43,10 +43,10 @@ export function deleteTeacher(teacherId) {
   })
 }
 
-// 获取教师可教授课程
-export function getTeacherCourses(teacherId) {
-  return request({
-    url: `/teachers/${teacherId}/courses`,
-    method: 'get'
-  })
-} 
+// // 获取教师可教授课程
+// export function getTeacherCourses(teacherId) {
+//   return request({
+//     url: `/teachers/${teacherId}/courses`,
+//     method: 'get'
+//   })
+// }

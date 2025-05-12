@@ -1,5 +1,6 @@
 package com.mis.backend.vo;
 
+import com.mis.backend.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,7 +15,7 @@ import java.io.Serializable;
 @Builder
 public class UserLoginVO implements Serializable {
     private String token;
-    private Integer role; //角色类型
+    private UserRole role; //角色类型
     private String roleName;//角色名称
     private String realId; //学生学号、教师编
 }

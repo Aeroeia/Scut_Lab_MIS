@@ -5,7 +5,9 @@ import com.mis.backend.dto.StudentDTO;
 import com.mis.backend.dto.StudentPageQueryDTO;
 import com.mis.backend.entity.Student;
 import com.mis.backend.result.Result;
+import com.mis.backend.service.ICourseSelectionService;
 import com.mis.backend.service.IStudentService;
+import com.mis.backend.service.IUserService;
 import com.mis.backend.vo.PageQueryVO;
 import com.mis.backend.vo.StudentVO;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +22,7 @@ import java.util.List;
 public class StudentController {
     @Autowired
     private IStudentService studentService;
+
     //获取学生列表
     @GetMapping
     public Result<PageQueryVO<StudentVO>> list(@RequestParam(value = "class",required = false) String clazz,@ModelAttribute StudentPageQueryDTO studentPageQueryDTO){
@@ -32,8 +35,8 @@ public class StudentController {
     @PostMapping
     public Result post(@RequestBody StudentDTO studentDTO){
         log.info("Student: {}", studentDTO);
-        Student student = BeanUtil.copyProperties(studentDTO, Student.class);
-        studentService.save(student);
+        studentService.add(studentDTO);
+
         return Result.success(studentDTO);
     }
     //获取学生详情
@@ -60,11 +63,11 @@ public class StudentController {
         return Result.success();
     }
     //获取学生选课信息
-    @GetMapping("/{studentId}/courses")
-    public Result<StudentVO> getCourseSelectionDetails(@PathVariable String studentId,@RequestParam(required = false) Integer year){
-        log.info("StudentId: {}", studentId);
-        log.info("Year: {}", year);
-        StudentVO studentVO = studentService.getDetails(studentId,year);
-        return Result.success(studentVO);
-    }
+//    @GetMapping("/{studentId}/courses")
+//    public Result<StudentVO> getCourseSelectionDetails(@PathVariable String studentId,@RequestParam(required = false) Integer year){
+//        log.info("StudentId: {}", studentId);
+//        log.info("Year: {}", year);
+//        StudentVO studentVO = studentService.getDetails(studentId,year);
+//        return Result.success(studentVO);
+//    }
 }

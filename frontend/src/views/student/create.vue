@@ -16,8 +16,8 @@
         
         <el-form-item label="Gender" prop="gender">
           <el-radio-group v-model="studentForm.gender">
-            <el-radio label="男">Male</el-radio>
-            <el-radio label="女">Female</el-radio>
+            <el-radio label="Male">Male</el-radio>
+            <el-radio label="Female">Female</el-radio>
           </el-radio-group>
         </el-form-item>
         
@@ -70,7 +70,7 @@ export default {
       studentForm: {
         studentId: '',
         name: '',
-        gender: '男',
+        gender: '',
         ageAtEnrollment: 18,
         enrollmentYear: new Date().getFullYear(),
         class: ''

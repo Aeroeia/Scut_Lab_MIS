@@ -27,10 +27,11 @@ mybatis-plus:
 logging:
   level:
     com:
-      sky:
-        mapper: debug
-        service: info
-        controller: info
+      mis:
+        backend:
+          mapper: debug
+          service: info
+          controller: info
 
 sky:
   jwt:

@@ -24,4 +24,6 @@ public interface IStudentService extends IService<Student> {
     StudentVO getDetails(String studentId,Integer year);
 
     void updateByStuId(String studentId, StudentDTO studentDTO);
+
+    void add(StudentDTO studentDTO);
 }

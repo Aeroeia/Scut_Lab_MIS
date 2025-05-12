@@ -5,7 +5,7 @@
         <span>Edit Student Information</span>
       </div>
       
-      <el-form :model="studentForm" :rules="rules" ref="studentForm" label-width="100px" class="studentForm" v-if="!pageLoading">
+      <el-form :model="studentForm" :rules="rules" ref="studentForm" label-width="150px" class="studentForm" v-if="!pageLoading">
         <el-form-item label="Student ID" prop="studentId">
           <el-input v-model="studentForm.studentId" placeholder="Enter student ID" disabled></el-input>
         </el-form-item>
@@ -16,12 +16,12 @@
         
         <el-form-item label="Gender" prop="gender">
           <el-radio-group v-model="studentForm.gender">
-            <el-radio label="男">Male</el-radio>
-            <el-radio label="女">Female</el-radio>
+            <el-radio label="Male">Male</el-radio>
+            <el-radio label="Female">Female</el-radio>
           </el-radio-group>
         </el-form-item>
         
-        <el-form-item label="Age at Enrollment" prop="ageAtEnrollment">
+        <el-form-item label="Age at Enrollment" prop="ageAtEnrollment" >
           <el-input-number v-model="studentForm.ageAtEnrollment" :min="10" :max="50" placeholder="Enter age at enrollment"></el-input-number>
         </el-form-item>
         
@@ -63,7 +63,7 @@ export default {
       studentForm: {
         studentId: '',
         name: '',
-        gender: '男',
+        gender: 'Male',
         ageAtEnrollment: 18,
         enrollmentYear: new Date().getFullYear(),
         class: ''

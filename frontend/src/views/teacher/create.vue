@@ -17,16 +17,16 @@
         
         <el-form-item label="Gender" prop="gender">
           <el-radio-group v-model="teacherForm.gender">
-            <el-radio label="男">Male</el-radio>
-            <el-radio label="女">Female</el-radio>
+            <el-radio label="Male">Male</el-radio>
+            <el-radio label="Female">Female</el-radio>
           </el-radio-group>
         </el-form-item>
         
         <el-form-item label="Title" prop="title">
           <el-select v-model="teacherForm.title" placeholder="Select title">
-            <el-option label="Lecturer" value="讲师"></el-option>
-            <el-option label="Associate Professor" value="副教授"></el-option>
-            <el-option label="Professor" value="教授"></el-option>
+            <el-option label="Lecturer" value="Lecturer"></el-option>
+            <el-option label="Associator" value="Associate Professor"></el-option>
+            <el-option label="Professor" value="Professor"></el-option>
           </el-select>
         </el-form-item>
         
@@ -50,10 +50,7 @@
             value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
-        
-        <el-form-item label="Password" prop="password">
-          <el-input v-model="teacherForm.password" type="password" placeholder="Enter password"></el-input>
-        </el-form-item>
+
         
         <el-form-item>
           <el-button type="primary" @click="submitForm" :loading="loading">Submit</el-button>
@@ -74,8 +71,8 @@ export default {
     const validateTeacherId = (rule, value, callback) => {
       if (!value) {
         callback(new Error('Please enter teacher ID'))
-      } else if (!/^\d{8}$/.test(value)) {
-        callback(new Error('ID must be 8 digits'))
+      } else if (!/^.\d{4}$/.test(value)) {
+        callback(new Error('ID size must be 5 '))
       } else {
         callback()
       }
@@ -108,13 +105,12 @@ export default {
       teacherForm: {
         teacherId: '',
         name: '',
-        gender: '男',
+        gender: '',
         title: '',
         department: '',
         email: '',
         phone: '',
         hireDate: '',
-        password: '123456' // Default password
       },
       rules: {
         teacherId: [
@@ -143,10 +139,6 @@ export default {
         hireDate: [
           { required: true, message: 'Please select hire date', trigger: 'change' }
         ],
-        password: [
-          { required: true, message: 'Please enter password', trigger: 'blur' },
-          { min: 6, message: 'Password length cannot be less than 6 characters', trigger: 'blur' }
-        ]
       }
     }
   },

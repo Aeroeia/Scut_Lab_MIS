@@ -1,4 +1,4 @@
-import { getTeachers, getTeacherById, addTeacher, updateTeacher, deleteTeacher, getTeacherCourses } from '@/api/teacher'
+import { getTeachers, getTeacherDetail, addTeacher, updateTeacher, deleteTeacher,  } from '@/api/teacher'
 
 const state = {
   teachers: [],
@@ -52,7 +52,7 @@ const actions = {
   },
 
   // 添加教师
-  addTeacher({ commit }, teacherData) {
+  createTeacher({ commit }, teacherData) {
     return new Promise((resolve, reject) => {
       addTeacher(teacherData)
         .then(response => {
@@ -90,20 +90,7 @@ const actions = {
     })
   },
 
-  // 获取教师可教授课程
-  getTeacherCourses({ commit }, teacherId) {
-    return new Promise((resolve, reject) => {
-      getTeacherCourses(teacherId)
-        .then(response => {
-          const { data } = response
-          commit('SET_TEACHER_COURSES', data.courses || [])
-          resolve(data)
-        })
-        .catch(error => {
-          reject(error)
-        })
-    })
-  }
+
 }
 
 export default {
