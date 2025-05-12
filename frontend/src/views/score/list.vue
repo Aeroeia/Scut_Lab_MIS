@@ -2,66 +2,66 @@
   <div class="container">
     <el-card>
       <div slot="header" class="clearfix">
-        <span>成绩列表</span>
+        <span>Score List</span>
       </div>
       
-      <!-- 搜索区域 -->
+      <!-- Search Area -->
       <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
-        <el-form-item label="学号">
-          <el-input v-model="searchForm.studentId" placeholder="请输入学号" clearable></el-input>
+        <el-form-item label="Student ID">
+          <el-input v-model="searchForm.studentId" placeholder="Enter student ID" clearable></el-input>
         </el-form-item>
-        <el-form-item label="姓名">
-          <el-input v-model="searchForm.studentName" placeholder="请输入姓名" clearable></el-input>
+        <el-form-item label="Name">
+          <el-input v-model="searchForm.studentName" placeholder="Enter name" clearable></el-input>
         </el-form-item>
-        <el-form-item label="课程编号">
-          <el-input v-model="searchForm.courseId" placeholder="请输入课程编号" clearable></el-input>
+        <el-form-item label="Course ID">
+          <el-input v-model="searchForm.courseId" placeholder="Enter course ID" clearable></el-input>
         </el-form-item>
-        <el-form-item label="课程名称">
-          <el-input v-model="searchForm.courseName" placeholder="请输入课程名称" clearable></el-input>
+        <el-form-item label="Course Name">
+          <el-input v-model="searchForm.courseName" placeholder="Enter course name" clearable></el-input>
         </el-form-item>
-        <el-form-item label="成绩状态">
-          <el-select v-model="searchForm.scoreStatus" placeholder="请选择" clearable>
-            <el-option label="已录入" value="1"></el-option>
-            <el-option label="未录入" value="0"></el-option>
+        <el-form-item label="Score Status">
+          <el-select v-model="searchForm.scoreStatus" placeholder="Please select" clearable>
+            <el-option label="Entered" value="1"></el-option>
+            <el-option label="Not Entered" value="0"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-          <el-button @click="resetSearch">重置</el-button>
+          <el-button type="primary" @click="handleSearch">Search</el-button>
+          <el-button @click="resetSearch">Reset</el-button>
         </el-form-item>
       </el-form>
       
-      <!-- 数据表格 -->
+      <!-- Data Table -->
       <el-table v-loading="loading" :data="scoreList" border style="width: 100%">
-        <el-table-column prop="id" label="选课ID" width="80" align="center"></el-table-column>
-        <el-table-column prop="studentId" label="学号" width="120" align="center"></el-table-column>
-        <el-table-column prop="studentName" label="学生姓名" width="120" align="center"></el-table-column>
-        <el-table-column prop="courseId" label="课程编号" width="120" align="center"></el-table-column>
-        <el-table-column prop="courseName" label="课程名称" min-width="150" align="center"></el-table-column>
-        <el-table-column prop="credit" label="学分" width="80" align="center"></el-table-column>
-        <el-table-column prop="score" label="成绩" width="100" align="center">
+        <el-table-column prop="id" label="Selection ID" width="80" align="center"></el-table-column>
+        <el-table-column prop="studentId" label="Student ID" width="120" align="center"></el-table-column>
+        <el-table-column prop="studentName" label="Student Name" width="120" align="center"></el-table-column>
+        <el-table-column prop="courseId" label="Course ID" width="120" align="center"></el-table-column>
+        <el-table-column prop="courseName" label="Course Name" min-width="150" align="center"></el-table-column>
+        <el-table-column prop="credit" label="Credits" width="80" align="center"></el-table-column>
+        <el-table-column prop="score" label="Score" width="100" align="center">
           <template slot-scope="scope">
             <el-tag v-if="scope.row.score !== null" :type="getScoreTagType(scope.row.score)">
               {{ scope.row.score }}
             </el-tag>
-            <el-tag v-else type="info">未录入</el-tag>
+            <el-tag v-else type="info">Not entered</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="selectionYear" label="选课年份" width="100" align="center"></el-table-column>
-        <el-table-column label="操作" align="center" width="120">
+        <el-table-column prop="selectionYear" label="Selection Year" width="100" align="center"></el-table-column>
+        <el-table-column label="Actions" align="center" width="120">
           <template slot-scope="scope">
             <el-button 
               type="text" 
               size="small" 
               v-if="isTeacher"
               @click="handleEdit(scope.row)">
-              {{ scope.row.score !== null ? '修改成绩' : '录入成绩' }}
+              {{ scope.row.score !== null ? 'Edit Score' : 'Enter Score' }}
             </el-button>
           </template>
         </el-table-column>
       </el-table>
       
-      <!-- 分页组件 -->
+      <!-- Pagination -->
       <el-pagination
         class="mt-20"
         @size-change="handleSizeChange"

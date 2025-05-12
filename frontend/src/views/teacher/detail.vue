@@ -2,58 +2,58 @@
   <div class="container">
     <el-card v-loading="loading">
       <div slot="header" class="clearfix">
-        <span>教师详情</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="goBack">返回列表</el-button>
+        <span>Teacher Details</span>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="goBack">Back to List</el-button>
       </div>
       
       <el-row :gutter="20" v-if="!loading">
-        <!-- 基本信息 -->
+        <!-- Basic Information -->
         <el-col :span="8">
           <el-card class="box-card">
             <div slot="header" class="clearfix">
-              <span>基本信息</span>
-              <el-button style="float: right; padding: 3px 0" type="text" @click="handleEdit">编辑</el-button>
+              <span>Basic Information</span>
+              <el-button style="float: right; padding: 3px 0" type="text" @click="handleEdit">Edit</el-button>
             </div>
             <div class="info-item">
-              <span class="label">工号：</span>
+              <span class="label">ID:</span>
               <span class="content">{{ teacherInfo.teacherId }}</span>
             </div>
             <div class="info-item">
-              <span class="label">姓名：</span>
+              <span class="label">Name:</span>
               <span class="content">{{ teacherInfo.name }}</span>
             </div>
             <div class="info-item">
-              <span class="label">性别：</span>
+              <span class="label">Gender:</span>
               <span class="content">{{ teacherInfo.gender }}</span>
             </div>
             <div class="info-item">
-              <span class="label">职称：</span>
+              <span class="label">Title:</span>
               <span class="content">{{ teacherInfo.title }}</span>
             </div>
             <div class="info-item">
-              <span class="label">所属院系：</span>
+              <span class="label">Department:</span>
               <span class="content">{{ teacherInfo.department }}</span>
             </div>
             <div class="info-item">
-              <span class="label">电子邮箱：</span>
-              <span class="content">{{ teacherInfo.email || '未设置' }}</span>
+              <span class="label">Email:</span>
+              <span class="content">{{ teacherInfo.email || 'Not set' }}</span>
             </div>
             <div class="info-item">
-              <span class="label">手机号码：</span>
-              <span class="content">{{ teacherInfo.phone || '未设置' }}</span>
+              <span class="label">Phone:</span>
+              <span class="content">{{ teacherInfo.phone || 'Not set' }}</span>
             </div>
             <div class="info-item">
-              <span class="label">入职日期：</span>
+              <span class="label">Hire Date:</span>
               <span class="content">{{ teacherInfo.hireDate }}</span>
             </div>
           </el-card>
         </el-col>
         
-        <!-- 教授课程 -->
+        <!-- Teaching Courses -->
         <el-col :span="16">
           <el-card class="box-card">
             <div slot="header" class="clearfix">
-              <span>教授课程</span>
+              <span>Teaching Courses</span>
             </div>
             
             <el-table
@@ -61,20 +61,20 @@
               :data="teacherCourses"
               border
               style="width: 100%">
-              <el-table-column prop="courseId" label="课程编号" width="120" align="center"></el-table-column>
-              <el-table-column prop="courseName" label="课程名称" min-width="150" align="center"></el-table-column>
-              <el-table-column prop="credit" label="学分" width="80" align="center"></el-table-column>
-              <el-table-column prop="hours" label="学时" width="80" align="center"></el-table-column>
-              <el-table-column prop="semester" label="开课学期" width="120" align="center"></el-table-column>
-              <el-table-column label="操作" width="150" align="center">
+              <el-table-column prop="courseId" label="Course ID" width="120" align="center"></el-table-column>
+              <el-table-column prop="courseName" label="Course Name" min-width="150" align="center"></el-table-column>
+              <el-table-column prop="credit" label="Credits" width="80" align="center"></el-table-column>
+              <el-table-column prop="hours" label="Hours" width="80" align="center"></el-table-column>
+              <el-table-column prop="semester" label="Semester" width="120" align="center"></el-table-column>
+              <el-table-column label="Actions" width="150" align="center">
                 <template slot-scope="scope">
-                  <el-button type="text" size="small" @click="viewStudents(scope.row)">查看学生</el-button>
-                  <el-button type="text" size="small" @click="viewScores(scope.row)">查看成绩</el-button>
+                  <el-button type="text" size="small" @click="viewStudents(scope.row)">View Students</el-button>
+                  <el-button type="text" size="small" @click="viewScores(scope.row)">View Scores</el-button>
                 </template>
               </el-table-column>
             </el-table>
             
-            <el-empty v-else description="暂无教授课程"></el-empty>
+            <el-empty v-else description="No courses available"></el-empty>
           </el-card>
         </el-col>
       </el-row>
@@ -98,7 +98,7 @@ export default {
   created() {
     this.teacherId = this.$route.params.id
     if (!this.teacherId) {
-      this.$message.error('教师ID不能为空')
+      this.$message.error('Teacher ID cannot be empty')
       this.goBack()
       return
     }
@@ -113,22 +113,22 @@ export default {
     fetchData() {
       this.loading = true
       
-      // 获取教师信息
+      // Get teacher information
       const teacherPromise = this.getTeacher(this.teacherId)
         .then(data => {
           this.teacherInfo = data
         })
       
-      // 获取教师课程
+      // Get teacher courses
       const coursesPromise = this.getTeacherCourses(this.teacherId)
         .then(data => {
           this.teacherCourses = data || []
         })
       
-      // 等待所有请求完成
+      // Wait for all requests to complete
       Promise.all([teacherPromise, coursesPromise])
         .catch(() => {
-          this.$message.error('获取教师信息失败')
+          this.$message.error('Failed to get teacher information')
           this.goBack()
         })
         .finally(() => {

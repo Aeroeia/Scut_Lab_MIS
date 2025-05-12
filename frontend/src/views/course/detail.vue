@@ -2,97 +2,97 @@
   <div class="container">
     <el-card v-loading="loading">
       <div slot="header" class="clearfix">
-        <span>课程详情</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="goBack">返回列表</el-button>
+        <span>Course Details</span>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="goBack">Back to List</el-button>
       </div>
       
       <el-row :gutter="20" v-if="!loading">
-        <!-- 基本信息 -->
+        <!-- Basic Information -->
         <el-col :span="8">
           <el-card class="box-card">
             <div slot="header" class="clearfix">
-              <span>基本信息</span>
-              <el-button style="float: right; padding: 3px 0" type="text" @click="handleEdit">编辑</el-button>
+              <span>Basic Information</span>
+              <el-button style="float: right; padding: 3px 0" type="text" @click="handleEdit">Edit</el-button>
             </div>
             <div class="info-item">
-              <span class="label">课程编号：</span>
+              <span class="label">Course ID:</span>
               <span class="content">{{ courseInfo.courseId }}</span>
             </div>
             <div class="info-item">
-              <span class="label">课程名称：</span>
+              <span class="label">Course Name:</span>
               <span class="content">{{ courseInfo.courseName }}</span>
             </div>
             <div class="info-item">
-              <span class="label">授课教师：</span>
+              <span class="label">Instructor:</span>
               <span class="content">{{ courseInfo.teacherName }} ({{ courseInfo.teacherId }})</span>
             </div>
             <div class="info-item">
-              <span class="label">学分：</span>
+              <span class="label">Credits:</span>
               <span class="content">{{ courseInfo.credit }}</span>
             </div>
             <div class="info-item">
-              <span class="label">学时：</span>
+              <span class="label">Hours:</span>
               <span class="content">{{ courseInfo.hours }}</span>
             </div>
             <div class="info-item">
-              <span class="label">开课学期：</span>
+              <span class="label">Semester:</span>
               <span class="content">{{ courseInfo.semester }}</span>
             </div>
             <div class="info-item">
-              <span class="label">课程描述：</span>
-              <span class="content description">{{ courseInfo.description || '暂无描述' }}</span>
+              <span class="label">Description:</span>
+              <span class="content description">{{ courseInfo.description || 'No description available' }}</span>
             </div>
           </el-card>
         </el-col>
         
-        <!-- 选课学生 -->
+        <!-- Enrolled Students -->
         <el-col :span="16">
           <el-card class="box-card">
             <div slot="header" class="clearfix">
-              <span>选课学生</span>
-              <span class="student-count">共 {{ studentCount }} 人</span>
+              <span>Enrolled Students</span>
+              <span class="student-count">Total: {{ studentCount }} students</span>
             </div>
             
-            <!-- 学生查询 -->
+            <!-- Student Search -->
             <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
-              <el-form-item label="学号">
-                <el-input v-model="searchForm.studentId" placeholder="请输入学号" clearable size="small"></el-input>
+              <el-form-item label="Student ID">
+                <el-input v-model="searchForm.studentId" placeholder="Enter Student ID" clearable size="small"></el-input>
               </el-form-item>
-              <el-form-item label="姓名">
-                <el-input v-model="searchForm.name" placeholder="请输入姓名" clearable size="small"></el-input>
+              <el-form-item label="Name">
+                <el-input v-model="searchForm.name" placeholder="Enter Name" clearable size="small"></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" size="small" @click="searchStudents">查询</el-button>
-                <el-button size="small" @click="resetSearch">重置</el-button>
+                <el-button type="primary" size="small" @click="searchStudents">Search</el-button>
+                <el-button size="small" @click="resetSearch">Reset</el-button>
               </el-form-item>
             </el-form>
             
-            <!-- 学生列表 -->
+            <!-- Student List -->
             <el-table
               v-if="students.length > 0"
               :data="students"
               border
               style="width: 100%">
-              <el-table-column prop="studentId" label="学号" width="120" align="center"></el-table-column>
-              <el-table-column prop="name" label="姓名" width="120" align="center"></el-table-column>
-              <el-table-column prop="gender" label="性别" width="80" align="center"></el-table-column>
-              <el-table-column prop="class" label="班级" width="120" align="center"></el-table-column>
-              <el-table-column prop="score" label="成绩" width="100" align="center">
+              <el-table-column prop="studentId" label="Student ID" width="120" align="center"></el-table-column>
+              <el-table-column prop="name" label="Name" width="120" align="center"></el-table-column>
+              <el-table-column prop="gender" label="Gender" width="80" align="center"></el-table-column>
+              <el-table-column prop="class" label="Class" width="120" align="center"></el-table-column>
+              <el-table-column prop="score" label="Score" width="100" align="center">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.score !== null ? scope.row.score : '未录入' }}</span>
+                  <span>{{ scope.row.score !== null ? scope.row.score : 'Not entered' }}</span>
                 </template>
               </el-table-column>
-              <el-table-column label="操作" width="150" align="center">
+              <el-table-column label="Actions" width="150" align="center">
                 <template slot-scope="scope">
-                  <el-button type="text" size="small" @click="viewStudentDetail(scope.row)">查看详情</el-button>
-                  <el-button v-if="isTeacher" type="text" size="small" @click="editScore(scope.row)">录入成绩</el-button>
+                  <el-button type="text" size="small" @click="viewStudentDetail(scope.row)">View Details</el-button>
+                  <el-button v-if="isTeacher" type="text" size="small" @click="editScore(scope.row)">Enter Score</el-button>
                 </template>
               </el-table-column>
             </el-table>
             
-            <el-empty v-else description="暂无选课学生"></el-empty>
+            <el-empty v-else description="No enrolled students"></el-empty>
             
-            <!-- 分页 -->
+            <!-- Pagination -->
             <el-pagination
               v-if="students.length > 0"
               class="mt-20"
@@ -136,13 +136,13 @@ export default {
   computed: {
     ...mapGetters(['userRole']),
     isTeacher() {
-      return this.userRole === '2' // 2代表教师角色
+      return this.userRole === '2' // 2 represents teacher role
     }
   },
   created() {
     this.courseId = this.$route.params.id
     if (!this.courseId) {
-      this.$message.error('课程ID不能为空')
+      this.$message.error('Course ID cannot be empty')
       this.goBack()
       return
     }
@@ -157,19 +157,19 @@ export default {
     fetchData() {
       this.loading = true
       
-      // 获取课程信息
+      // Get course information
       const coursePromise = this.getCourseDetail(this.courseId)
         .then(data => {
           this.courseInfo = data
         })
       
-      // 获取选课学生
+      // Get enrolled students
       const studentsPromise = this.fetchStudents()
       
-      // 等待所有请求完成
+      // Wait for all requests to complete
       Promise.all([coursePromise, studentsPromise])
         .catch(() => {
-          this.$message.error('获取课程信息失败')
+          this.$message.error('Failed to get course information')
           this.goBack()
         })
         .finally(() => {

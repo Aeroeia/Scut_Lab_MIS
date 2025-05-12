@@ -2,12 +2,12 @@
   <div class="dashboard-container">
     <el-card class="welcome-card">
       <div class="welcome-message">
-        <h1>欢迎使用华南理工大学计算机学院课程与成绩管理系统</h1>
-        <p v-if="roleName">当前角色：<span class="role-tag">{{ roleName }}</span></p>
+        <h1>Welcome to SCUT School of Computer Science Course & Grade Management System</h1>
+        <p v-if="roleName">Current Role: <span class="role-tag">{{ roleName }}</span></p>
       </div>
     </el-card>
 
-    <!-- 快速统计信息 -->
+    <!-- Quick Statistics -->
     <el-row :gutter="20" class="dashboard-stats">
       <el-col :span="8">
         <el-card shadow="hover" class="stats-card">
@@ -15,7 +15,7 @@
             <i class="el-icon-user"></i>
           </div>
           <div class="stats-info">
-            <div class="stats-title">学生总数</div>
+            <div class="stats-title">Total Students</div>
             <div class="stats-value">{{ stats.studentCount || '--' }}</div>
           </div>
         </el-card>
@@ -26,7 +26,7 @@
             <i class="el-icon-reading"></i>
           </div>
           <div class="stats-info">
-            <div class="stats-title">课程总数</div>
+            <div class="stats-title">Total Courses</div>
             <div class="stats-value">{{ stats.courseCount || '--' }}</div>
           </div>
         </el-card>
@@ -37,16 +37,16 @@
             <i class="el-icon-data-line"></i>
           </div>
           <div class="stats-info">
-            <div class="stats-title">平均成绩</div>
+            <div class="stats-title">Average Score</div>
             <div class="stats-value">{{ stats.averageScore || '--' }}</div>
           </div>
         </el-card>
       </el-col>
     </el-row>
 
-    <!-- 管理员功能模块 -->
+    <!-- Admin Functions -->
     <div v-if="isAdmin" class="dashboard-panels">
-      <h2 class="panel-title"><i class="el-icon-menu"></i> 系统管理功能</h2>
+      <h2 class="panel-title"><i class="el-icon-menu"></i> System Management</h2>
       <el-row :gutter="20">
         <el-col :span="8" v-for="(item, index) in adminMenus" :key="index">
           <el-card shadow="hover" class="dashboard-card">
@@ -56,16 +56,16 @@
             </div>
             <div class="dashboard-content">
               <p>{{ item.description }}</p>
-              <el-button type="primary" @click="goTo(item.path)">进入管理</el-button>
+              <el-button type="primary" @click="goTo(item.path)">{{ item.buttonText }}</el-button>
             </div>
           </el-card>
         </el-col>
       </el-row>
     </div>
 
-    <!-- 教师功能模块 -->
+    <!-- Teacher Functions -->
     <div v-if="isTeacher" class="dashboard-panels">
-      <h2 class="panel-title"><i class="el-icon-s-management"></i> 教师管理功能</h2>
+      <h2 class="panel-title"><i class="el-icon-s-management"></i> Teacher Functions</h2>
       <el-row :gutter="20">
         <el-col :span="8" v-for="(item, index) in teacherMenus" :key="index">
           <el-card shadow="hover" class="dashboard-card">
@@ -82,9 +82,9 @@
       </el-row>
     </div>
 
-    <!-- 学生功能模块 -->
+    <!-- Student Functions -->
     <div v-if="isStudent" class="dashboard-panels">
-      <h2 class="panel-title"><i class="el-icon-school"></i> 学生服务功能</h2>
+      <h2 class="panel-title"><i class="el-icon-school"></i> Student Services</h2>
       <el-row :gutter="20">
         <el-col :span="8" v-for="(item, index) in studentMenus" :key="index">
           <el-card shadow="hover" class="dashboard-card">
@@ -120,99 +120,99 @@ export default {
       },
       adminMenus: [
         {
-          title: '学生管理',
+          title: 'Student Management',
           icon: 'el-icon-user',
-          description: '管理学生信息、查看学生列表',
+          description: 'Manage student information and view student list',
           path: '/student/list',
-          buttonText: '进入管理'
+          buttonText: 'Manage'
         },
         {
-          title: '教师管理',
+          title: 'Teacher Management',
           icon: 'el-icon-s-custom',
-          description: '管理教师信息、查看教师列表',
+          description: 'Manage teacher information and view teacher list',
           path: '/teacher/list',
-          buttonText: '进入管理'
+          buttonText: 'Manage'
         },
         {
-          title: '课程管理',
+          title: 'Course Management',
           icon: 'el-icon-reading',
-          description: '管理课程信息、查看课程列表',
+          description: 'Manage course information and view course list',
           path: '/course/list',
-          buttonText: '进入管理'
+          buttonText: 'Manage'
         },
         {
-          title: '选课管理',
+          title: 'Course Selection',
           icon: 'el-icon-notebook-1',
-          description: '管理选课信息、查看选课列表',
+          description: 'Manage course selection and view selection list',
           path: '/course-selection/list',
-          buttonText: '进入管理'
+          buttonText: 'Manage'
         },
         {
-          title: '成绩管理',
+          title: 'Grade Management',
           icon: 'el-icon-s-data',
-          description: '管理学生成绩、查看成绩列表',
+          description: 'Manage student grades and view grade list',
           path: '/score/list',
-          buttonText: '进入管理'
+          buttonText: 'Manage'
         },
         {
-          title: '统计分析',
+          title: 'Statistics',
           icon: 'el-icon-pie-chart',
-          description: '查看全校成绩统计和分析',
+          description: 'View school-wide grade statistics and analysis',
           path: '/statistics/all',
-          buttonText: '查看统计'
+          buttonText: 'View Stats'
         }
       ],
       teacherMenus: [
         {
-          title: '选课管理',
+          title: 'Course Selection',
           icon: 'el-icon-notebook-1',
-          description: '查看您所教授课程的选课情况',
+          description: 'View course selections for your taught courses',
           path: '/course-selection/list',
-          buttonText: '查看选课'
+          buttonText: 'View'
         },
         {
-          title: '成绩管理',
+          title: 'Grade Management',
           icon: 'el-icon-s-data',
-          description: '管理学生成绩、录入成绩',
+          description: 'Manage student grades and enter scores',
           path: '/score/list',
-          buttonText: '成绩管理'
+          buttonText: 'Manage'
         },
         {
-          title: '班级统计',
+          title: 'Class Statistics',
           icon: 'el-icon-s-marketing',
-          description: '查看班级成绩统计和分析',
+          description: 'View class grade statistics and analysis',
           path: '/statistics/class',
-          buttonText: '查看统计'
+          buttonText: 'View Stats'
         },
         {
-          title: '课程统计',
+          title: 'Course Statistics',
           icon: 'el-icon-pie-chart',
-          description: '查看课程成绩统计和分析',
+          description: 'View course grade statistics and analysis',
           path: '/statistics/course',
-          buttonText: '查看统计'
+          buttonText: 'View Stats'
         }
       ],
       studentMenus: [
         {
-          title: '我的选课',
+          title: 'My Courses',
           icon: 'el-icon-notebook-1',
-          description: '查看您的选课信息和已选课程',
+          description: 'View your course selection and enrolled courses',
           path: '/course-selection/list',
-          buttonText: '查看选课'
+          buttonText: 'View'
         },
         {
-          title: '我的成绩',
+          title: 'My Grades',
           icon: 'el-icon-s-data',
-          description: '查看您的课程成绩信息',
+          description: 'View your course grades',
           path: '/score/list',
-          buttonText: '查看成绩'
+          buttonText: 'View'
         },
         {
-          title: '成绩分析',
+          title: 'Grade Analysis',
           icon: 'el-icon-pie-chart',
-          description: '查看您的成绩分析和统计',
+          description: 'View your grade analysis and statistics',
           path: '/statistics/student',
-          buttonText: '查看分析'
+          buttonText: 'View Analysis'
         }
       ]
     }
@@ -229,7 +229,7 @@ export default {
     }
   },
   mounted() {
-    // 获取统计数据
+    // Get statistics data
     this.fetchDashboardStats()
   },
   methods: {
@@ -237,8 +237,8 @@ export default {
       this.$router.push(path)
     },
     fetchDashboardStats() {
-      // 这里应该调用后端API获取统计数据
-      // 为简化示例，使用模拟数据
+      // This should call backend API to get statistics
+      // Using mock data for simplification
       setTimeout(() => {
         this.stats = {
           studentCount: 1200,

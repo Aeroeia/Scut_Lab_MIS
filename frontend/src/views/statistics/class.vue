@@ -2,16 +2,16 @@
   <div class="container">
     <el-card>
       <div slot="header" class="clearfix">
-        <span>班级成绩统计</span>
+        <span>Class Statistics</span>
       </div>
       
-      <!-- 查询条件 -->
+      <!-- Search Criteria -->
       <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
-        <el-form-item label="班级">
+        <el-form-item label="Class">
           <el-select 
             v-model="searchForm.className" 
             filterable 
-            placeholder="请选择班级"
+            placeholder="Select class"
             style="width: 250px"
             @change="handleClassChange">
             <el-option
@@ -22,53 +22,53 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="学年">
+        <el-form-item label="Academic Year">
           <el-date-picker
             v-model="searchForm.year"
             type="year"
             value-format="yyyy"
-            placeholder="选择年份">
+            placeholder="Select year">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="fetchData">查询</el-button>
-          <el-button @click="resetSearch">重置</el-button>
+          <el-button type="primary" @click="fetchData">Search</el-button>
+          <el-button @click="resetSearch">Reset</el-button>
         </el-form-item>
       </el-form>
       
-      <!-- 班级信息展示 -->
+      <!-- Class Information Display -->
       <el-card v-if="showClassInfo" class="mb-20">
         <div slot="header" class="clearfix">
-          <span>班级统计信息</span>
+          <span>Class Statistics Summary</span>
         </div>
         <el-descriptions :column="3" border>
-          <el-descriptions-item label="班级名称">{{ searchForm.className }}</el-descriptions-item>
-          <el-descriptions-item label="学生人数">{{ statisticsData.studentCount || 0 }} 人</el-descriptions-item>
-          <el-descriptions-item label="平均成绩">
+          <el-descriptions-item label="Class Name">{{ searchForm.className }}</el-descriptions-item>
+          <el-descriptions-item label="Student Count">{{ statisticsData.studentCount || 0 }} students</el-descriptions-item>
+          <el-descriptions-item label="Average Score">
             <span class="average-score" :class="getScoreClass(statisticsData.averageScore)">
               {{ statisticsData.averageScore ? statisticsData.averageScore.toFixed(1) : '-' }}
             </span>
           </el-descriptions-item>
-          <el-descriptions-item label="最高分">
+          <el-descriptions-item label="Highest Score">
             <span class="score-excellent">{{ statisticsData.highestScore || '-' }}</span>
           </el-descriptions-item>
-          <el-descriptions-item label="最低分">
+          <el-descriptions-item label="Lowest Score">
             <span class="score-fail">{{ statisticsData.lowestScore || '-' }}</span>
           </el-descriptions-item>
-          <el-descriptions-item label="优良率">
+          <el-descriptions-item label="Excellence Rate">
             {{ statisticsData.excellentRate ? (statisticsData.excellentRate * 100).toFixed(1) + '%' : '-' }}
           </el-descriptions-item>
         </el-descriptions>
       </el-card>
       
-      <!-- 成绩统计图表 -->
+      <!-- Score Statistics Charts -->
       <div v-loading="loading">
         <el-row :gutter="20" v-if="showCharts">
-          <!-- 成绩分布柱状图 -->
+          <!-- Score Distribution Bar Chart -->
           <el-col :span="12">
             <el-card class="chart-card">
               <div slot="header" class="clearfix">
-                <span>成绩分布</span>
+                <span>Score Distribution</span>
               </div>
               <div class="chart-container">
                 <div ref="barChart" class="chart"></div>
@@ -76,11 +76,11 @@
             </el-card>
           </el-col>
           
-          <!-- 成绩等级饼图 -->
+          <!-- Grade Level Pie Chart -->
           <el-col :span="12">
             <el-card class="chart-card">
               <div slot="header" class="clearfix">
-                <span>成绩等级分布</span>
+                <span>Grade Level Distribution</span>
               </div>
               <div class="chart-container">
                 <div ref="pieChart" class="chart"></div>
@@ -89,47 +89,47 @@
           </el-col>
         </el-row>
         
-        <!-- 学生成绩表格 -->
+        <!-- Student Score Table -->
         <el-card class="mt-20" v-if="showTable">
           <div slot="header" class="clearfix">
-            <span>班级学生成绩列表</span>
+            <span>Class Student Score List</span>
             <el-button
               style="float: right; padding: 3px 0"
               type="text"
               @click="handleExport"
               :disabled="!showTable">
-              导出Excel
+              Export Excel
             </el-button>
           </div>
           <el-table
             :data="statisticsData.studentScores"
             border
             style="width: 100%">
-            <el-table-column prop="studentId" label="学号" width="120" align="center"></el-table-column>
-            <el-table-column prop="name" label="姓名" width="120" align="center"></el-table-column>
-            <el-table-column prop="gender" label="性别" width="80" align="center"></el-table-column>
-            <el-table-column prop="averageScore" label="平均成绩" width="100" align="center">
+            <el-table-column prop="studentId" label="Student ID" width="120" align="center"></el-table-column>
+            <el-table-column prop="name" label="Name" width="120" align="center"></el-table-column>
+            <el-table-column prop="gender" label="Gender" width="80" align="center"></el-table-column>
+            <el-table-column prop="averageScore" label="Average Score" width="100" align="center">
               <template slot-scope="scope">
                 <span :class="getScoreClass(scope.row.averageScore)">
                   {{ scope.row.averageScore ? scope.row.averageScore.toFixed(1) : '-' }}
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="rank" label="班级排名" width="100" align="center"></el-table-column>
-            <el-table-column label="操作" width="120" align="center">
+            <el-table-column prop="rank" label="Class Ranking" width="100" align="center"></el-table-column>
+            <el-table-column label="Actions" width="120" align="center">
               <template slot-scope="scope">
                 <el-button 
                   type="text" 
                   size="small" 
                   @click="viewStudentDetail(scope.row)">
-                  详细成绩
+                  Detailed Scores
                 </el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-card>
         
-        <el-empty v-if="!loading && !showCharts" description="请选择班级查看成绩统计"></el-empty>
+        <el-empty v-if="!loading && !showCharts" description="Please select a class to view statistics"></el-empty>
       </div>
     </el-card>
   </div>
@@ -189,36 +189,36 @@ export default {
     ...mapActions('student', ['getStudents']),
     ...mapActions('statistics', ['getClassAverageScore']),
     
-    // 获取班级列表
+    // Get class list
     fetchClassList() {
       this.getStudents({ size: 1000 })
         .then(data => {
-          // 从学生数据中提取不重复的班级
+          // Extract unique class names from student data
           const classList = [...new Set(data.records.map(item => item.class))].filter(Boolean)
           this.classOptions = classList.sort()
           
-          // 如果路由传入了班级参数，自动设置
+          // If class parameter is passed in route, set it automatically
           if (this.$route.query.className) {
             this.searchForm.className = this.$route.query.className
             this.fetchData()
           }
         })
         .catch(() => {
-          this.$message.error('获取班级列表失败')
+          this.$message.error('Failed to get class list')
         })
     },
     
-    // 班级选择变更
+    // Class selection change
     handleClassChange(className) {
       if (className) {
         this.fetchData()
       }
     },
     
-    // 获取班级成绩统计数据
+    // Get class statistics data
     fetchData() {
       if (!this.searchForm.className) {
-        this.$message.warning('请选择班级')
+        this.$message.warning('Please select a class')
         return
       }
       
@@ -234,14 +234,14 @@ export default {
           })
         })
         .catch(() => {
-          this.$message.error('获取班级成绩统计数据失败')
+          this.$message.error('Failed to get class statistics data')
         })
         .finally(() => {
           this.loading = false
         })
     },
     
-    // 重置搜索条件
+    // Reset search criteria
     resetSearch() {
       this.searchForm = {
         className: '',
@@ -265,18 +265,18 @@ export default {
       }
     },
     
-    // 初始化图表
+    // Initialize charts
     initCharts() {
       this.$nextTick(() => {
-        // 初始化柱状图
+        // Initialize bar chart
         this.initBarChart()
         
-        // 初始化饼图
+        // Initialize pie chart
         this.initPieChart()
       })
     },
     
-    // 初始化柱状图
+    // Initialize bar chart
     initBarChart() {
       if (this.barChart) {
         this.barChart.dispose()
@@ -285,7 +285,7 @@ export default {
       const chartDom = this.$refs.barChart
       this.barChart = echarts.init(chartDom)
       
-      // 计算成绩区间分布
+      // Calculate score range distribution
       const scoreRanges = [
         { range: '90-100', count: 0 },
         { range: '80-89', count: 0 },
@@ -327,12 +327,12 @@ export default {
           type: 'value',
           minInterval: 1,
           axisLabel: {
-            formatter: '{value} 人'
+            formatter: '{value} students'
           }
         },
         series: [
           {
-            name: '学生人数',
+            name: 'Student Count',
             type: 'bar',
             data: scoreRanges.map(item => item.count),
             itemStyle: {
@@ -344,7 +344,7 @@ export default {
             label: {
               show: true,
               position: 'top',
-              formatter: '{c} 人'
+              formatter: '{c} students'
             }
           }
         ]
@@ -353,7 +353,7 @@ export default {
       this.barChart.setOption(option)
     },
     
-    // 初始化饼图
+    // Initialize pie chart
     initPieChart() {
       if (this.pieChart) {
         this.pieChart.dispose()
@@ -362,13 +362,13 @@ export default {
       const chartDom = this.$refs.pieChart
       this.pieChart = echarts.init(chartDom)
       
-      // 统计各等级成绩数量
+      // Count grades
       const levels = [
-        { name: '优秀 (90-100分)', value: 0, color: '#67C23A' },
-        { name: '良好 (80-89分)', value: 0, color: '#409EFF' },
-        { name: '中等 (70-79分)', value: 0, color: '#E6A23C' },
-        { name: '及格 (60-69分)', value: 0, color: '#F56C6C' },
-        { name: '不及格 (0-59分)', value: 0, color: '#909399' }
+        { name: 'Excellent (90-100 points)', value: 0, color: '#67C23A' },
+        { name: 'Good (80-89 points)', value: 0, color: '#409EFF' },
+        { name: 'Medium (70-79 points)', value: 0, color: '#E6A23C' },
+        { name: 'Pass (60-69 points)', value: 0, color: '#F56C6C' },
+        { name: 'Fail (0-59 points)', value: 0, color: '#909399' }
       ]
       
       this.statisticsData.studentScores.forEach(student => {
@@ -383,7 +383,7 @@ export default {
       const option = {
         tooltip: {
           trigger: 'item',
-          formatter: '{a} <br/>{b}: {c}人 ({d}%)'
+          formatter: '{a} <br/>{b}: {c} students ({d}%)'
         },
         legend: {
           orient: 'vertical',
@@ -393,7 +393,7 @@ export default {
         },
         series: [
           {
-            name: '成绩等级',
+            name: 'Grade Level',
             type: 'pie',
             radius: ['40%', '70%'],
             avoidLabelOverlap: false,
@@ -430,7 +430,7 @@ export default {
       this.pieChart.setOption(option)
     },
     
-    // 窗口大小变化时重绘图表
+    // Resize charts when window size changes
     resizeCharts() {
       if (this.barChart) {
         this.barChart.resize()
@@ -440,7 +440,7 @@ export default {
       }
     },
     
-    // 查看学生详情
+    // View student details
     viewStudentDetail(student) {
       this.$router.push({
         path: '/statistics/student',
@@ -448,22 +448,22 @@ export default {
       })
     },
     
-    // 导出Excel
+    // Export Excel
     handleExport() {
-      // 这里仅为示例，实际导出功能需要调用后端API或使用前端导出库
-      this.$message.success('成绩表导出成功')
+      // This is just an example, actual export functionality needs to call backend API or use frontend export library
+      this.$message.success('Export successful')
     },
     
-    // 根据成绩返回等级
+    // Get score level
     getScoreLevel(score) {
-      if (score >= 90) return '优秀'
-      if (score >= 80) return '良好'
-      if (score >= 70) return '中等'
-      if (score >= 60) return '及格'
-      return '不及格'
+      if (score >= 90) return 'Excellent'
+      if (score >= 80) return 'Good'
+      if (score >= 70) return 'Medium'
+      if (score >= 60) return 'Pass'
+      return 'Fail'
     },
     
-    // 获取成绩颜色类
+    // Get score class
     getScoreClass(score) {
       if (!score) return ''
       if (score >= 90) return 'score-excellent'

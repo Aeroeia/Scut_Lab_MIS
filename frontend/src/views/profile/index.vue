@@ -2,7 +2,7 @@
   <div class="container">
     <el-card>
       <div slot="header" class="clearfix">
-        <span>个人信息</span>
+        <span>Profile Information</span>
       </div>
       
       <el-row :gutter="20">
@@ -20,29 +20,29 @@
         
         <el-col :span="16">
           <el-card shadow="hover">
-            <el-descriptions title="基本信息" :column="2" border>
+            <el-descriptions title="Basic Information" :column="2" border>
               <el-descriptions-item label="ID">{{ userInfo.realId }}</el-descriptions-item>
-              <el-descriptions-item label="角色">{{ userInfo.roleName }}</el-descriptions-item>
-              <el-descriptions-item label="用户名">{{ userInfo.username }}</el-descriptions-item>
-              <el-descriptions-item label="登录时间">{{ loginTime }}</el-descriptions-item>
+              <el-descriptions-item label="Role">{{ userInfo.roleName }}</el-descriptions-item>
+              <el-descriptions-item label="Username">{{ userInfo.username }}</el-descriptions-item>
+              <el-descriptions-item label="Login Time">{{ loginTime }}</el-descriptions-item>
             </el-descriptions>
             
             <el-divider></el-divider>
             
-            <el-form ref="passwordForm" :model="passwordForm" :rules="passwordRules" label-width="100px" class="password-form">
-              <h3>修改密码</h3>
-              <el-form-item label="旧密码" prop="oldPassword">
+            <el-form ref="passwordForm" :model="passwordForm" :rules="passwordRules" label-width="120px" class="password-form">
+              <h3>Change Password</h3>
+              <el-form-item label="Old Password" prop="oldPassword">
                 <el-input v-model="passwordForm.oldPassword" type="password" show-password></el-input>
               </el-form-item>
-              <el-form-item label="新密码" prop="newPassword">
+              <el-form-item label="New Password" prop="newPassword">
                 <el-input v-model="passwordForm.newPassword" type="password" show-password></el-input>
               </el-form-item>
-              <el-form-item label="确认密码" prop="confirmPassword">
+              <el-form-item label="Confirm Password" prop="confirmPassword">
                 <el-input v-model="passwordForm.confirmPassword" type="password" show-password></el-input>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="submitForm">修改密码</el-button>
-                <el-button @click="resetForm">重置</el-button>
+                <el-button type="primary" @click="submitForm">Update Password</el-button>
+                <el-button @click="resetForm">Reset</el-button>
               </el-form-item>
             </el-form>
           </el-card>
@@ -58,10 +58,10 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'Profile',
   data() {
-    // 验证密码是否一致
+    // Validate password confirmation
     const validateConfirmPassword = (rule, value, callback) => {
       if (value !== this.passwordForm.newPassword) {
-        callback(new Error('两次输入的密码不一致'))
+        callback(new Error('Passwords do not match'))
       } else {
         callback()
       }
@@ -77,15 +77,15 @@ export default {
       },
       passwordRules: {
         oldPassword: [
-          { required: true, message: '请输入旧密码', trigger: 'blur' },
-          { min: 6, message: '密码长度不少于6位', trigger: 'blur' }
+          { required: true, message: 'Please enter your old password', trigger: 'blur' },
+          { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }
         ],
         newPassword: [
-          { required: true, message: '请输入新密码', trigger: 'blur' },
-          { min: 6, message: '密码长度不少于6位', trigger: 'blur' }
+          { required: true, message: 'Please enter your new password', trigger: 'blur' },
+          { min: 6, message: 'Password must be at least 6 characters', trigger: 'blur' }
         ],
         confirmPassword: [
-          { required: true, message: '请再次输入新密码', trigger: 'blur' },
+          { required: true, message: 'Please confirm your new password', trigger: 'blur' },
           { validator: validateConfirmPassword, trigger: 'blur' }
         ]
       }
@@ -97,12 +97,12 @@ export default {
     ])
   },
   methods: {
-    // 提交修改密码表单
+    // Submit password change form
     submitForm() {
       this.$refs.passwordForm.validate(valid => {
         if (valid) {
           this.$message({
-            message: '密码修改成功',
+            message: 'Password updated successfully',
             type: 'success'
           })
           this.resetForm()
@@ -112,7 +112,7 @@ export default {
       })
     },
     
-    // 重置表单
+    // Reset form
     resetForm() {
       this.$refs.passwordForm.resetFields()
     }

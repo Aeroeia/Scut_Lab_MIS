@@ -2,60 +2,60 @@
   <div class="container">
     <el-card>
       <div slot="header" class="clearfix">
-        <span>选课列表</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="handleCreate" v-if="isAdmin">添加选课</el-button>
+        <span>Course Selection List</span>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="handleCreate" v-if="isAdmin">Add Course Selection</el-button>
       </div>
       
-      <!-- 搜索区域 -->
+      <!-- Search Area -->
       <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
-        <el-form-item label="学号">
-          <el-input v-model="searchForm.studentId" placeholder="请输入学号" clearable></el-input>
+        <el-form-item label="Student ID">
+          <el-input v-model="searchForm.studentId" placeholder="Enter student ID" clearable></el-input>
         </el-form-item>
-        <el-form-item label="学生姓名">
-          <el-input v-model="searchForm.studentName" placeholder="请输入学生姓名" clearable></el-input>
+        <el-form-item label="Student Name">
+          <el-input v-model="searchForm.studentName" placeholder="Enter student name" clearable></el-input>
         </el-form-item>
-        <el-form-item label="课程编号">
-          <el-input v-model="searchForm.courseId" placeholder="请输入课程编号" clearable></el-input>
+        <el-form-item label="Course ID">
+          <el-input v-model="searchForm.courseId" placeholder="Enter course ID" clearable></el-input>
         </el-form-item>
-        <el-form-item label="课程名称">
-          <el-input v-model="searchForm.courseName" placeholder="请输入课程名称" clearable></el-input>
+        <el-form-item label="Course Name">
+          <el-input v-model="searchForm.courseName" placeholder="Enter course name" clearable></el-input>
         </el-form-item>
-        <el-form-item label="选课年份">
+        <el-form-item label="Selection Year">
           <el-date-picker
             v-model="searchForm.selectionYear"
             type="year"
             value-format="yyyy"
-            placeholder="选择年份">
+            placeholder="Select year">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-          <el-button @click="resetSearch">重置</el-button>
+          <el-button type="primary" @click="handleSearch">Search</el-button>
+          <el-button @click="resetSearch">Reset</el-button>
         </el-form-item>
       </el-form>
       
-      <!-- 数据表格 -->
+      <!-- Data Table -->
       <el-table v-loading="loading" :data="selectionList" border style="width: 100%">
-        <el-table-column prop="id" label="选课ID" width="80" align="center"></el-table-column>
-        <el-table-column prop="studentId" label="学号" width="120" align="center"></el-table-column>
-        <el-table-column prop="studentName" label="学生姓名" width="120" align="center"></el-table-column>
-        <el-table-column prop="courseId" label="课程编号" width="120" align="center"></el-table-column>
-        <el-table-column prop="courseName" label="课程名称" min-width="150" align="center"></el-table-column>
-        <el-table-column prop="teacherName" label="授课教师" width="120" align="center"></el-table-column>
-        <el-table-column prop="selectionYear" label="选课年份" width="100" align="center"></el-table-column>
-        <el-table-column prop="score" label="成绩" width="80" align="center">
+        <el-table-column prop="id" label="ID" width="80" align="center"></el-table-column>
+        <el-table-column prop="studentId" label="Student ID" width="120" align="center"></el-table-column>
+        <el-table-column prop="studentName" label="Student Name" width="120" align="center"></el-table-column>
+        <el-table-column prop="courseId" label="Course ID" width="120" align="center"></el-table-column>
+        <el-table-column prop="courseName" label="Course Name" min-width="150" align="center"></el-table-column>
+        <el-table-column prop="teacherName" label="Teacher" width="120" align="center"></el-table-column>
+        <el-table-column prop="selectionYear" label="Selection Year" width="100" align="center"></el-table-column>
+        <el-table-column prop="score" label="Score" width="80" align="center">
           <template slot-scope="scope">
-            <span>{{ scope.row.score !== null ? scope.row.score : '未录入' }}</span>
+            <span>{{ scope.row.score !== null ? scope.row.score : 'Not entered' }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" width="200">
+        <el-table-column label="Actions" align="center" width="200">
           <template slot-scope="scope">
             <el-button 
               type="text" 
               size="small" 
               v-if="isTeacher && scope.row.score === null"
               @click="handleInputScore(scope.row)">
-              录入成绩
+              Enter Score
             </el-button>
             <el-button 
               type="text" 
@@ -63,25 +63,25 @@
               class="danger-text" 
               v-if="isAdmin"
               @click="handleDelete(scope.row)">
-              删除
+              Delete
             </el-button>
             <el-button 
               type="text" 
               size="small" 
               @click="handleViewStudent(scope.row)">
-              学生详情
+              Student Details
             </el-button>
             <el-button 
               type="text" 
               size="small" 
               @click="handleViewCourse(scope.row)">
-              课程详情
+              Course Details
             </el-button>
           </template>
         </el-table-column>
       </el-table>
       
-      <!-- 分页组件 -->
+      <!-- Pagination -->
       <el-pagination
         class="mt-20"
         @size-change="handleSizeChange"
@@ -221,17 +221,17 @@ export default {
     },
     
     handleDelete(row) {
-      this.$confirm('确认删除该选课记录吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('Are you sure you want to delete this course selection?', 'Confirmation', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         this.deleteCourseSelection(row.id).then(() => {
-          this.$message.success('删除成功')
+          this.$message.success('Successfully deleted')
           this.fetchData()
         })
       }).catch(() => {
-        this.$message.info('已取消删除')
+        this.$message.info('Deletion cancelled')
       })
     }
   }

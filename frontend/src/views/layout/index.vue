@@ -1,12 +1,12 @@
 <template>
   <div class="app-wrapper">
-    <!-- 侧边栏 -->
+    <!-- Sidebar -->
     <div class="sidebar-container">
       <div class="sidebar-logo">
-        <span class="logo-title">华南理工大学计算机学院</span>
+        <span class="logo-title">School of Computer Science, SCUT</span>
       </div>
       
-      <!-- 菜单 -->
+      <!-- Menu -->
       <el-scrollbar wrap-class="scrollbar-wrapper">
         <el-menu
           :default-active="activeMenu"
@@ -22,9 +22,9 @@
       </el-scrollbar>
     </div>
 
-    <!-- 主容器 -->
+    <!-- Main Container -->
     <div class="main-container" :style="{ marginLeft: '210px' }">
-      <!-- 顶部导航 -->
+      <!-- Top Navigation -->
       <div class="navbar">
         <breadcrumb class="app-breadcrumb" />
         <div class="right-menu">
@@ -33,14 +33,14 @@
               {{ userRole }}<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item icon="el-icon-user" @click.native="toProfile">个人信息</el-dropdown-item>
-              <el-dropdown-item icon="el-icon-switch-button" @click.native="handleLogout">退出登录</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-user" @click.native="toProfile">Profile</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-switch-button" @click.native="handleLogout">Logout</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </div>
       </div>
 
-      <!-- 主内容区 -->
+      <!-- Main Content Area -->
       <div class="container">
         <router-view :key="key" />
       </div>
@@ -75,7 +75,7 @@ export default {
       'role'
     ]),
     routes() {
-      // 根据用户角色筛选路由
+      // Filter routes based on user role
       const userRole = getRole()
       if (!userRole) return constantRoutes
       
@@ -99,7 +99,7 @@ export default {
       return this.$route.path
     },
     userRole() {
-      return getRoleName() || '未知角色'
+      return getRoleName() || 'Unknown Role'
     }
   },
   methods: {
@@ -128,7 +128,7 @@ export default {
 
 .sidebar-container {
   transition: width 0.3s;
-  width: 210px;
+  width: 220px;
   height: 100%;
   position: fixed;
   top: 0;

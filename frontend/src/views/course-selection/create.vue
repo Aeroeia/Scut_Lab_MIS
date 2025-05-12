@@ -2,16 +2,16 @@
   <div class="container">
     <el-card>
       <div slot="header" class="clearfix">
-        <span>添加选课</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="goBack">返回列表</el-button>
+        <span>Add Course Selection</span>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="goBack">Back to List</el-button>
       </div>
       
       <el-form :model="selectionForm" :rules="rules" ref="selectionForm" label-width="100px" class="selectionForm">
-        <el-form-item label="学生" prop="studentId">
+        <el-form-item label="Student" prop="studentId">
           <el-select 
             v-model="selectionForm.studentId" 
             filterable 
-            placeholder="请选择学生" 
+            placeholder="Select student" 
             @change="handleStudentChange"
             style="width: 100%">
             <el-option
@@ -25,11 +25,11 @@
           </el-select>
         </el-form-item>
         
-        <el-form-item label="课程" prop="courseId">
+        <el-form-item label="Course" prop="courseId">
           <el-select 
             v-model="selectionForm.courseId" 
             filterable 
-            placeholder="请选择课程" 
+            placeholder="Select course" 
             @change="handleCourseChange"
             style="width: 100%">
             <el-option
@@ -39,45 +39,45 @@
               :value="item.courseId">
               <span>{{ item.courseId }} - {{ item.courseName }}</span>
               <span style="float: right; color: #8492a6; font-size: 13px">
-                {{ item.teacherName }} | {{ item.credit }}学分
+                {{ item.teacherName }} | {{ item.credit }} credits
               </span>
             </el-option>
           </el-select>
         </el-form-item>
         
-        <el-form-item label="选课年份" prop="selectionYear">
+        <el-form-item label="Select Year" prop="selectionYear">
           <el-date-picker
             v-model="selectionForm.selectionYear"
             type="year"
             value-format="yyyy"
-            placeholder="选择年份">
+            placeholder="Select year">
           </el-date-picker>
         </el-form-item>
         
-        <el-form-item label="备注" prop="remark">
-          <el-input type="textarea" v-model="selectionForm.remark" :rows="3" placeholder="选填"></el-input>
+        <el-form-item label="Notes" prop="remark">
+          <el-input type="textarea" v-model="selectionForm.remark" :rows="3" placeholder="Optional"></el-input>
         </el-form-item>
         
         <el-form-item>
-          <el-button type="primary" @click="submitForm('selectionForm')" :loading="loading">提交</el-button>
-          <el-button @click="resetForm('selectionForm')">重置</el-button>
-          <el-button @click="goBack">取消</el-button>
+          <el-button type="primary" @click="submitForm('selectionForm')" :loading="loading">Submit</el-button>
+          <el-button @click="resetForm('selectionForm')">Reset</el-button>
+          <el-button @click="goBack">Cancel</el-button>
         </el-form-item>
       </el-form>
       
-      <!-- 预览信息 -->
+      <!-- Preview Information -->
       <el-card class="preview-card" v-if="showPreview">
         <div slot="header" class="clearfix">
-          <span>选课信息预览</span>
+          <span>Course Selection Preview</span>
         </div>
         <el-descriptions :column="2" border>
-          <el-descriptions-item label="学生学号">{{ selectionForm.studentId }}</el-descriptions-item>
-          <el-descriptions-item label="学生姓名">{{ selectionForm.studentName }}</el-descriptions-item>
-          <el-descriptions-item label="课程编号">{{ selectionForm.courseId }}</el-descriptions-item>
-          <el-descriptions-item label="课程名称">{{ selectionForm.courseName }}</el-descriptions-item>
-          <el-descriptions-item label="授课教师">{{ selectionForm.teacherName }}</el-descriptions-item>
-          <el-descriptions-item label="学分">{{ selectionForm.credit }}</el-descriptions-item>
-          <el-descriptions-item label="选课年份">{{ selectionForm.selectionYear }}</el-descriptions-item>
+          <el-descriptions-item label="Student ID">{{ selectionForm.studentId }}</el-descriptions-item>
+          <el-descriptions-item label="Student Name">{{ selectionForm.studentName }}</el-descriptions-item>
+          <el-descriptions-item label="Course ID">{{ selectionForm.courseId }}</el-descriptions-item>
+          <el-descriptions-item label="Course Name">{{ selectionForm.courseName }}</el-descriptions-item>
+          <el-descriptions-item label="Teacher">{{ selectionForm.teacherName }}</el-descriptions-item>
+          <el-descriptions-item label="Credits">{{ selectionForm.credit }}</el-descriptions-item>
+          <el-descriptions-item label="Selection Year">{{ selectionForm.selectionYear }}</el-descriptions-item>
         </el-descriptions>
       </el-card>
     </el-card>
@@ -107,13 +107,13 @@ export default {
       },
       rules: {
         studentId: [
-          { required: true, message: '请选择学生', trigger: 'change' }
+          { required: true, message: 'Please select a student', trigger: 'change' }
         ],
         courseId: [
-          { required: true, message: '请选择课程', trigger: 'change' }
+          { required: true, message: 'Please select a course', trigger: 'change' }
         ],
         selectionYear: [
-          { required: true, message: '请选择选课年份', trigger: 'change' }
+          { required: true, message: 'Please select a year', trigger: 'change' }
         ]
       }
     }
@@ -132,29 +132,29 @@ export default {
     ...mapActions('student', ['getStudents']),
     ...mapActions('course', ['getCourses']),
     
-    // 获取学生列表
+    // Get student list
     fetchStudents() {
       this.getStudents({ size: 1000 })
         .then(data => {
           this.studentOptions = data.records || []
         })
         .catch(() => {
-          this.$message.error('获取学生列表失败')
+          this.$message.error('Failed to get student list')
         })
     },
     
-    // 获取课程列表
+    // Get course list
     fetchCourses() {
       this.getCourses({ size: 1000 })
         .then(data => {
           this.courseOptions = data.records || []
         })
         .catch(() => {
-          this.$message.error('获取课程列表失败')
+          this.$message.error('Failed to get course list')
         })
     },
     
-    // 学生选择变更
+    // Student selection change
     handleStudentChange(studentId) {
       const student = this.studentOptions.find(item => item.studentId === studentId)
       if (student) {
@@ -162,7 +162,7 @@ export default {
       }
     },
     
-    // 课程选择变更
+    // Course selection change
     handleCourseChange(courseId) {
       const course = this.courseOptions.find(item => item.courseId === courseId)
       if (course) {
@@ -173,7 +173,7 @@ export default {
       }
     },
     
-    // 提交表单
+    // Submit form
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -181,20 +181,20 @@ export default {
           
           this.addCourseSelection(this.selectionForm)
             .then(() => {
-              this.$message.success('添加选课成功')
+              this.$message.success('Course selection added successfully')
               this.goBack()
             })
             .catch(() => {
               this.loading = false
             })
         } else {
-          this.$message.error('请正确填写表单内容')
+          this.$message.error('Please fill out the form correctly')
           return false
         }
       })
     },
     
-    // 重置表单
+    // Reset form
     resetForm(formName) {
       this.$refs[formName].resetFields()
       this.selectionForm = {
@@ -210,7 +210,7 @@ export default {
       }
     },
     
-    // 返回列表
+    // Return to list
     goBack() {
       this.$router.push('/course-selection/list')
     }

@@ -11,7 +11,7 @@ export const constantRoutes = [
     path: '/login',
     name: 'Login',
     component: () => import('@/views/login/index'),
-    meta: { title: '登录' },
+    meta: { title: 'Login' },
     hidden: true
   },
   {
@@ -28,7 +28,7 @@ export const constantRoutes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index'),
-        meta: { title: '首页', icon: 'el-icon-s-home' }
+        meta: { title: 'Dashboard', icon: 'el-icon-s-home' }
       }
     ]
   }
@@ -41,32 +41,32 @@ export const asyncRoutes = [
     path: '/student',
     component: () => import('@/views/layout/index'),
     redirect: '/student/list',
-    meta: { title: '学生管理', icon: 'el-icon-user', roles: ['1'] }, // 只有管理员可见
+    meta: { title: 'Student Manage', icon: 'el-icon-user', roles: ['1'] }, // 只有管理员可见
     children: [
       {
         path: 'list',
         name: 'StudentList',
         component: () => import('@/views/student/list'),
-        meta: { title: '学生列表', icon: 'el-icon-user-solid' }
+        meta: { title: 'Student List', icon: 'el-icon-user-solid' }
       },
       {
         path: 'create',
         name: 'StudentCreate',
         component: () => import('@/views/student/create'),
-        meta: { title: '添加学生', icon: 'el-icon-plus' }
+        meta: { title: 'Add Student', icon: 'el-icon-plus' }
       },
       {
         path: 'edit/:id',
         name: 'StudentEdit',
         component: () => import('@/views/student/edit'),
-        meta: { title: '编辑学生', icon: 'el-icon-edit', activeMenu: '/student/list' },
+        meta: { title: 'Edit Student', icon: 'el-icon-edit', activeMenu: '/student/list' },
         hidden: true
       },
       {
         path: 'detail/:id',
         name: 'StudentDetail',
         component: () => import('@/views/student/detail'),
-        meta: { title: '学生详情', icon: 'el-icon-view', activeMenu: '/student/list' },
+        meta: { title: 'Student Details', icon: 'el-icon-view', activeMenu: '/student/list' },
         hidden: true
       }
     ]
@@ -77,32 +77,32 @@ export const asyncRoutes = [
     path: '/teacher',
     component: () => import('@/views/layout/index'),
     redirect: '/teacher/list',
-    meta: { title: '教师管理', icon: 'el-icon-s-custom', roles: ['1'] }, // 只有管理员可见
+    meta: { title: 'Teacher Manage', icon: 'el-icon-s-custom', roles: ['1'] }, // 只有管理员可见
     children: [
       {
         path: 'list',
         name: 'TeacherList',
         component: () => import('@/views/teacher/list'),
-        meta: { title: '教师列表', icon: 'el-icon-s-check' }
+        meta: { title: 'Teacher List', icon: 'el-icon-s-check' }
       },
       {
         path: 'create',
         name: 'TeacherCreate',
         component: () => import('@/views/teacher/create'),
-        meta: { title: '添加教师', icon: 'el-icon-plus' }
+        meta: { title: 'Add Teacher', icon: 'el-icon-plus' }
       },
       {
         path: 'edit/:id',
         name: 'TeacherEdit',
         component: () => import('@/views/teacher/edit'),
-        meta: { title: '编辑教师', icon: 'el-icon-edit', activeMenu: '/teacher/list' },
+        meta: { title: 'Edit Teacher', icon: 'el-icon-edit', activeMenu: '/teacher/list' },
         hidden: true
       },
       {
         path: 'detail/:id',
         name: 'TeacherDetail',
         component: () => import('@/views/teacher/detail'),
-        meta: { title: '教师详情', icon: 'el-icon-view', activeMenu: '/teacher/list' },
+        meta: { title: 'Teacher Details', icon: 'el-icon-view', activeMenu: '/teacher/list' },
         hidden: true
       }
     ]
@@ -113,32 +113,32 @@ export const asyncRoutes = [
     path: '/course',
     component: () => import('@/views/layout/index'),
     redirect: '/course/list',
-    meta: { title: '课程管理', icon: 'el-icon-reading', roles: ['1'] }, // 只有管理员可见
+    meta: { title: 'Course Manage', icon: 'el-icon-reading', roles: ['1'] }, // 只有管理员可见
     children: [
       {
         path: 'list',
         name: 'CourseList',
         component: () => import('@/views/course/list'),
-        meta: { title: '课程列表', icon: 'el-icon-notebook-2' }
+        meta: { title: 'Course List', icon: 'el-icon-notebook-2' }
       },
       {
         path: 'create',
         name: 'CourseCreate',
         component: () => import('@/views/course/create'),
-        meta: { title: '添加课程', icon: 'el-icon-plus' }
+        meta: { title: 'Add Course', icon: 'el-icon-plus' }
       },
       {
         path: 'edit/:id',
         name: 'CourseEdit',
         component: () => import('@/views/course/edit'),
-        meta: { title: '编辑课程', icon: 'el-icon-edit', activeMenu: '/course/list' },
+        meta: { title: 'Edit Course', icon: 'el-icon-edit', activeMenu: '/course/list' },
         hidden: true
       },
       {
         path: 'detail/:id',
         name: 'CourseDetail',
         component: () => import('@/views/course/detail'),
-        meta: { title: '课程详情', icon: 'el-icon-view', activeMenu: '/course/list' },
+        meta: { title: 'Course Details', icon: 'el-icon-view', activeMenu: '/course/list' },
         hidden: true
       }
     ]
@@ -149,19 +149,19 @@ export const asyncRoutes = [
     path: '/course-selection',
     component: () => import('@/views/layout/index'),
     redirect: '/course-selection/list',
-    meta: { title: '选课管理', icon: 'el-icon-notebook-1', roles: ['1', '2', '3'] }, // 所有角色可见
+    meta: { title: 'Course Selection', icon: 'el-icon-notebook-1', roles: ['1', '2', '3'] }, // 所有角色可见
     children: [
       {
         path: 'list',
         name: 'CourseSelectionList',
         component: () => import('@/views/course-selection/list'),
-        meta: { title: '选课列表', icon: 'el-icon-document' }
+        meta: { title: 'Selection List', icon: 'el-icon-document' }
       },
       {
         path: 'create',
         name: 'CourseSelectionCreate',
         component: () => import('@/views/course-selection/create'),
-        meta: { title: '添加选课', icon: 'el-icon-plus', roles: ['1'] } // 只有管理员可添加选课
+        meta: { title: 'Add Selection', icon: 'el-icon-plus', roles: ['1'] } // 只有管理员可添加选课
       }
     ]
   },
@@ -171,19 +171,19 @@ export const asyncRoutes = [
     path: '/score',
     component: () => import('@/views/layout/index'),
     redirect: '/score/list',
-    meta: { title: '成绩管理', icon: 'el-icon-s-data', roles: ['1', '2', '3'] }, // 所有角色可见
+    meta: { title: 'Grade Manage', icon: 'el-icon-s-data', roles: ['1', '2', '3'] }, // 所有角色可见
     children: [
       {
         path: 'list',
         name: 'ScoreList',
         component: () => import('@/views/score/list'),
-        meta: { title: '成绩列表', icon: 'el-icon-document-checked' }
+        meta: { title: 'Grade List', icon: 'el-icon-document-checked' }
       },
       {
         path: 'edit/:id',
         name: 'ScoreEdit',
         component: () => import('@/views/score/edit'),
-        meta: { title: '编辑成绩', icon: 'el-icon-edit', activeMenu: '/score/list', roles: ['2'] }, // 只有教师可编辑成绩
+        meta: { title: 'Edit Grade', icon: 'el-icon-edit', activeMenu: '/score/list', roles: ['2'] }, // 只有教师可编辑成绩
         hidden: true
       }
     ]
@@ -194,31 +194,31 @@ export const asyncRoutes = [
     path: '/statistics',
     component: () => import('@/views/layout/index'),
     redirect: '/statistics/student',
-    meta: { title: '统计分析', icon: 'el-icon-pie-chart', roles: ['1', '2', '3'] }, // 所有角色可见
+    meta: { title: 'Statistics', icon: 'el-icon-pie-chart', roles: ['1', '2', '3'] }, // 所有角色可见
     children: [
       {
         path: 'student',
         name: 'StudentStatistics',
         component: () => import('@/views/statistics/student'),
-        meta: { title: '学生成绩统计', icon: 'el-icon-s-data' }
+        meta: { title: 'Student Statistics', icon: 'el-icon-s-data' }
       },
       {
         path: 'class',
         name: 'ClassStatistics',
         component: () => import('@/views/statistics/class'),
-        meta: { title: '班级成绩统计', icon: 'el-icon-s-marketing' }
+        meta: { title: 'Class Statistics', icon: 'el-icon-s-marketing' }
       },
       {
         path: 'course',
         name: 'CourseStatistics',
         component: () => import('@/views/statistics/course'),
-        meta: { title: '课程成绩统计', icon: 'el-icon-s-help' }
+        meta: { title: 'Course Statistics', icon: 'el-icon-s-help' }
       },
       {
         path: 'all',
         name: 'AllStatistics',
         component: () => import('@/views/statistics/all'),
-        meta: { title: '全体学生统计', icon: 'el-icon-data-line', roles: ['1', '2'] } // 管理员和教师可见
+        meta: { title: 'Overall Statistics', icon: 'el-icon-data-line', roles: ['1', '2'] } // 管理员和教师可见
       }
     ]
   },
@@ -233,7 +233,7 @@ export const asyncRoutes = [
         path: 'index',
         name: 'Profile',
         component: () => import('@/views/profile/index'),
-        meta: { title: '个人信息', icon: 'el-icon-user' }
+        meta: { title: 'Profile', icon: 'el-icon-user' }
       }
     ]
   },
@@ -308,49 +308,49 @@ export async function addAsyncRoutes() {
   return []
 }
 
-// 初始化路由
+// Initialize router
 addAsyncRoutes()
 
-// 路由守卫
+// Route guard
 router.beforeEach(async (to, from, next) => {
-  // 获取token
+  // Get token
   const hasToken = getToken()
 
   if (hasToken) {
     if (to.path === '/login') {
-      // 如果已登录，重定向到首页
+      // If already logged in, redirect to homepage
       next({ path: '/' })
     } else {
-      // 判断是否已经有角色
+      // Check if user already has roles
       const hasRoles = store.state.user && store.state.user.role
       
       if (hasRoles && asyncRoutesAdded) {
-        // 如果有角色并已添加路由，直接放行
+        // If user has roles and routes are added, proceed
         next()
       } else {
         try {
-          // 获取用户信息
-          const { role } = await store.dispatch('user/getUserInfo')
+          // Get user info
+          await store.dispatch('user/getUserInfo')
           
-          // 添加动态路由
-          const accessRoutes = await addAsyncRoutes()
+          // Add dynamic routes
+          await addAsyncRoutes()
           
-          // 确保路由完成
+          // Ensure routes are complete
           next({ ...to, replace: true })
         } catch (error) {
-          // 出错时，重置token并跳转到登录页
+          // If error, reset token and redirect to login page
           await store.dispatch('user/resetToken')
           next(`/login?redirect=${to.path}`)
         }
       }
     }
   } else {
-    // 没有token
+    // No token
     if (to.path === '/login') {
-      // 未登录状态访问登录页，放行
+      // If accessing login page without login, allow access
       next()
     } else {
-      // 未登录状态访问其他页面，跳转到登录页
+      // If accessing other pages without login, redirect to login page
       next(`/login?redirect=${to.path}`)
     }
   }

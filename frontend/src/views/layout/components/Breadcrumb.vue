@@ -19,7 +19,7 @@ export default {
   },
   watch: {
     $route() {
-      // 路由变化时更新导航
+      // Update navigation when route changes
       this.getBreadcrumb()
     }
   },
@@ -30,10 +30,10 @@ export default {
     getBreadcrumb() {
       let matched = this.$route.matched.filter(item => item.meta && item.meta.title)
       
-      // 如果没有匹配到首页，就手动添加
+      // Manually add homepage if not matched
       const first = matched[0]
       if (first && first.path !== '/dashboard') {
-        matched = [{ path: '/dashboard', meta: { title: '首页' } }].concat(matched)
+        matched = [{ path: '/dashboard', meta: { title: 'Dashboard' } }].concat(matched)
       }
       
       this.levelList = matched
@@ -55,7 +55,7 @@ export default {
   cursor: text;
 }
 
-/* 过渡动画 */
+/* Transition animation */
 .breadcrumb-enter-active,
 .breadcrumb-leave-active {
   transition: all .5s;

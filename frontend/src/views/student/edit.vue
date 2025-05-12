@@ -2,47 +2,47 @@
   <div class="container">
     <el-card v-loading="pageLoading">
       <div slot="header">
-        <span>编辑学生信息</span>
+        <span>Edit Student Information</span>
       </div>
       
       <el-form :model="studentForm" :rules="rules" ref="studentForm" label-width="100px" class="studentForm" v-if="!pageLoading">
-        <el-form-item label="学号" prop="studentId">
-          <el-input v-model="studentForm.studentId" placeholder="请输入学号" disabled></el-input>
+        <el-form-item label="Student ID" prop="studentId">
+          <el-input v-model="studentForm.studentId" placeholder="Enter student ID" disabled></el-input>
         </el-form-item>
         
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="studentForm.name" placeholder="请输入姓名"></el-input>
+        <el-form-item label="Name" prop="name">
+          <el-input v-model="studentForm.name" placeholder="Enter name"></el-input>
         </el-form-item>
         
-        <el-form-item label="性别" prop="gender">
+        <el-form-item label="Gender" prop="gender">
           <el-radio-group v-model="studentForm.gender">
-            <el-radio label="男">男</el-radio>
-            <el-radio label="女">女</el-radio>
+            <el-radio label="男">Male</el-radio>
+            <el-radio label="女">Female</el-radio>
           </el-radio-group>
         </el-form-item>
         
-        <el-form-item label="入学年龄" prop="ageAtEnrollment">
-          <el-input-number v-model="studentForm.ageAtEnrollment" :min="10" :max="50" placeholder="请输入入学年龄"></el-input-number>
+        <el-form-item label="Age at Enrollment" prop="ageAtEnrollment">
+          <el-input-number v-model="studentForm.ageAtEnrollment" :min="10" :max="50" placeholder="Enter age at enrollment"></el-input-number>
         </el-form-item>
         
-        <el-form-item label="入学年份" prop="enrollmentYear">
+        <el-form-item label="Enrollment Year" prop="enrollmentYear">
           <el-date-picker
             v-model="enrollmentDate"
             type="year"
-            placeholder="选择年份"
+            placeholder="Select year"
             value-format="yyyy"
             @change="handleYearChange">
           </el-date-picker>
         </el-form-item>
         
-        <el-form-item label="班级" prop="class">
-          <el-input v-model="studentForm.class" placeholder="请输入班级"></el-input>
+        <el-form-item label="Class" prop="class">
+          <el-input v-model="studentForm.class" placeholder="Enter class"></el-input>
         </el-form-item>
         
         <el-form-item>
-          <el-button type="primary" @click="submitForm('studentForm')" :loading="submitLoading">保存</el-button>
-          <el-button @click="resetForm('studentForm')">重置</el-button>
-          <el-button @click="goBack">返回</el-button>
+          <el-button type="primary" @click="submitForm('studentForm')" :loading="submitLoading">Save</el-button>
+          <el-button @click="resetForm('studentForm')">Reset</el-button>
+          <el-button @click="goBack">Back</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -70,20 +70,20 @@ export default {
       },
       rules: {
         name: [
-          { required: true, message: '请输入姓名', trigger: 'blur' }
+          { required: true, message: 'Please enter a name', trigger: 'blur' }
         ],
         gender: [
-          { required: true, message: '请选择性别', trigger: 'change' }
+          { required: true, message: 'Please select gender', trigger: 'change' }
         ],
         ageAtEnrollment: [
-          { required: true, message: '请输入入学年龄', trigger: 'blur' },
-          { type: 'number', min: 10, max: 50, message: '年龄必须在10到50岁之间', trigger: 'blur' }
+          { required: true, message: 'Please enter age at enrollment', trigger: 'blur' },
+          { type: 'number', min: 10, max: 50, message: 'Age must be between 10 and 50', trigger: 'blur' }
         ],
         enrollmentYear: [
-          { required: true, message: '请选择入学年份', trigger: 'change' }
+          { required: true, message: 'Please select enrollment year', trigger: 'change' }
         ],
         class: [
-          { required: true, message: '请输入班级', trigger: 'blur' }
+          { required: true, message: 'Please enter class', trigger: 'blur' }
         ]
       }
     }
@@ -97,7 +97,7 @@ export default {
     
     getStudentInfo() {
       if (!this.studentId) {
-        this.$message.error('学生ID不能为空')
+        this.$message.error('Student ID cannot be empty')
         this.goBack()
         return
       }
@@ -109,7 +109,7 @@ export default {
           this.enrollmentDate = String(data.enrollmentYear)
         })
         .catch(() => {
-          this.$message.error('获取学生信息失败')
+          this.$message.error('Failed to get student information')
           this.goBack()
         })
         .finally(() => {
@@ -131,14 +131,14 @@ export default {
             data: this.studentForm
           })
             .then(() => {
-              this.$message.success('更新成功')
+              this.$message.success('Updated successfully')
               this.goBack()
             })
             .catch(() => {
               this.submitLoading = false
             })
         } else {
-          this.$message.error('请正确填写表单')
+          this.$message.error('Please fill out the form correctly')
           return false
         }
       })

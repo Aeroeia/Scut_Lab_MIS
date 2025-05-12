@@ -2,44 +2,44 @@
   <div class="container">
     <el-card>
       <div slot="header" class="clearfix">
-        <span>学生列表</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="handleCreate">添加学生</el-button>
+        <span>Student List</span>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="handleCreate">Add Student</el-button>
       </div>
       
-      <!-- 搜索区域 -->
+      <!-- Search Area -->
       <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
-        <el-form-item label="学号">
-          <el-input v-model="searchForm.studentId" placeholder="请输入学号" clearable></el-input>
+        <el-form-item label="Student ID">
+          <el-input v-model="searchForm.studentId" placeholder="Enter student ID" clearable></el-input>
         </el-form-item>
-        <el-form-item label="姓名">
-          <el-input v-model="searchForm.name" placeholder="请输入姓名" clearable></el-input>
+        <el-form-item label="Name">
+          <el-input v-model="searchForm.name" placeholder="Enter name" clearable></el-input>
         </el-form-item>
-        <el-form-item label="班级">
-          <el-input v-model="searchForm.class" placeholder="请输入班级" clearable></el-input>
+        <el-form-item label="Class">
+          <el-input v-model="searchForm.class" placeholder="Enter class" clearable></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-          <el-button @click="resetSearch">重置</el-button>
+          <el-button type="primary" @click="handleSearch">Search</el-button>
+          <el-button @click="resetSearch">Reset</el-button>
         </el-form-item>
       </el-form>
       
-      <!-- 数据表格 -->
+      <!-- Data Table -->
       <el-table v-loading="loading" :data="studentList" border style="width: 100%">
-        <el-table-column prop="studentId" label="学号" width="120" align="center"></el-table-column>
-        <el-table-column prop="name" label="姓名" width="120" align="center"></el-table-column>
-        <el-table-column prop="gender" label="性别" width="80" align="center"></el-table-column>
-        <el-table-column prop="class" label="班级" width="120" align="center"></el-table-column>
-        <el-table-column prop="enrollmentYear" label="入学年份" width="120" align="center"></el-table-column>
-        <el-table-column label="操作" align="center">
+        <el-table-column prop="studentId" label="Student ID" width="120" align="center"></el-table-column>
+        <el-table-column prop="name" label="Name" width="120" align="center"></el-table-column>
+        <el-table-column prop="gender" label="Gender" width="80" align="center"></el-table-column>
+        <el-table-column prop="class" label="Class" width="120" align="center"></el-table-column>
+        <el-table-column prop="enrollmentYear" label="Enroll Year" width="120" align="center"></el-table-column>
+        <el-table-column label="Actions" align="center">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleDetail(scope.row)">详情</el-button>
-            <el-button type="text" size="small" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button type="text" size="small" class="danger-text" @click="handleDelete(scope.row)">删除</el-button>
+            <el-button type="text" size="small" @click="handleDetail(scope.row)">Details</el-button>
+            <el-button type="text" size="small" @click="handleEdit(scope.row)">Edit</el-button>
+            <el-button type="text" size="small" class="danger-text" @click="handleDelete(scope.row)">Delete</el-button>
           </template>
         </el-table-column>
       </el-table>
       
-      <!-- 分页组件 -->
+      <!-- Pagination -->
       <el-pagination
         class="mt-20"
         @size-change="handleSizeChange"
@@ -139,17 +139,17 @@ export default {
     },
     
     handleDelete(row) {
-      this.$confirm('确认删除该学生吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
+      this.$confirm('Are you sure you want to delete this student?', 'Confirmation', {
+        confirmButtonText: 'Confirm',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       }).then(() => {
         this.deleteStudent(row.studentId).then(() => {
-          this.$message.success('删除成功')
+          this.$message.success('Successfully deleted')
           this.fetchData()
         })
       }).catch(() => {
-        this.$message.info('已取消删除')
+        this.$message.info('Deletion cancelled')
       })
     }
   }

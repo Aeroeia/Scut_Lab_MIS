@@ -28,7 +28,7 @@ const mutations = {
 }
 
 const actions = {
-  // 用户登录
+  // User login
   login({ commit }, userInfo) {
     const { username, password } = userInfo
     return new Promise((resolve, reject) => {
@@ -53,10 +53,10 @@ const actions = {
     })
   },
 
-  // 获取用户信息
+  // Get user information
   getUserInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      // 如果已经有角色信息，直接返回
+      // If role information already exists, return directly
       if (state.role) {
         resolve({
           role: state.role,
@@ -66,31 +66,31 @@ const actions = {
         return
       }
       
-      // 否则从服务器获取用户信息
+      // Otherwise fetch user information from server
       fetchUserInfo()
         .then(response => {
           const { data } = response
           
           if (!data) {
-            reject(new Error('验证失败，请重新登录'))
+            reject(new Error('Verification failed, please login again'))
             return
           }
           
           const { role, realId, roleName, name } = data
           
-          // 验证返回的角色是否为空
+          // Verify the returned role is not empty
           if (!role) {
-            reject(new Error('获取用户角色失败'))
+            reject(new Error('Failed to get user role'))
             return
           }
           
-          // 设置用户信息
+          // Set user information
           commit('SET_ROLE', role.toString())
           commit('SET_REAL_ID', realId)
           commit('SET_ROLE_NAME', roleName)
           commit('SET_NAME', name || '')
           
-          // 同步到Cookie
+          // Sync to cookies
           setRole(role.toString())
           setRealId(realId)
           setRoleName(roleName)
@@ -103,7 +103,7 @@ const actions = {
     })
   },
 
-  // 用户登出
+  // User logout
   logout({ commit }) {
     return new Promise((resolve, reject) => {
       logout()
@@ -123,7 +123,7 @@ const actions = {
     })
   },
 
-  // 重置token
+  // Reset token
   resetToken({ commit }) {
     return new Promise(resolve => {
       commit('SET_TOKEN', '')

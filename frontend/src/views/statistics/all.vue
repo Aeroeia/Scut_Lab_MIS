@@ -2,40 +2,40 @@
   <div class="container">
     <el-card>
       <div slot="header" class="clearfix">
-        <span>全校成绩统计</span>
+        <span>School-wide Statistics</span>
       </div>
       
-      <!-- 查询条件 -->
+      <!-- Search Criteria -->
       <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
-        <el-form-item label="学年">
+        <el-form-item label="Academic Year">
           <el-date-picker
             v-model="searchForm.year"
             type="year"
             value-format="yyyy"
-            placeholder="选择年份">
+            placeholder="Select year">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="学期">
-          <el-select v-model="searchForm.semester" placeholder="请选择学期" clearable>
-            <el-option label="第一学期" value="1"></el-option>
-            <el-option label="第二学期" value="2"></el-option>
+        <el-form-item label="Semester">
+          <el-select v-model="searchForm.semester" placeholder="Select semester" clearable>
+            <el-option label="First Semester" value="1"></el-option>
+            <el-option label="Second Semester" value="2"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="fetchData">查询</el-button>
-          <el-button @click="resetSearch">重置</el-button>
+          <el-button type="primary" @click="fetchData">Search</el-button>
+          <el-button @click="resetSearch">Reset</el-button>
         </el-form-item>
       </el-form>
       
-      <!-- 统计信息展示 -->
+      <!-- Statistics Display -->
       <el-card v-if="showStatistics" class="mb-20">
         <div slot="header" class="clearfix">
-          <span>全校统计信息</span>
+          <span>School-wide Statistics Summary</span>
         </div>
         <el-row :gutter="20">
           <el-col :span="8">
             <div class="stat-card">
-              <div class="stat-title">全校平均分</div>
+              <div class="stat-title">School Average Score</div>
               <div class="stat-value" :class="getScoreClass(statisticsData.averageScore)">
                 {{ statisticsData.averageScore ? statisticsData.averageScore.toFixed(1) : '-' }}
               </div>
@@ -43,7 +43,7 @@
           </el-col>
           <el-col :span="8">
             <div class="stat-card">
-              <div class="stat-title">通过率</div>
+              <div class="stat-title">Pass Rate</div>
               <div class="stat-value score-pass">
                 {{ statisticsData.passRate ? (statisticsData.passRate * 100).toFixed(1) + '%' : '-' }}
               </div>
@@ -51,7 +51,7 @@
           </el-col>
           <el-col :span="8">
             <div class="stat-card">
-              <div class="stat-title">优良率</div>
+              <div class="stat-title">Excellence Rate</div>
               <div class="stat-value score-excellent">
                 {{ statisticsData.excellentRate ? (statisticsData.excellentRate * 100).toFixed(1) + '%' : '-' }}
               </div>
@@ -61,33 +61,33 @@
         <el-row :gutter="20" class="mt-20">
           <el-col :span="8">
             <div class="stat-card">
-              <div class="stat-title">参与统计人数</div>
+              <div class="stat-title">Students Count</div>
               <div class="stat-value">{{ statisticsData.studentCount || 0 }}</div>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="stat-card">
-              <div class="stat-title">参与统计课程数</div>
+              <div class="stat-title">Courses Count</div>
               <div class="stat-value">{{ statisticsData.courseCount || 0 }}</div>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="stat-card">
-              <div class="stat-title">总成绩记录数</div>
+              <div class="stat-title">Total Score Records</div>
               <div class="stat-value">{{ statisticsData.scoreCount || 0 }}</div>
             </div>
           </el-col>
         </el-row>
       </el-card>
       
-      <!-- 成绩统计图表 -->
+      <!-- Score Statistics Charts -->
       <div v-loading="loading">
         <el-row :gutter="20" v-if="showCharts">
-          <!-- 各分数段人数分布 -->
+          <!-- Score Range Distribution -->
           <el-col :span="12">
             <el-card class="chart-card">
               <div slot="header" class="clearfix">
-                <span>各分数段人数分布</span>
+                <span>Score Range Distribution</span>
               </div>
               <div class="chart-container">
                 <div ref="scoreRangeChart" class="chart"></div>
@@ -95,11 +95,11 @@
             </el-card>
           </el-col>
           
-          <!-- 各等级占比 -->
+          <!-- Grade Level Distribution -->
           <el-col :span="12">
             <el-card class="chart-card">
               <div slot="header" class="clearfix">
-                <span>成绩等级分布</span>
+                <span>Grade Level Distribution</span>
               </div>
               <div class="chart-container">
                 <div ref="levelPieChart" class="chart"></div>
@@ -108,13 +108,13 @@
           </el-col>
         </el-row>
         
-        <!-- 班级/专业对比 -->
+        <!-- Class Comparison -->
         <el-card class="mt-20" v-if="showCharts">
           <div slot="header" class="clearfix">
-            <span>班级平均分对比</span>
+            <span>Class Average Score Comparison</span>
             <el-radio-group v-model="displayType" size="small" style="float: right; margin-top: -5px">
-              <el-radio-button label="bar">柱状图</el-radio-button>
-              <el-radio-button label="line">折线图</el-radio-button>
+              <el-radio-button label="bar">Bar Chart</el-radio-button>
+              <el-radio-button label="line">Line Chart</el-radio-button>
             </el-radio-group>
           </div>
           <div class="chart-container chart-container-large">
@@ -122,12 +122,12 @@
           </div>
         </el-card>
         
-        <!-- 课程成绩TOP10 -->
+        <!-- Course Score TOP10 -->
         <el-row :gutter="20" class="mt-20" v-if="showCharts">
           <el-col :span="12">
             <el-card class="chart-card">
               <div slot="header" class="clearfix">
-                <span>平均分最高的TOP10课程</span>
+                <span>TOP10 Courses with Highest Average Score</span>
               </div>
               <div class="chart-container">
                 <div ref="topCoursesChart" class="chart"></div>
@@ -138,7 +138,7 @@
           <el-col :span="12">
             <el-card class="chart-card">
               <div slot="header" class="clearfix">
-                <span>平均分最低的TOP10课程</span>
+                <span>TOP10 Courses with Lowest Average Score</span>
               </div>
               <div class="chart-container">
                 <div ref="bottomCoursesChart" class="chart"></div>
@@ -147,7 +147,7 @@
           </el-col>
         </el-row>
         
-        <el-empty v-if="!loading && !showCharts" description="暂无统计数据"></el-empty>
+        <el-empty v-if="!loading && !showCharts" description="No statistics data available"></el-empty>
       </div>
     </el-card>
   </div>

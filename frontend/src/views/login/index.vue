@@ -2,14 +2,14 @@
   <div class="login-container">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
       <div class="login-title">
-        <h3>华南理工大学计算机学院课程与成绩管理系统</h3>
+        <h3>SCUT School of Computer Science Course & Grade Management System</h3>
       </div>
 
       <el-form-item prop="username">
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="用户名"
+          placeholder="Username"
           name="username"
           type="text"
           tabindex="1"
@@ -24,7 +24,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="密码"
+          placeholder="Password"
           name="password"
           tabindex="2"
           autocomplete="on"
@@ -37,7 +37,7 @@
         </el-input>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
     </el-form>
   </div>
 </template>
@@ -50,14 +50,14 @@ export default {
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('请输入用户名'))
+        callback(new Error('Please enter username'))
       } else {
         callback()
       }
     }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 1) {
-        callback(new Error('密码不能为空'))
+        callback(new Error('Password cannot be empty'))
       } else {
         callback()
       }
@@ -103,7 +103,7 @@ export default {
           this.loading = true
           this.login(this.loginForm)
             .then(() => {
-              this.$message.success('登录成功')
+              this.$message.success('Login successful')
               this.$router.push({ path: this.redirect || '/' })
               this.loading = false
             })

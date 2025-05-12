@@ -340,8 +340,33 @@ li.el-menu-item::after {
   background-color: #304156;
 }
 
+/* 修复侧边栏滚动问题 */
+.sidebar-container .el-scrollbar {
+  height: calc(100% - 60px); /* 减去logo高度 */
+}
+
+.sidebar-container .el-scrollbar__wrap {
+  overflow-x: hidden !important;
+  height: 100%;
+}
+
+.sidebar-container .el-scrollbar__bar.is-horizontal {
+  display: none;
+}
+
+.sidebar-container .el-scrollbar__view {
+  height: 100%;
+}
+
+.sidebar-container .scrollbar-wrapper {
+  overflow-x: hidden !important;
+  height: 100%;
+}
+
 .sidebar-container .el-menu {
   border-right: none;
+  height: 100%;
+  width: 100% !important;
 }
 
 .sidebar-logo {
@@ -445,4 +470,69 @@ li.el-menu-item::after {
   margin-bottom: 30px;
   font-weight: bold;
   font-size: 26px;
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(144, 147, 153, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(144, 147, 153, 0.5);
+}
+
+/* 确保滚动区域内容正确显示 */
+.el-scrollbar {
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+}
+
+.el-scrollbar__wrap {
+  overflow: auto;
+  height: 100%;
+}
+
+.el-scrollbar__bar {
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  z-index: 1;
+  border-radius: 4px;
+}
+
+.el-scrollbar__bar.is-horizontal {
+  height: 6px;
+  left: 2px;
+}
+
+.el-scrollbar__bar.is-vertical {
+  width: 6px;
+  top: 2px;
+}
+
+.el-scrollbar__thumb {
+  position: relative;
+  display: block;
+  width: 0;
+  height: 0;
+  cursor: pointer;
+  border-radius: inherit;
+  background-color: rgba(144, 147, 153, 0.3);
+  transition: .3s background-color;
+}
+
+.el-scrollbar__thumb:hover {
+  background-color: rgba(144, 147, 153, 0.5);
 } 

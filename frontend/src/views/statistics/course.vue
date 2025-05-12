@@ -2,17 +2,17 @@
   <div class="container">
     <el-card>
       <div slot="header" class="clearfix">
-        <span>课程成绩统计</span>
+        <span>Course Statistics</span>
       </div>
       
-      <!-- 查询条件 -->
+      <!-- Search Criteria -->
       <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
-        <el-form-item label="课程">
+        <el-form-item label="Course">
           <el-select 
             v-model="searchForm.courseId" 
             filterable 
-            placeholder="请选择课程"
-            style="width: 300px"
+            placeholder="Select course"
+            style="width: 350px"
             @change="handleCourseChange">
             <el-option
               v-for="item in courseOptions"
@@ -20,64 +20,102 @@
               :label="`${item.courseId} - ${item.courseName}`"
               :value="item.courseId">
               <span>{{ item.courseId }} - {{ item.courseName }}</span>
-              <span style="float: right; color: #8492a6; font-size: 13px">
-                {{ item.teacherName }}
-              </span>
+              <span style="float: right; color: #8492a6; font-size: 13px">{{ item.teacherName }}</span>
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="学年">
+        <el-form-item label="Academic Year">
           <el-date-picker
             v-model="searchForm.year"
             type="year"
             value-format="yyyy"
-            placeholder="选择年份">
+            placeholder="Select year">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="fetchData">查询</el-button>
-          <el-button @click="resetSearch">重置</el-button>
+          <el-button type="primary" @click="fetchData">Search</el-button>
+          <el-button @click="resetSearch">Reset</el-button>
         </el-form-item>
       </el-form>
       
-      <!-- 课程信息展示 -->
+      <!-- Course Information Display -->
       <el-card v-if="showCourseInfo" class="mb-20">
         <div slot="header" class="clearfix">
-          <span>课程统计信息</span>
+          <span>Course Statistics Summary</span>
         </div>
         <el-descriptions :column="3" border>
-          <el-descriptions-item label="课程编号">{{ currentCourse.courseId }}</el-descriptions-item>
-          <el-descriptions-item label="课程名称">{{ currentCourse.courseName }}</el-descriptions-item>
-          <el-descriptions-item label="授课教师">{{ currentCourse.teacherName }}</el-descriptions-item>
-          <el-descriptions-item label="学生人数">{{ statisticsData.studentCount || 0 }} 人</el-descriptions-item>
-          <el-descriptions-item label="平均分">
-            <span class="average-score" :class="getScoreClass(statisticsData.averageScore)">
-              {{ statisticsData.averageScore ? statisticsData.averageScore.toFixed(1) : '-' }}
-            </span>
-          </el-descriptions-item>
-          <el-descriptions-item label="通过率">
-            {{ statisticsData.passRate ? (statisticsData.passRate * 100).toFixed(1) + '%' : '-' }}
-          </el-descriptions-item>
-          <el-descriptions-item label="最高分">
-            <span class="score-excellent">{{ statisticsData.highestScore || '-' }}</span>
-          </el-descriptions-item>
-          <el-descriptions-item label="最低分">
-            <span class="score-fail">{{ statisticsData.lowestScore || '-' }}</span>
-          </el-descriptions-item>
-          <el-descriptions-item label="优良率">
-            {{ statisticsData.excellentRate ? (statisticsData.excellentRate * 100).toFixed(1) + '%' : '-' }}
-          </el-descriptions-item>
+          <el-descriptions-item label="Course ID">{{ courseInfo.courseId }}</el-descriptions-item>
+          <el-descriptions-item label="Course Name">{{ courseInfo.courseName }}</el-descriptions-item>
+          <el-descriptions-item label="Teacher">{{ courseInfo.teacherName }}</el-descriptions-item>
+          <el-descriptions-item label="Credits">{{ courseInfo.credit }}</el-descriptions-item>
+          <el-descriptions-item label="Hours">{{ courseInfo.hours }}</el-descriptions-item>
+          <el-descriptions-item label="Semester">{{ courseInfo.semester }}</el-descriptions-item>
         </el-descriptions>
       </el-card>
       
-      <!-- 成绩统计图表 -->
+      <!-- Score Statistics Display -->
+      <el-card v-if="showScoreInfo" class="mb-20">
+        <div slot="header" class="clearfix">
+          <span>Score Statistics</span>
+        </div>
+        <el-row :gutter="20">
+          <el-col :span="8">
+            <div class="stat-card">
+              <div class="stat-title">Average Score</div>
+              <div class="stat-value" :class="getScoreClass(statisticsData.averageScore)">
+                {{ statisticsData.averageScore ? statisticsData.averageScore.toFixed(1) : '-' }}
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="stat-card">
+              <div class="stat-title">Pass Rate</div>
+              <div class="stat-value score-pass">
+                {{ statisticsData.passRate ? (statisticsData.passRate * 100).toFixed(1) + '%' : '-' }}
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="stat-card">
+              <div class="stat-title">Excellence Rate</div>
+              <div class="stat-value score-excellent">
+                {{ statisticsData.excellentRate ? (statisticsData.excellentRate * 100).toFixed(1) + '%' : '-' }}
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" class="mt-20">
+          <el-col :span="8">
+            <div class="stat-card">
+              <div class="stat-title">Highest Score</div>
+              <div class="stat-value score-excellent">{{ statisticsData.highestScore || '-' }}</div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="stat-card">
+              <div class="stat-title">Lowest Score</div>
+              <div class="stat-value" :class="statisticsData.lowestScore && statisticsData.lowestScore < 60 ? 'score-fail' : ''">
+                {{ statisticsData.lowestScore || '-' }}
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="8">
+            <div class="stat-card">
+              <div class="stat-title">Student Count</div>
+              <div class="stat-value">{{ statisticsData.studentCount || 0 }}</div>
+            </div>
+          </el-col>
+        </el-row>
+      </el-card>
+      
+      <!-- Score Statistics Charts -->
       <div v-loading="loading">
         <el-row :gutter="20" v-if="showCharts">
-          <!-- 成绩柱状图 -->
+          <!-- Score Distribution Chart -->
           <el-col :span="12">
             <el-card class="chart-card">
               <div slot="header" class="clearfix">
-                <span>成绩分布</span>
+                <span>Score Range Distribution</span>
               </div>
               <div class="chart-container">
                 <div ref="barChart" class="chart"></div>
@@ -85,11 +123,11 @@
             </el-card>
           </el-col>
           
-          <!-- 成绩等级饼图 -->
+          <!-- Grade Level Pie Chart -->
           <el-col :span="12">
             <el-card class="chart-card">
               <div slot="header" class="clearfix">
-                <span>成绩等级分布</span>
+                <span>Grade Level Distribution</span>
               </div>
               <div class="chart-container">
                 <div ref="pieChart" class="chart"></div>
@@ -98,62 +136,61 @@
           </el-col>
         </el-row>
         
-        <!-- 班级对比图 -->
-        <el-card class="mt-20" v-if="showCharts && statisticsData.classScores && statisticsData.classScores.length > 0">
+        <!-- Class Average Comparison Chart -->
+        <el-card class="mt-20" v-if="showClassChart">
           <div slot="header" class="clearfix">
-            <span>班级成绩对比</span>
+            <span>Class Average Comparison</span>
+            <el-radio-group v-model="displayType" size="small" style="float: right; margin-top: -5px">
+              <el-radio-button label="bar">Bar Chart</el-radio-button>
+              <el-radio-button label="line">Line Chart</el-radio-button>
+            </el-radio-group>
           </div>
-          <div class="chart-container">
+          <div class="chart-container chart-container-large">
             <div ref="classChart" class="chart"></div>
           </div>
         </el-card>
         
-        <!-- 学生成绩表格 -->
+        <!-- Student Score Table -->
         <el-card class="mt-20" v-if="showTable">
           <div slot="header" class="clearfix">
-            <span>学生成绩列表</span>
+            <span>Student Score List</span>
             <el-button
               style="float: right; padding: 3px 0"
               type="text"
               @click="handleExport"
               :disabled="!showTable">
-              导出Excel
+              Export Excel
             </el-button>
           </div>
           <el-table
             :data="statisticsData.studentScores"
             border
             style="width: 100%">
-            <el-table-column prop="studentId" label="学号" width="120" align="center"></el-table-column>
-            <el-table-column prop="name" label="姓名" width="120" align="center"></el-table-column>
-            <el-table-column prop="gender" label="性别" width="80" align="center"></el-table-column>
-            <el-table-column prop="class" label="班级" width="120" align="center"></el-table-column>
-            <el-table-column prop="score" label="成绩" width="100" align="center">
+            <el-table-column prop="studentId" label="Student ID" width="120" align="center"></el-table-column>
+            <el-table-column prop="name" label="Name" width="120" align="center"></el-table-column>
+            <el-table-column prop="class" label="Class" width="120" align="center"></el-table-column>
+            <el-table-column prop="score" label="Score" width="100" align="center">
               <template slot-scope="scope">
-                <el-tag :type="getScoreTagType(scope.row.score)">
-                  {{ scope.row.score !== null ? scope.row.score : '未录入' }}
-                </el-tag>
+                <span :class="getScoreClass(scope.row.score)">
+                  {{ scope.row.score !== null ? scope.row.score : 'Not entered' }}
+                </span>
               </template>
             </el-table-column>
-            <el-table-column prop="level" label="等级" width="100" align="center">
-              <template slot-scope="scope">
-                {{ scope.row.score !== null ? getScoreLevel(scope.row.score) : '-' }}
-              </template>
-            </el-table-column>
-            <el-table-column label="操作" width="120" align="center">
+            <el-table-column prop="rank" label="Ranking" width="100" align="center"></el-table-column>
+            <el-table-column label="Actions" width="120" align="center">
               <template slot-scope="scope">
                 <el-button 
                   type="text" 
                   size="small" 
                   @click="viewStudentDetail(scope.row)">
-                  查看详情
+                  Student Details
                 </el-button>
               </template>
             </el-table-column>
           </el-table>
         </el-card>
         
-        <el-empty v-if="!loading && !showCharts" description="请选择课程查看成绩统计"></el-empty>
+        <el-empty v-if="!loading && !showCharts" description="Please select a course to view statistics"></el-empty>
       </div>
     </el-card>
   </div>
@@ -425,7 +462,7 @@ export default {
       const option = {
         tooltip: {
           trigger: 'item',
-          formatter: '{a} <br/>{b}: {c}人 ({d}%)'
+          formatter: '{a} <br/>{b}: {c} students ({d}%)'
         },
         legend: {
           orient: 'vertical',
@@ -435,7 +472,7 @@ export default {
         },
         series: [
           {
-            name: '成绩等级',
+            name: 'Grade Level',
             type: 'pie',
             radius: ['40%', '70%'],
             avoidLabelOverlap: false,
@@ -578,7 +615,7 @@ export default {
     // 导出Excel
     handleExport() {
       // 这里仅为示例，实际导出功能需要调用后端API或使用前端导出库
-      this.$message.success('成绩表导出成功')
+      this.$message.success('Grade table exported successfully')
     },
     
     // 根据成绩返回不同的Tag类型
@@ -592,11 +629,11 @@ export default {
     
     // 根据成绩返回等级
     getScoreLevel(score) {
-      if (score >= 90) return '优秀'
-      if (score >= 80) return '良好'
-      if (score >= 70) return '中等'
-      if (score >= 60) return '及格'
-      return '不及格'
+      if (score >= 90) return 'Excellent'
+      if (score >= 80) return 'Good'
+      if (score >= 70) return 'Medium'
+      if (score >= 60) return 'Pass'
+      return 'Fail'
     },
     
     // 获取成绩颜色类
