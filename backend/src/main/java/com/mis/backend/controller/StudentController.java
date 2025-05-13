@@ -41,9 +41,9 @@ public class StudentController {
     }
     //获取学生详情
     @GetMapping("/{studentId}")
-    public Result<StudentVO> getDetails(@PathVariable String studentId){
+    public Result<StudentVO> getDetails(@PathVariable String studentId,Integer year){
         log.info("StudentId: {}", studentId);
-        StudentVO studentVO = studentService.getDetails(studentId,null);
+        StudentVO studentVO = studentService.getDetails(studentId,year);
         log.info("StudentVO: {}", studentVO);
         return Result.success(studentVO);
     }
@@ -59,15 +59,7 @@ public class StudentController {
     @DeleteMapping("/{studentId}")
     public Result delete(@PathVariable String studentId){
         log.info("StudentId: {}", studentId);
-        studentService.lambdaUpdate().eq(Student::getStudentId,studentId).remove();
+        studentService.delete(studentId);
         return Result.success();
     }
-    //获取学生选课信息
-//    @GetMapping("/{studentId}/courses")
-//    public Result<StudentVO> getCourseSelectionDetails(@PathVariable String studentId,@RequestParam(required = false) Integer year){
-//        log.info("StudentId: {}", studentId);
-//        log.info("Year: {}", year);
-//        StudentVO studentVO = studentService.getDetails(studentId,year);
-//        return Result.success(studentVO);
-//    }
 }

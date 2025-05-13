@@ -10,7 +10,7 @@ export function getTeachers(params) {
 }
 
 // 获取教师详情
-export function getTeacherDetail(teacherId) {
+export function getTeacherById(teacherId) {
   return request({
     url: `/teachers/${teacherId}`,
     method: 'get'

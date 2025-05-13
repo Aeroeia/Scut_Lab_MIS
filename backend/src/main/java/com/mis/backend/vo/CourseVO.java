@@ -1,11 +1,13 @@
 package com.mis.backend.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor
@@ -15,5 +17,10 @@ public class CourseVO implements Serializable {
     //课程编号
     String courseId;
     //课程名称
-    String courseName;
+    @JsonProperty("courseName")
+    String name;
+    BigDecimal credit;
+    Integer hours;
+    String semester;
+
 }

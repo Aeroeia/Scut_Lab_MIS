@@ -11,8 +11,9 @@ import java.util.List;
  * </p>
  *
  * @author aer
- * @since 2025-05-06
+ * @since 2025-05-13
  */
 public interface ICourseService extends IService<Course> {
 
+    List<Course> getCoursesByIds(List<String> ids);
 }

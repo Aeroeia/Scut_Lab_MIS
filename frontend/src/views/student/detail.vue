@@ -23,7 +23,7 @@
         <div slot="header" class="clearfix">
           <span>Course Registration Information</span>
           <div style="float: right">
-            <el-select v-model="selectedYear" placeholder="Select year" size="small" @change="fetchCourses" style="width: 120px; margin-right: 10px;">
+            <el-select v-model="selectedYear" placeholder="Select year" size="small" @change="loadData" style="width: 120px; margin-right: 10px;">
               <el-option
                 v-for="year in yearOptions"
                 :key="year"
@@ -99,7 +99,10 @@ export default {
       }
       
       this.pageLoading = true
-      this.getStudentDetail(this.studentId)
+      this.getStudentDetail({
+        studentId:this.studentId,
+        params:{year:this.selectedYear}
+      })
         .then(data => {
           this.studentInfo = data
           this.courseList = data.courses
@@ -125,7 +128,6 @@ export default {
     //       this.$message.error('Failed to get course registration information')
     //     })
     // },
-    //
     goEdit() {
       this.$router.push(`/student/edit/${this.studentId}`)
     },

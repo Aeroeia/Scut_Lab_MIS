@@ -19,6 +19,7 @@ import com.mis.backend.vo.PageQueryVO;
 import com.mis.backend.vo.StudentVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -78,6 +79,7 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
     }
 
     @Override
+    @Transactional
     public void add(StudentDTO studentDTO) {
         Student student = BeanUtil.copyProperties(studentDTO, Student.class);
         this.save(student);
@@ -87,5 +89,13 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper, Student> impl
                 .realId(student.getStudentId())
                 .build();
         userService.save(build);
+    }
+
+    @Override
+    @Transactional
+    public void delete(String studentId) {
+        this.lambdaUpdate().eq(Student::getStudentId, studentId).remove();
+        userService.lambdaUpdate().eq(User::getRealId, studentId).remove();
+        courseSelectionService.lambdaUpdate().eq(CourseSelection::getStudentId, studentId).remove();
     }
 }

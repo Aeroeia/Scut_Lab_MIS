@@ -10,10 +10,11 @@ export function getStudents(params) {
 }
 
 // 获取学生详情
-export function getStudentById(studentId) {
+export function getStudentById(studentId,params) {
   return request({
     url: `/students/${studentId}`,
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 
@@ -43,7 +44,7 @@ export function deleteStudent(studentId) {
   })
 }
 
-// 获取学生选课信息
+//获取学生选课信息
 // export function getStudentCourses(studentId, params) {
 //   return request({
 //     url: `/students/${studentId}/courses`,

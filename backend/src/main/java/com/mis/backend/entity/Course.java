@@ -1,6 +1,8 @@
 package com.mis.backend.entity;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -16,7 +18,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author aer
- * @since 2025-05-06
+ * @since 2025-05-13
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -50,12 +52,12 @@ public class Course implements Serializable {
     /**
      * 开课年级
      */
-    private Integer gradeRequirement;
+    private Integer semester;
 
     /**
-     * 停课年份
+     * 学时
      */
-    private Integer discontinueYear;
+    private Integer hours;
 
     /**
      * 创建时间
@@ -66,6 +68,9 @@ public class Course implements Serializable {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
+    @TableLogic
+    private Integer deleted;
 
 
 }

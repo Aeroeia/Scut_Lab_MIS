@@ -31,7 +31,7 @@
               <span class="content">{{ teacherInfo.title }}</span>
             </div>
             <div class="info-item">
-              <span class="label">Department:</span>
+              <span class="label" style="margin-right: 20px">Department:</span>
               <span class="content">{{ teacherInfo.department }}</span>
             </div>
             <div class="info-item">
@@ -63,7 +63,7 @@
               style="width: 100%">
               <el-table-column prop="courseId" label="Course ID" width="120" align="center"></el-table-column>
               <el-table-column prop="courseName" label="Course Name" min-width="150" align="center"></el-table-column>
-              <el-table-column prop="credit" label="Credits" width="80" align="center"></el-table-column>
+                <el-table-column prop="credit" label="Credits" width="80" align="center"></el-table-column>
               <el-table-column prop="hours" label="Hours" width="80" align="center"></el-table-column>
               <el-table-column prop="semester" label="Semester" width="120" align="center"></el-table-column>
               <el-table-column label="Actions" width="150" align="center">
@@ -126,7 +126,7 @@ export default {
       //   })
       
       // Wait for all requests to complete
-      Promise.all([teacherPromise, coursesPromise])
+      Promise.all([teacherPromise])
         .catch(() => {
           this.$message.error('Failed to get teacher information')
           this.goBack()

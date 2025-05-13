@@ -2,6 +2,7 @@ package com.mis.backend.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.mis.backend.entity.Course;
 import com.mis.backend.entity.CourseSelection;
 import com.mis.backend.entity.Teacher;
@@ -28,19 +29,19 @@ import java.util.stream.Collectors;
  * @since 2025-05-06
  */
 @Service
-public class CourseSelectionServiceImpl extends ServiceImpl<CourseSelectionMapper, CourseSelection> implements ICourseSelectionService {
+public class    CourseSelectionServiceImpl extends ServiceImpl<CourseSelectionMapper, CourseSelection> implements ICourseSelectionService {
     @Autowired
     private ICourseService courseService;
     @Autowired
     private ITeacherService teacherService;
     @Override
     public List<Course> getCoursesByIds(List<String> ids) {
-        return courseService.lambdaQuery().in(Course::getCourseId, ids).list();
+       return courseService.getCoursesByIds(ids);
     }
 
     @Override
     public List<Teacher> getTeachersByIds(List<String> ids) {
-        return teacherService.lambdaQuery().in(Teacher::getTeacherId, ids).list();
+        return teacherService.getTeachersByIds(ids);
     }
 
     @Override

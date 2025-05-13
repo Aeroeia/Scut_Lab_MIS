@@ -8,14 +8,14 @@
       
       <!-- Search Area -->
       <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
-        <el-form-item label="Student ID">
-          <el-input v-model="searchForm.studentId" placeholder="Enter student ID" clearable></el-input>
+        <el-form-item label="Student ID" >
+          <el-input v-model="searchForm.studentId" placeholder="Enter student ID" clearable style="width: 180px;"></el-input>
         </el-form-item>
         <el-form-item label="Name" >
           <el-input v-model="searchForm.name" placeholder="Enter name" clearable></el-input>
         </el-form-item>
         <el-form-item label="Class">
-          <el-input v-model="searchForm.class" placeholder="Enter class" clearable></el-input>
+          <el-input v-model="searchForm.class" placeholder="Enter class" clearable style="width: 200px;"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">Search</el-button>

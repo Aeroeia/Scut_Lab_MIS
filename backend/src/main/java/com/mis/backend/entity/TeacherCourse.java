@@ -1,5 +1,6 @@
 package com.mis.backend.entity;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -15,7 +16,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author aer
- * @since 2025-05-06
+ * @since 2025-05-13
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -50,6 +51,9 @@ public class TeacherCourse implements Serializable {
      * 更新时间
      */
     private LocalDateTime updateTime;
+
+    @TableLogic
+    private Integer deleted;
 
 
 }

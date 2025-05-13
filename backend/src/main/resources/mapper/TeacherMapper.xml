@@ -2,4 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.mis.backend.mapper.TeacherMapper">
 
+    <select id="getTeachersByIds" resultType="com.mis.backend.entity.Teacher">
+        select *
+        from teacher
+        <where>
+            teacher_id in
+            <foreach collection="ids" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
 </mapper>

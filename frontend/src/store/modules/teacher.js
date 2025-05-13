@@ -1,4 +1,4 @@
-import { getTeachers, getTeacherDetail, addTeacher, updateTeacher, deleteTeacher,  } from '@/api/teacher'
+import { getTeachers, getTeacherById, addTeacher, updateTeacher, deleteTeacher,  } from '@/api/teacher'
 
 const state = {
   teachers: [],
@@ -14,10 +14,8 @@ const mutations = {
   },
   SET_TEACHER_DETAIL: (state, detail) => {
     state.teacherDetail = detail
+    state.teacherCourses = detail.courses
   },
-  SET_TEACHER_COURSES: (state, courses) => {
-    state.teacherCourses = courses
-  }
 }
 
 const actions = {
