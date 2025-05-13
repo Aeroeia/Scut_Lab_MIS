@@ -77,4 +77,11 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     public List<Teacher> getTeachersByIds(List<String> ids) {
         return teacherMapper.getTeachersByIds(ids);
     }
+
+    @Override
+    public void edit(TeacherDTO teacherDTO) {
+        String teacherId = teacherDTO.getTeacherId();
+        Teacher teacher = BeanUtil.copyProperties(teacherDTO, Teacher.class);
+        lambdaUpdate().eq(Teacher::getTeacherId, teacherId).update(teacher);
+    }
 }

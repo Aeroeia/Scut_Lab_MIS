@@ -53,6 +53,13 @@ public class TeacherController {
         log.info("teacherVO: {}", teacherVO.getCourses());
         return Result.success(teacherVO);
     }
+    //修改教师信息
+    @PutMapping("/{teacherId}")
+    public Result edit(@RequestBody TeacherDTO teacherDTO){
+        log.info("teacherDTO: {}", teacherDTO);
+        teacherService.edit(teacherDTO);
+        return Result.success();
+    }
     //删除教师
     @DeleteMapping("/{teacherId}")
     public Result delete(@PathVariable String teacherId){

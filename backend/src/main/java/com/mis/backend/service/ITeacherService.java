@@ -24,4 +24,6 @@ public interface ITeacherService extends IService<Teacher> {
     void delete(String teacherId);
 
     List<Teacher> getTeachersByIds(List<String> ids);
+
+    void edit(TeacherDTO teacherDTO);
 }

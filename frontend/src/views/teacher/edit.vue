@@ -17,16 +17,16 @@
         
         <el-form-item label="Gender" prop="gender">
           <el-radio-group v-model="teacherForm.gender">
-            <el-radio label="男">Male</el-radio>
-            <el-radio label="女">Female</el-radio>
+            <el-radio label="Male">Male</el-radio>
+            <el-radio label="Female">Female</el-radio>
           </el-radio-group>
         </el-form-item>
         
         <el-form-item label="Title" prop="title">
           <el-select v-model="teacherForm.title" placeholder="Select title">
-            <el-option label="Lecturer" value="讲师"></el-option>
-            <el-option label="Associate Professor" value="副教授"></el-option>
-            <el-option label="Professor" value="教授"></el-option>
+            <el-option label="Lecturer" value="Lecturer"></el-option>
+            <el-option label="Associate Professor" value="Associate"></el-option>
+            <el-option label="Professor" value="Professor"></el-option>
           </el-select>
         </el-form-item>
         
@@ -50,12 +50,7 @@
             value-format="yyyy-MM-dd">
           </el-date-picker>
         </el-form-item>
-        
-        <el-form-item label="Reset Password" prop="resetPassword">
-          <el-switch v-model="resetPassword"></el-switch>
-          <span class="tips">When enabled, the password will be reset to default: 123456</span>
-        </el-form-item>
-        
+
         <el-form-item>
           <el-button type="primary" @click="submitForm" :loading="submitting">Save</el-button>
           <el-button @click="resetForm">Reset</el-button>
@@ -137,7 +132,7 @@ export default {
     this.fetchTeacherData()
   },
   methods: {
-    ...mapActions('teacher', ['getTeacher', 'updateTeacher']),
+    ...mapActions('teacher', ['getTeacherDetail', 'updateTeacher']),
     
     fetchTeacherData() {
       const teacherId = this.$route.params.id
@@ -148,7 +143,7 @@ export default {
       }
       
       this.loading = true
-      this.getTeacher(teacherId)
+      this.getTeacherDetail(teacherId)
         .then(data => {
           this.teacherForm = { ...data }
         })
@@ -172,7 +167,11 @@ export default {
             teacherData.resetPassword = true
           }
           
-          this.updateTeacher(teacherData)
+          // 修正调用方式，传递teacherId和data作为单独的对象
+          this.updateTeacher({
+            teacherId: this.teacherForm.teacherId,
+            data: teacherData
+          })
             .then(() => {
               this.$message.success('Teacher information updated successfully')
               this.goBack()

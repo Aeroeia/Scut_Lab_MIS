@@ -1,4 +1,4 @@
-import { getTeachers, getTeacherById, addTeacher, updateTeacher, deleteTeacher,  } from '@/api/teacher'
+import { getTeachers, getTeacherById, addTeacher, updateTeacher, deleteTeacher } from '@/api/teacher'
 
 const state = {
   teachers: [],

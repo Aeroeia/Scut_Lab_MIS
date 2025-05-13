@@ -103,7 +103,7 @@ export default {
       }
       
       this.pageLoading = true
-      this.getStudentDetail(this.studentId)
+      this.getStudentDetail({studentId: this.studentId, params: {}})
         .then(data => {
           this.studentForm = { ...data }
           this.enrollmentDate = String(data.enrollmentYear)
