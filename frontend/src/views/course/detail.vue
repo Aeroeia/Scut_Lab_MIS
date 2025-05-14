@@ -50,27 +50,13 @@
           <el-card class="box-card">
             <div slot="header" class="clearfix">
               <span>Enrolled Students</span>
-              <span class="student-count">Total: {{ studentCount }} students</span>
+              <span class="student-count">Total: {{ allStudents.length }} students</span>
             </div>
-            
-            <!-- Student Search -->
-            <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
-              <el-form-item label="Student ID">
-                <el-input v-model="searchForm.studentId" placeholder="Enter Student ID" clearable size="small"></el-input>
-              </el-form-item>
-              <el-form-item label="Name">
-                <el-input v-model="searchForm.name" placeholder="Enter Name" clearable size="small"></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" size="small" @click="searchStudents">Search</el-button>
-                <el-button size="small" @click="resetSearch">Reset</el-button>
-              </el-form-item>
-            </el-form>
             
             <!-- Student List -->
             <el-table
-              v-if="students.length > 0"
-              :data="students"
+              v-if="displayStudents.length > 0"
+              :data="displayStudents"
               border
               style="width: 100%">
               <el-table-column prop="studentId" label="Student ID" width="120" align="center"></el-table-column>
@@ -94,7 +80,7 @@
             
             <!-- Pagination -->
             <el-pagination
-              v-if="students.length > 0"
+              v-if="allStudents.length > 0"
               class="mt-20"
               @size-change="handleSizeChange"
               @current-change="handleCurrentChange"
@@ -102,7 +88,7 @@
               :page-sizes="[10, 20, 50]"
               :page-size="pagination.size"
               layout="total, sizes, prev, pager, next, jumper"
-              :total="studentCount">
+              :total="allStudents.length">
             </el-pagination>
           </el-card>
         </el-col>
@@ -121,12 +107,8 @@ export default {
       loading: true,
       courseId: '',
       courseInfo: {},
-      students: [],
-      studentCount: 0,
-      searchForm: {
-        studentId: '',
-        name: ''
-      },
+      allStudents: [], // 存储所有学生
+      displayStudents: [], // 存储当前页显示的学生
       pagination: {
         page: 1,
         size: 10
@@ -134,9 +116,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRole']),
+    ...mapGetters(['userRole', 'userInfo', 'userRealId', 'userRoleName']),
     isTeacher() {
       return this.userRole === '2' // 2 represents teacher role
+    },
+    isStudent() {
+      return this.userRole === '3' // 3 represents student role
+    },
+    isAdmin() {
+      return this.userRole === '1' // 1 represents admin role
     }
   },
   created() {
@@ -150,70 +138,43 @@ export default {
   },
   methods: {
     ...mapActions({
-      getCourseDetail: 'course/getCourseDetail',
-      getCourseStudents: 'course/getCourseStudents'
+      getCourse: 'course/getCourseDetail' // 保持原有的action名称，只修改后端接口
     }),
     
     fetchData() {
       this.loading = true
       
-      // Get course information
-      const coursePromise = this.getCourseDetail(this.courseId)
+      // 使用新的API路径获取课程详情和学生名单
+      this.getCourse(this.courseId)
         .then(data => {
           this.courseInfo = data
+          // 假设API返回的数据包含students字段，包含所有选择该课程的学生
+          this.allStudents = data.students || []
+          this.updateDisplayStudents()
         })
-      
-      // Get enrolled students
-      const studentsPromise = this.fetchStudents()
-      
-      // Wait for all requests to complete
-      Promise.all([coursePromise, studentsPromise])
         .catch(() => {
           this.$message.error('Failed to get course information')
-          this.goBack()
         })
         .finally(() => {
           this.loading = false
         })
     },
     
-    fetchStudents() {
-      const params = {
-        page: this.pagination.page,
-        size: this.pagination.size,
-        studentId: this.searchForm.studentId || undefined,
-        name: this.searchForm.name || undefined
-      }
-      
-      return this.getCourseStudents({ courseId: this.courseId, params })
-        .then(data => {
-          this.students = data.students || []
-          this.studentCount = data.total || 0
-        })
-    },
-    
-    searchStudents() {
-      this.pagination.page = 1
-      this.fetchStudents()
-    },
-    
-    resetSearch() {
-      this.searchForm = {
-        studentId: '',
-        name: ''
-      }
-      this.pagination.page = 1
-      this.fetchStudents()
+    // 前端处理分页
+    updateDisplayStudents() {
+      const start = (this.pagination.page - 1) * this.pagination.size
+      const end = start + this.pagination.size
+      this.displayStudents = this.allStudents.slice(start, end)
     },
     
     handleSizeChange(val) {
       this.pagination.size = val
-      this.fetchStudents()
+      this.updateDisplayStudents()
     },
     
     handleCurrentChange(val) {
       this.pagination.page = val
-      this.fetchStudents()
+      this.updateDisplayStudents()
     },
     
     handleEdit() {

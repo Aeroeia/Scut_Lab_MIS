@@ -99,9 +99,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['userRole']),
+    ...mapGetters(['userRole', 'userInfo', 'userRealId']),
     isTeacher() {
-      return this.userRole === '2' // 2代表教师角色
+      return this.userRole === '2' // 2 represents teacher role
+    },
+    isStudent() {
+      return this.userRole === '3' // 3 represents student role
+    },
+    isAdmin() {
+      return this.userRole === '1' // 1 represents admin role
     }
   },
   created() {

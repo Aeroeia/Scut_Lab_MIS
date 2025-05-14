@@ -37,10 +37,9 @@
         
         <el-form-item label="Semester" prop="semester">
           <el-select v-model="courseForm.semester" placeholder="Select semester">
-            <el-option label="2023-2024 First Semester" value="2023-2024-1"></el-option>
-            <el-option label="2023-2024 Second Semester" value="2023-2024-2"></el-option>
-            <el-option label="2024-2025 First Semester" value="2024-2025-1"></el-option>
-            <el-option label="2024-2025 Second Semester" value="2024-2025-2"></el-option>
+            <el-option label="First Semester" value="1"></el-option>
+            <el-option label="Second Semester" value="2"></el-option>
+
           </el-select>
         </el-form-item>
         
@@ -66,11 +65,10 @@ export default {
   data() {
     // Validate if course ID is an 8-digit number
     const validateCourseId = (rule, value, callback) => {
-      if (value.length !== 8) {
-        callback(new Error('Course ID must be 8 digits'))
-      } else if (!/^\d+$/.test(value)) {
-        callback(new Error('Course ID must be numbers only'))
-      } else {
+      if (value.length !== 9) {
+        callback(new Error('Course ID must be 9 digits'))
+      }
+      else {
         callback()
       }
     }

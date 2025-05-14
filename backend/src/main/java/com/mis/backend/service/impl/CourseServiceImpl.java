@@ -1,22 +1,25 @@
 package com.mis.backend.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.mis.backend.dto.CourseDTO;
 import com.mis.backend.dto.CoursePageQueryDTO;
-import com.mis.backend.entity.Course;
-import com.mis.backend.entity.Teacher;
-import com.mis.backend.entity.TeacherCourse;
+import com.mis.backend.entity.*;
 import com.mis.backend.mapper.CourseMapper;
-import com.mis.backend.service.ICourseService;
+import com.mis.backend.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.mis.backend.service.ITeacherCourseService;
-import com.mis.backend.service.ITeacherService;
+import com.mis.backend.vo.CourseStudentVO;
 import com.mis.backend.vo.CourseVO;
 import com.mis.backend.vo.PageQueryVO;
+import com.mis.backend.vo.StudentVO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +43,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     private ITeacherCourseService teacherCourseService;
     @Autowired
     private ITeacherService teacherService;
+    @Autowired
+    private IStudentService studentService;
+    @Autowired
+    private ICourseSelectionService courseSelectionService;
     @Override
     public List<Course> getCoursesByIds(List<String> ids) {
         return courseMapper.getCoursesByIds(ids);
@@ -51,128 +58,140 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         String courseId = coursePageQueryDTO.getCourseId();
         String teacherName = coursePageQueryDTO.getTeacherName();
         
-        // 获取所有符合条件的教师
-        List<Teacher> teachers = null;
-        if (StrUtil.isNotEmpty(teacherName)) {
-            teachers = teacherService.lambdaQuery().like(Teacher::getName, teacherName).list();
-            if (CollUtil.isEmpty(teachers)) {
+        // 构建查询条件，先不分页
+        List<String> filteredCourseIds = null;
+        if (StrUtil.isNotEmpty(courseId) || StrUtil.isNotEmpty(name)) {
+            // 如果指定了课程ID或课程名称，先过滤课程
+            filteredCourseIds = this.lambdaQuery()
+                    .eq(StrUtil.isNotEmpty(courseId), Course::getCourseId, courseId)
+                    .like(StrUtil.isNotEmpty(name), Course::getName, name)
+                    .list()
+                    .stream()
+                    .map(Course::getCourseId)
+                    .collect(Collectors.toList());
+            
+            if (CollUtil.isEmpty(filteredCourseIds)) {
                 return PageQueryVO.of();
             }
         }
         
-        // 构建课程查询条件
-        Page<Course> mpPage = coursePageQueryDTO.toMpPage();
-        Page<Course> coursePage = this.lambdaQuery()
-                .like(StrUtil.isNotEmpty(name), Course::getName, name)
-                .eq(StrUtil.isNotEmpty(courseId), Course::getCourseId, courseId)
-                .page(mpPage);
-        
-        if (CollUtil.isEmpty(coursePage.getRecords())) {
-            return PageQueryVO.of();
-        }
-        
-        // 获取所有课程ID
-        List<String> queryCourseIds = coursePage.getRecords().stream()
-                .map(Course::getCourseId)
-                .collect(Collectors.toList());
-        
-        // 查询课程-教师关联关系
-        List<TeacherCourse> teacherCourses;
-        if (teachers != null) {
-            // 根据课程ID和教师ID查询
-            List<String> teacherIds = teachers.stream()
+        // 构建教师ID条件
+        List<String> filteredTeacherIds = null;
+        if (StrUtil.isNotEmpty(teacherName)) {
+            // 如果指定了教师名称，先过滤教师
+            filteredTeacherIds = teacherService.lambdaQuery()
+                    .like(Teacher::getName, teacherName)
+                    .list()
+                    .stream()
                     .map(Teacher::getTeacherId)
                     .collect(Collectors.toList());
             
-            teacherCourses = teacherCourseService.lambdaQuery()
-                    .in(TeacherCourse::getCourseId, queryCourseIds)
-                    .in(TeacherCourse::getTeacherId, teacherIds)
-                    .list();
-        } else {
-            // 仅根据课程ID查询
-            teacherCourses = teacherCourseService.lambdaQuery()
-                    .in(TeacherCourse::getCourseId, queryCourseIds)
-                    .list();
+            if (CollUtil.isEmpty(filteredTeacherIds)) {
+                return PageQueryVO.of();
+            }
         }
         
-        if (CollUtil.isEmpty(teacherCourses)) {
-            // 如果没有关联的教师信息，只返回课程基本信息
-            return PageQueryVO.of(coursePage, course -> {
-                CourseVO courseVO = new CourseVO();
-                courseVO.setCourseId(course.getCourseId());
-                courseVO.setName(course.getName());
-                courseVO.setCredit(course.getCredit());
-                courseVO.setHours(course.getHours());
-                courseVO.setSemester(course.getSemester());
-                return courseVO;
-            });
+        // 在TeacherCourse表上应用分页
+        Page<TeacherCourse> tcPage = coursePageQueryDTO.toMpPage();
+        
+        // 构建TeacherCourse查询条件
+        Page<TeacherCourse> teacherCoursePage = teacherCourseService.lambdaQuery()
+                .in(filteredCourseIds != null, TeacherCourse::getCourseId, filteredCourseIds)
+                .in(filteredTeacherIds != null, TeacherCourse::getTeacherId, filteredTeacherIds)
+                .page(tcPage);
+        
+        if (CollUtil.isEmpty(teacherCoursePage.getRecords())) {
+            return PageQueryVO.of();
         }
         
-        // 获取所有需要的教师ID
-        List<String> allTeacherIds = teacherCourses.stream()
+        // 获取分页后的课程IDs和教师IDs
+        List<String> pagedCourseIds = teacherCoursePage.getRecords().stream()
+                .map(TeacherCourse::getCourseId)
+                .distinct()
+                .collect(Collectors.toList());
+        
+        List<String> pagedTeacherIds = teacherCoursePage.getRecords().stream()
                 .map(TeacherCourse::getTeacherId)
                 .distinct()
                 .collect(Collectors.toList());
         
-        // 查询教师信息
-        teachers = teacherService.lambdaQuery()
-                .in(Teacher::getTeacherId, allTeacherIds)
+        // 批量查询课程和教师信息
+        List<Course> courses = this.lambdaQuery()
+                .in(Course::getCourseId, pagedCourseIds)
                 .list();
         
-        // 创建教师ID到教师名称的映射
-        Map<String, String> teacherIdToNameMap = teachers.stream()
-                .collect(Collectors.toMap(Teacher::getTeacherId, Teacher::getName));
+        List<Teacher> teachers = teacherService.lambdaQuery()
+                .in(Teacher::getTeacherId, pagedTeacherIds)
+                .list();
         
-        // 创建课程ID到课程的映射
-        Map<String, Course> courseIdToCourseMap = coursePage.getRecords().stream()
+        // 创建映射
+        Map<String, Course> courseMap = courses.stream()
                 .collect(Collectors.toMap(Course::getCourseId, course -> course));
         
-        // 创建结果集
-        List<CourseVO> resultList = new ArrayList<>();
-        for (TeacherCourse tc : teacherCourses) {
+        Map<String, String> teacherMap = teachers.stream()
+                .collect(Collectors.toMap(Teacher::getTeacherId, Teacher::getName));
+        
+        // 构建结果集
+        List<CourseVO> resultList = teacherCoursePage.getRecords().stream().map(tc -> {
             String thisCourseId = tc.getCourseId();
             String thisTeacherId = tc.getTeacherId();
             
-            // 获取课程信息
-            Course course = courseIdToCourseMap.get(thisCourseId);
+            Course course = courseMap.get(thisCourseId);
             if (course == null) {
-                continue; // 跳过没有找到的课程
+                return null; // 跳过没有找到的课程
             }
             
-            // 创建VO对象
-            CourseVO courseVO = new CourseVO();
-            courseVO.setCourseId(thisCourseId);
-            courseVO.setName(course.getName());
-            courseVO.setCredit(course.getCredit());
-            courseVO.setHours(course.getHours());
-            courseVO.setSemester(course.getSemester());
-            
-            // 设置教师信息
-            courseVO.setTeacherId(thisTeacherId);
-            courseVO.setTeacherName(teacherIdToNameMap.get(thisTeacherId));
-            
-            resultList.add(courseVO);
-        }
+            CourseVO vo = new CourseVO();
+            vo.setCourseId(thisCourseId);
+            vo.setName(course.getName());
+            vo.setCredit(course.getCredit());
+            vo.setHours(course.getHours());
+            vo.setSemester(course.getSemester());
+            vo.setTeacherId(thisTeacherId);
+            vo.setTeacherName(teacherMap.get(thisTeacherId));
+            return vo;
+        }).filter(vo -> vo != null).collect(Collectors.toList());
         
-        // 创建自定义分页结果
+        // 创建分页结果
         PageQueryVO<CourseVO> pageQueryVO = new PageQueryVO<>();
-        pageQueryVO.setTotal(resultList.size());
-        pageQueryVO.setCurrent(coursePageQueryDTO.getPage());
-        pageQueryVO.setSize(coursePageQueryDTO.getSize());
-        
-        // 手动分页处理
-        int start = (coursePageQueryDTO.getPage() - 1) * coursePageQueryDTO.getSize();
-        int end = Math.min(start + coursePageQueryDTO.getSize(), resultList.size());
-        if (start < resultList.size()) {
-            pageQueryVO.setRecords(resultList.subList(start, end));
-        } else {
-            pageQueryVO.setRecords(new ArrayList<>());
-        }
-        
-        // 计算总页数
-        int pages = (int) Math.ceil((double) resultList.size() / coursePageQueryDTO.getSize());
-        pageQueryVO.setPages(pages);
+        pageQueryVO.setTotal((int)teacherCoursePage.getTotal());
+        pageQueryVO.setPages((int)teacherCoursePage.getPages());
+        pageQueryVO.setSize((int)teacherCoursePage.getSize());
+        pageQueryVO.setCurrent((int)teacherCoursePage.getCurrent());
+        pageQueryVO.setRecords(resultList);
         
         return pageQueryVO;
+    }
+
+    @Override
+    @Transactional
+    public void add(CourseDTO courseDTO) {
+        Course course = BeanUtil.copyProperties(courseDTO, Course.class);
+        course.setName(courseDTO.getCourseName());
+        this.save(course);
+        TeacherCourse teacherCourse = BeanUtil.copyProperties(courseDTO, TeacherCourse.class);
+        teacherCourseService.save(teacherCourse);
+    }
+
+    @Override
+    public CourseVO getDetails(String courseId) {
+        Course course = lambdaQuery().eq(Course::getCourseId, courseId).one();
+        String teacherId = teacherCourseService.lambdaQuery().eq(TeacherCourse::getCourseId,courseId).one().getTeacherId();
+        String teacherName = teacherService.lambdaQuery().eq(Teacher::getTeacherId,teacherId).one().getName();
+        CourseVO courseVO = BeanUtil.copyProperties(course, CourseVO.class);
+        courseVO.setTeacherName(teacherName);
+        courseVO.setTeacherId(teacherId);
+        List<CourseSelection> courseSelections = courseSelectionService.lambdaQuery()
+                .eq(CourseSelection::getCourseId, courseId).list();
+        Map<String, BigDecimal> map = courseSelections.stream().collect(Collectors.toMap(CourseSelection::getStudentId, CourseSelection::getScore));
+        List<String> studentIds = courseSelections.stream().map(CourseSelection::getStudentId).toList();
+        List<Student> students = studentService.lambdaQuery().in(Student::getStudentId, studentIds).list();
+        List<CourseStudentVO> courseStudentVOS = BeanUtil.copyToList(students, CourseStudentVO.class);
+        for(CourseStudentVO courseStudentVO : courseStudentVOS) {
+            BigDecimal score = map.get(courseStudentVO.getStudentId());
+            courseStudentVO.setScore(score);
+        }
+        courseVO.setStudents(courseStudentVOS);
+        return courseVO;
     }
 }

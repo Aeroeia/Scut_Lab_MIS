@@ -16,9 +16,9 @@
         </el-form-item>
         <el-form-item label="Title">
           <el-select v-model="searchForm.title" placeholder="Select title" clearable>
-            <el-option label="Lecturer" value="讲师"></el-option>
-            <el-option label="Associate Professor" value="副教授"></el-option>
-            <el-option label="Professor" value="教授"></el-option>
+            <el-option label="Lecturer" value="Lecturer"></el-option>
+            <el-option label="Associate Professor" value="Associate"></el-option>
+            <el-option label="Professor" value="Professor"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>

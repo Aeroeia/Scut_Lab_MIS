@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -24,5 +25,5 @@ public class CourseVO implements Serializable {
     Integer semester;
     String teacherId;
     String teacherName;
-
+    List<CourseStudentVO> students;
 }
