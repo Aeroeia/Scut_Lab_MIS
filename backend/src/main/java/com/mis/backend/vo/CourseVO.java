@@ -21,6 +21,8 @@ public class CourseVO implements Serializable {
     String name;
     BigDecimal credit;
     Integer hours;
-    String semester;
+    Integer semester;
+    String teacherId;
+    String teacherName;
 
 }

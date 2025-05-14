@@ -1,7 +1,10 @@
 package com.mis.backend.service;
 
+import com.mis.backend.dto.CoursePageQueryDTO;
 import com.mis.backend.entity.Course;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.mis.backend.vo.CourseVO;
+import com.mis.backend.vo.PageQueryVO;
 
 import java.util.List;
 
@@ -16,4 +19,6 @@ import java.util.List;
 public interface ICourseService extends IService<Course> {
 
     List<Course> getCoursesByIds(List<String> ids);
+
+    PageQueryVO<CourseVO> pageQuery(CoursePageQueryDTO coursePageQueryDTO);
 }

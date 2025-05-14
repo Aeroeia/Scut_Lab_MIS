@@ -2,13 +2,19 @@ package com.mis.backend.vo;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PageQueryVO<T> {
     private Integer total;
     private Integer pages;
@@ -30,5 +36,14 @@ public class PageQueryVO<T> {
         List<VO> collect = records.stream().map(convertor).collect(Collectors.toList());
         pageQueryVO.setRecords(collect);
         return pageQueryVO;
+    }
+    public static <VO> PageQueryVO<VO> of(){
+       return PageQueryVO.<VO>builder()
+                .current(0)
+                .pages(0)
+                .records(List.<VO>of())
+                .total(0)
+                .size(0)
+                .build();
     }
 }

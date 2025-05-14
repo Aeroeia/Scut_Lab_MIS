@@ -9,13 +9,13 @@
       <!-- Search Area -->
       <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
         <el-form-item label="Course ID">
-          <el-input v-model="searchForm.courseId" placeholder="Enter course ID" clearable></el-input>
+          <el-input v-model="searchForm.courseId" placeholder="Enter course ID" clearable style="width: 150px"></el-input>
         </el-form-item>
-        <el-form-item label="Course Name">
-          <el-input v-model="searchForm.courseName" placeholder="Enter course name" clearable></el-input>
+        <el-form-item label="Course Name" >
+          <el-input v-model="searchForm.courseName" placeholder="Enter course name" clearable style="width: 200px"></el-input>
         </el-form-item>
         <el-form-item label="Teacher">
-          <el-input v-model="searchForm.teacherName" placeholder="Enter teacher name" clearable></el-input>
+          <el-input v-model="searchForm.teacherName" placeholder="Enter teacher name" clearable style="width: 150px"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">Search</el-button>
