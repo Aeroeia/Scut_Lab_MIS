@@ -10,10 +10,11 @@ export function getCourses(params) {
 }
 
 // 获取课程详情
-export function getCourseById(courseId) {
+export function getCourseById(courseId, teacherId) {
   return request({
     url: `/courses/${courseId}`,
-    method: 'get'
+    method: 'get',
+    params: { teacherId }
   })
 }
 

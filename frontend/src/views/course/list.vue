@@ -26,7 +26,7 @@
       <!-- Data Table -->
       <el-table v-loading="loading" :data="courseList" border style="width: 100%">
         <el-table-column prop="courseId" label="Course ID" width="120" align="center"></el-table-column>
-        <el-table-column prop="courseName" label="Course Name" min-width="150" align="center"></el-table-column>
+        <el-table-column prop="courseName" label="Course Name" min-width="150" align="center" width="200"></el-table-column>
         <el-table-column prop="teacherId" label="Teacher ID" width="120" align="center"></el-table-column>
         <el-table-column prop="teacherName" label="Teacher Name" width="120" align="center"></el-table-column>
         <el-table-column prop="credit" label="Credits" width="80" align="center"></el-table-column>
@@ -137,7 +137,10 @@ export default {
     },
     
     handleDetail(row) {
-      this.$router.push(`/course/detail/${row.courseId}`)
+      this.$router.push({
+        path: `/course/detail/${row.courseId}`,
+        query: { teacherId: row.teacherId }
+      })
     },
     
     handleDelete(row) {

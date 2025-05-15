@@ -128,7 +128,7 @@ export default {
     this.fetchCourses()
   },
   methods: {
-    ...mapActions('course-selection', ['addCourseSelection']),
+    ...mapActions('courseSelection', ['addCourseSelection']),
     ...mapActions('student', ['getStudents']),
     ...mapActions('course', ['getCourses']),
     

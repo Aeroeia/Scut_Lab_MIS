@@ -37,9 +37,12 @@ const actions = {
   },
 
   // 获取课程详情
-  getCourseDetail({ commit }, courseId) {
+  getCourseDetail({ commit }, params) {
+    const courseId = typeof params === 'string' ? params : params.courseId;
+    const teacherId = typeof params === 'string' ? undefined : params.teacherId;
+    
     return new Promise((resolve, reject) => {
-      getCourseById(courseId)
+      getCourseById(courseId, teacherId)
         .then(response => {
           const { data } = response
           commit('SET_COURSE_DETAIL', data)

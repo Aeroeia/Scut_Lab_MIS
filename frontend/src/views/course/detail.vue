@@ -106,6 +106,7 @@ export default {
     return {
       loading: true,
       courseId: '',
+      teacherId: '',
       courseInfo: {},
       allStudents: [], // 存储所有学生
       displayStudents: [], // 存储当前页显示的学生
@@ -129,8 +130,14 @@ export default {
   },
   created() {
     this.courseId = this.$route.params.id
+    this.teacherId = this.$route.query.teacherId
     if (!this.courseId) {
       this.$message.error('Course ID cannot be empty')
+      this.goBack()
+      return
+    }
+    if (!this.teacherId) {
+      this.$message.error('Teacher ID cannot be empty')
       this.goBack()
       return
     }
@@ -144,8 +151,8 @@ export default {
     fetchData() {
       this.loading = true
       
-      // 使用新的API路径获取课程详情和学生名单
-      this.getCourse(this.courseId)
+      // 传递教师ID参数
+      this.getCourse({ courseId: this.courseId, teacherId: this.teacherId })
         .then(data => {
           this.courseInfo = data
           // 假设API返回的数据包含students字段，包含所有选择该课程的学生
@@ -178,7 +185,10 @@ export default {
     },
     
     handleEdit() {
-      this.$router.push(`/course/edit/${this.courseId}`)
+      this.$router.push({
+        path: `/course/edit/${this.courseId}`,
+        query: { teacherId: this.teacherId }
+      })
     },
     
     viewStudentDetail(student) {

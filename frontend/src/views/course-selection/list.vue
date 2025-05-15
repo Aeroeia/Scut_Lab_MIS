@@ -42,7 +42,7 @@
         <el-table-column prop="courseId" label="Course ID" width="120" align="center"></el-table-column>
         <el-table-column prop="courseName" label="Course Name" min-width="150" align="center"></el-table-column>
         <el-table-column prop="teacherName" label="Teacher" width="120" align="center"></el-table-column>
-        <el-table-column prop="selectionYear" label="Selection Year" width="100" align="center"></el-table-column>
+        <el-table-column prop="selectionYear" label="Selection Year" width="120" align="center"></el-table-column>
         <el-table-column prop="score" label="Score" width="80" align="center">
           <template slot-scope="scope">
             <span>{{ scope.row.score !== null ? scope.row.score : 'Not entered' }}</span>
@@ -64,18 +64,6 @@
               v-if="isAdmin"
               @click="handleDelete(scope.row)">
               Delete
-            </el-button>
-            <el-button 
-              type="text" 
-              size="small" 
-              @click="handleViewStudent(scope.row)">
-              Student Details
-            </el-button>
-            <el-button 
-              type="text" 
-              size="small" 
-              @click="handleViewCourse(scope.row)">
-              Course Details
             </el-button>
           </template>
         </el-table-column>
@@ -143,7 +131,10 @@ export default {
     this.fetchData()
   },
   methods: {
-    ...mapActions('course-selection', ['getCourseSelections', 'deleteCourseSelection']),
+    ...mapActions({
+      getCourseSelections: 'courseSelection/getCourseSelections', 
+      deleteCourseSelection: 'courseSelection/deleteCourseSelection'
+    }),
     
     fetchData() {
       this.loading = true
@@ -214,15 +205,7 @@ export default {
         }
       })
     },
-    
-    handleViewStudent(row) {
-      this.$router.push(`/student/detail/${row.studentId}`)
-    },
-    
-    handleViewCourse(row) {
-      this.$router.push(`/course/detail/${row.courseId}`)
-    },
-    
+
     handleDelete(row) {
       this.$confirm('Are you sure you want to delete this course selection?', 'Confirmation', {
         confirmButtonText: 'Confirm',

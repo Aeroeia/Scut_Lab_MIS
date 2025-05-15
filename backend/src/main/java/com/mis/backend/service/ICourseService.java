@@ -25,5 +25,9 @@ public interface ICourseService extends IService<Course> {
 
     void add(CourseDTO courseDTO);
 
-    CourseVO getDetails(String courseId);
+    CourseVO getDetails(String courseId,String teacherId);
+
+    void edit(CourseDTO courseDTO);
+
+    void delete(String courseId);
 }

@@ -31,9 +31,21 @@ public class CourseController {
         return Result.success();
     }
     @GetMapping("/{courseId}")
-    public Result<CourseVO> getDetails(@PathVariable String courseId){
+    public Result<CourseVO> getDetails(@PathVariable String courseId,@RequestParam String teacherId){
         log.info("courseId: {}", courseId);
-        CourseVO courseVO = courseService.getDetails(courseId);
+        CourseVO courseVO = courseService.getDetails(courseId,teacherId);
         return Result.success(courseVO);
+    }
+    @PutMapping("/{courseId}")
+    public Result edit(@RequestBody CourseDTO courseDTO){
+        log.info("courseDTO: {}", courseDTO);
+        courseService.edit(courseDTO);
+        return Result.success();
+    }
+    @DeleteMapping("/{courseId}")
+    public Result delete(@PathVariable String courseId){
+        log.info("courseId: {}", courseId);
+        courseService.delete(courseId);
+        return Result.success();
     }
 }

@@ -49,6 +49,9 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     private ICourseSelectionService courseSelectionService;
     @Override
     public List<Course> getCoursesByIds(List<String> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return List.of();
+        }
         return courseMapper.getCoursesByIds(ids);
     }
 
@@ -116,11 +119,11 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
                 .collect(Collectors.toList());
         
         // 批量查询课程和教师信息
-        List<Course> courses = this.lambdaQuery()
+        List<Course> courses = CollUtil.isEmpty(pagedCourseIds) ? new ArrayList<>() : this.lambdaQuery()
                 .in(Course::getCourseId, pagedCourseIds)
                 .list();
         
-        List<Teacher> teachers = teacherService.lambdaQuery()
+        List<Teacher> teachers = CollUtil.isEmpty(pagedTeacherIds) ? new ArrayList<>() : teacherService.lambdaQuery()
                 .in(Teacher::getTeacherId, pagedTeacherIds)
                 .list();
         
@@ -174,9 +177,8 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     @Override
-    public CourseVO getDetails(String courseId) {
+    public CourseVO getDetails(String courseId,String teacherId) {
         Course course = lambdaQuery().eq(Course::getCourseId, courseId).one();
-        String teacherId = teacherCourseService.lambdaQuery().eq(TeacherCourse::getCourseId,courseId).one().getTeacherId();
         String teacherName = teacherService.lambdaQuery().eq(Teacher::getTeacherId,teacherId).one().getName();
         CourseVO courseVO = BeanUtil.copyProperties(course, CourseVO.class);
         courseVO.setTeacherName(teacherName);
@@ -184,8 +186,12 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         List<CourseSelection> courseSelections = courseSelectionService.lambdaQuery()
                 .eq(CourseSelection::getCourseId, courseId).list();
         Map<String, BigDecimal> map = courseSelections.stream().collect(Collectors.toMap(CourseSelection::getStudentId, CourseSelection::getScore));
-        List<String> studentIds = courseSelections.stream().map(CourseSelection::getStudentId).toList();
-        List<Student> students = studentService.lambdaQuery().in(Student::getStudentId, studentIds).list();
+        List<String> studentIds = new ArrayList<>(map.keySet());
+        List<Student> students = new ArrayList<>();
+        // 防止studentIds为空时引发SQL语法错误
+        if (!CollUtil.isEmpty(studentIds)) {
+            students = studentService.lambdaQuery().in(Student::getStudentId, studentIds).list();
+        }
         List<CourseStudentVO> courseStudentVOS = BeanUtil.copyToList(students, CourseStudentVO.class);
         for(CourseStudentVO courseStudentVO : courseStudentVOS) {
             BigDecimal score = map.get(courseStudentVO.getStudentId());
@@ -193,5 +199,29 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         }
         courseVO.setStudents(courseStudentVOS);
         return courseVO;
+    }
+
+    @Override
+    @Transactional
+    public void edit(CourseDTO courseDTO) {
+        Course course = BeanUtil.copyProperties(courseDTO, Course.class);
+        course.setName(courseDTO.getCourseName());
+        lambdaUpdate().eq(Course::getCourseId, course.getCourseId()).update(course);
+        TeacherCourse teacherCourse = BeanUtil.copyProperties(courseDTO, TeacherCourse.class);
+        teacherCourseService.lambdaUpdate()
+                .eq(TeacherCourse::getCourseId, course.getCourseId())
+                .set(TeacherCourse::getTeacherId, teacherCourse.getTeacherId())
+                .update();
+        courseSelectionService.lambdaUpdate()
+                .eq(CourseSelection::getCourseId, courseDTO.getCourseId())
+                .set(CourseSelection::getTeacherId,courseDTO.getTeacherId())
+                .update();
+
+    }
+    @Override
+    @Transactional
+    public void delete(String courseId) {
+        this.lambdaUpdate().eq(Course::getCourseId, courseId).remove();
+        teacherCourseService.lambdaUpdate().eq(TeacherCourse::getCourseId,courseId).remove();
     }
 }

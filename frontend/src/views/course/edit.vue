@@ -6,12 +6,12 @@
         <el-button style="float: right; padding: 3px 0" type="text" @click="goBack">Back to List</el-button>
       </div>
       
-      <el-form :model="courseForm" :rules="rules" ref="courseForm" label-width="100px" class="courseForm" v-if="!pageLoading">
+      <el-form :model="courseForm" :rules="rules" ref="courseForm" label-width="150px" class="courseForm" v-if="!pageLoading">
         <el-form-item label="Course ID" prop="courseId">
           <el-input v-model="courseForm.courseId" placeholder="Enter course ID" disabled></el-input>
         </el-form-item>
         
-        <el-form-item label="Course Name" prop="courseName">
+        <el-form-item label="Course Name" prop="courseName" >
           <el-input v-model="courseForm.courseName" placeholder="Enter course name"></el-input>
         </el-form-item>
         
@@ -37,10 +37,8 @@
         
         <el-form-item label="Semester" prop="semester">
           <el-select v-model="courseForm.semester" placeholder="Select semester">
-            <el-option label="2023-2024 First Semester" value="2023-2024-1"></el-option>
-            <el-option label="2023-2024 Second Semester" value="2023-2024-2"></el-option>
-            <el-option label="2024-2025 First Semester" value="2024-2025-1"></el-option>
-            <el-option label="2024-2025 Second Semester" value="2024-2025-2"></el-option>
+            <el-option label=" First Semester" value="1"></el-option>
+            <el-option label=" Second Semester" value="2"></el-option>
           </el-select>
         </el-form-item>
         

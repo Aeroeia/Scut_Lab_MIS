@@ -15,4 +15,6 @@ public class CourseSelectionVO implements Serializable {
     BigDecimal credit;
     Integer selectionYear;
     BigDecimal score;
+    String studentId;
+    String studentName;
 }

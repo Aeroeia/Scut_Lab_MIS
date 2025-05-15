@@ -1,6 +1,7 @@
 package com.mis.backend.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import com.mis.backend.dto.TeacherDTO;
 import com.mis.backend.entity.Course;
 import com.mis.backend.entity.Teacher;
@@ -75,6 +76,9 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
 
     @Override
     public List<Teacher> getTeachersByIds(List<String> ids) {
+        if(CollUtil.isEmpty(ids)){
+            return List.<Teacher>of();
+        }
         return teacherMapper.getTeachersByIds(ids);
     }
 
