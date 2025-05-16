@@ -2,8 +2,8 @@
   <div v-if="!item.hidden">
     <!-- 无子菜单或只有一个显示的子菜单 -->
     <template v-if="hasOneShowingChild(item.children, item)">
-      <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
-        <el-menu-item :index="resolvePath(onlyOneChild.path)">
+      <app-link v-if="onlyOneChild.meta && hasPermission(onlyOneChild)" :to="resolvePath(onlyOneChild.path)">
+        <el-menu-item :index="resolvePath(onlyOneChild.path)" @click="handleMenuItemClick">
           <i v-if="onlyOneChild.meta && onlyOneChild.meta.icon" :class="onlyOneChild.meta.icon"></i>
           <span slot="title">{{ onlyOneChild.meta.title }}</span>
         </el-menu-item>
@@ -17,7 +17,7 @@
         <span slot="title">{{ item.meta.title }}</span>
       </template>
       <sidebar-item
-        v-for="child in item.children"
+        v-for="child in filterChildren(item.children)"
         :key="child.path"
         :is-nest="true"
         :item="child"
@@ -32,6 +32,7 @@
 import path from 'path'
 import { isExternal } from '@/utils/validate'
 import AppLink from './Link'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'SidebarItem',
@@ -53,15 +54,40 @@ export default {
       default: false
     }
   },
+  computed: {
+    ...mapGetters(['userRole'])
+  },
   data() {
     this.onlyOneChild = null
     return {}
   },
   methods: {
+    // 检查是否有权限访问菜单项
+    hasPermission(route) {
+      if (route.meta && route.meta.roles) {
+        return route.meta.roles.includes(this.userRole)
+      } else {
+        return true
+      }
+    },
+    
+    // 过滤子菜单项，只显示有权限的
+    filterChildren(children) {
+      if (!children) return []
+      return children.filter(child => {
+        if (child.hidden) return false
+        return this.hasPermission(child)
+      })
+    },
+    
     hasOneShowingChild(children = [], parent) {
-      // 过滤掉隐藏的子菜单
+      if (!children) {
+        children = []
+      }
+      
+      // 过滤掉隐藏的子菜单和没有权限的子菜单
       const showingChildren = children.filter(item => {
-        if (item.hidden) {
+        if (item.hidden || !this.hasPermission(item)) {
           return false
         } else {
           // 记录唯一的子路由
@@ -94,6 +120,14 @@ export default {
       }
       
       return path.resolve(this.basePath, routePath)
+    },
+    
+    handleMenuItemClick(e) {
+      const fullPath = this.resolvePath(this.onlyOneChild.path);
+      if (fullPath.includes('/student/create') || fullPath.includes('/course-selection/create')) {
+        // 阻止默认行为，让Vue Router自己处理
+        e.preventDefault();
+      }
     }
   }
 }

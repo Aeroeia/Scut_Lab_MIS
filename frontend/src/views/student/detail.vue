@@ -5,7 +5,7 @@
       <el-card class="mb-20">
         <div slot="header" class="clearfix">
           <span>Student Basic Information</span>
-          <el-button style="float: right; padding: 3px 0" type="text" @click="goEdit">Edit</el-button>
+          <el-button style="float: right; padding: 3px 0" type="text" @click="goEdit" v-if="isAdmin">Edit</el-button>
         </div>
         
         <el-descriptions :column="2" border v-if="studentInfo">
@@ -61,10 +61,16 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions,mapGetters } from 'vuex'
 
 export default {
   name: 'StudentDetail',
+  computed: {
+    ...mapGetters(['userRole']),
+    isAdmin() {
+      return this.userRole === '1'
+    }
+  },
   data() {
     return {
       pageLoading: false,

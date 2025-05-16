@@ -16,6 +16,6 @@ import java.io.Serializable;
 public class UserLoginVO implements Serializable {
     private String token;
     private UserRole role; //角色类型
-    private String roleName;//角色名称
-    private String realId; //学生学号、教师编
+    private String roleName;//用户昵称
+    private String realId; //学生学号、教师编号
 }

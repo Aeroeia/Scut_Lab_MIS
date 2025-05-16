@@ -1,6 +1,8 @@
 package com.mis.backend.controller;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.mis.backend.constant.JwtClaimsConstant;
+import com.mis.backend.context.BaseContext;
 import com.mis.backend.dto.UserLoginDTO;
 import com.mis.backend.entity.User;
 import com.mis.backend.properties.JwtProperties;
@@ -11,10 +13,7 @@ import com.mis.backend.util.JwtUtil;
 import com.mis.backend.vo.UserLoginVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +51,26 @@ public class UserController {
 
     @PostMapping("/logout")
     public Result logout(){
+        return Result.success();
+    }
+    @GetMapping("/info")
+    public Result<UserLoginVO> getProfile(){
+        log.info("currentId:{}", BaseContext.getCurrentId());
+        User user = userService.lambdaQuery().eq(User::getRealId, BaseContext.getCurrentId()).one();
+        UserLoginVO userLoginVO = UserLoginVO.builder()
+                .realId(user.getRealId())
+                .role(user.getType())
+                .roleName(user.getUsername())
+                .build();
+        return Result.success(userLoginVO);
+
+    }
+    @PutMapping("/{realId}")
+    public Result update(@PathVariable String realId,@RequestBody Map<String,String> map){
+        log.info("realId:{}",realId);
+        userService.lambdaUpdate().eq(User::getRealId,realId)
+                .set(User::getPassword,map.get("password"))
+                .update();
         return Result.success();
     }
 }

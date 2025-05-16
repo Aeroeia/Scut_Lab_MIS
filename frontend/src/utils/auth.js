@@ -4,6 +4,7 @@ const TokenKey = 'token'
 const RoleKey = 'role'
 const RealIdKey = 'realId'
 const RoleNameKey = 'roleName'
+const UserNameKey = 'userName'
 
 // Token相关操作
 export function getToken() {
@@ -45,7 +46,12 @@ export function getRoleName() {
 export function setRoleName(roleName) {
   return Cookies.set(RoleNameKey, roleName)
 }
-
+export function setUserName(userName){
+  return Cookies.set(UserNameKey,userName)
+}
+export function getUserName(){
+  return Cookies.get(UserNameKey)
+}
 // 检查是否为管理员
 export function isAdmin() {
   return getRole() === '1'

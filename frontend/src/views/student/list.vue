@@ -3,11 +3,11 @@
     <el-card>
       <div slot="header" class="clearfix">
         <span>Student List</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="handleCreate">Add Student</el-button>
+        <el-button v-if="isAdmin" style="float: right; padding: 3px 0" type="text" @click="handleCreate">Add Student</el-button>
       </div>
       
       <!-- Search Area -->
-      <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
+      <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20" v-if="!isStudent">
         <el-form-item label="Student ID" >
           <el-input v-model="searchForm.studentId" placeholder="Enter student ID" clearable style="width: 180px;"></el-input>
         </el-form-item>
@@ -32,9 +32,9 @@
         <el-table-column prop="enrollmentYear" label="Enroll Year" width="120" align="center"></el-table-column>
         <el-table-column label="Actions" align="center">
           <template slot-scope="scope">
-            <el-button type="text" size="small" @click="handleDetail(scope.row)">Details</el-button>
-            <el-button type="text" size="small" @click="handleEdit(scope.row)">Edit</el-button>
-            <el-button type="text" size="small" class="danger-text" @click="handleDelete(scope.row)">Delete</el-button>
+            <el-button type="text" size="small" @click="handleDetail(scope.row)" >Details</el-button>
+            <el-button v-if="isAdmin" type="text" size="small" @click="handleEdit(scope.row)">Edit</el-button>
+            <el-button v-if="isAdmin" type="text" size="small" class="danger-text" @click="handleDelete(scope.row)">Delete</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'StudentList',
@@ -75,7 +75,19 @@ export default {
       total: 0
     }
   },
+  computed: {
+    ...mapGetters(['userRole', 'userRealId']),
+    isAdmin() {
+      return this.userRole === '1'
+    },
+    isStudent() {
+      return this.userRole === '3'
+    }
+  },
   created() {
+    if (this.isStudent) {
+      this.searchForm.studentId = this.userRealId
+    }
     this.fetchData()
   },
   methods: {
@@ -89,6 +101,10 @@ export default {
         studentId: this.searchForm.studentId || undefined,
         name: this.searchForm.name || undefined,
         class: this.searchForm.class || undefined
+      }
+      
+      if (this.isStudent) {
+        params.studentId = this.userRealId
       }
       
       this.getStudents(params)

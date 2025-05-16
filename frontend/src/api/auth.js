@@ -17,10 +17,3 @@ export function logout() {
   })
 }
 
-// 获取用户信息
-export function getUserInfo() {
-  return request({
-    url: '/auth/info',
-    method: 'get'
-  })
-} 

@@ -8,10 +8,10 @@
       
       <!-- Search Area -->
       <el-form :inline="true" :model="searchForm" class="demo-form-inline mb-20">
-        <el-form-item label="Student ID">
+        <el-form-item label="Student ID" v-if="!isStudent">
           <el-input v-model="searchForm.studentId" placeholder="Enter student ID" clearable></el-input>
         </el-form-item>
-        <el-form-item label="Student Name">
+        <el-form-item label="Student Name" v-if="!isStudent">
           <el-input v-model="searchForm.studentName" placeholder="Enter student name" clearable></el-input>
         </el-form-item>
         <el-form-item label="Course ID">
@@ -141,8 +141,8 @@ export default {
       const params = {
         page: this.pagination.page,
         size: this.pagination.size,
-        studentId: this.searchForm.studentId || undefined,
-        studentName: this.searchForm.studentName || undefined,
+        studentId: this.isStudent ? this.userRealId : (this.searchForm.studentId || undefined),
+        studentName: this.isStudent ? undefined : (this.searchForm.studentName || undefined),
         courseId: this.searchForm.courseId || undefined,
         courseName: this.searchForm.courseName || undefined,
         selectionYear: this.searchForm.selectionYear || undefined,
@@ -170,7 +170,7 @@ export default {
       const courseId = this.searchForm.courseId
       
       this.searchForm = {
-        studentId: '',
+        studentId: this.isStudent ? this.userRealId : '',
         studentName: '',
         courseId: courseId || '',
         courseName: '',

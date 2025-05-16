@@ -41,7 +41,7 @@ export const asyncRoutes = [
     path: '/student',
     component: () => import('@/views/layout/index'),
     redirect: '/student/list',
-    meta: { title: 'Student Manage', icon: 'el-icon-user', roles: ['1'] }, // 只有管理员可见
+    meta: { title: 'Student Manage', icon: 'el-icon-user', roles: ['1', '2'] }, // 管理员和角色2可见
     children: [
       {
         path: 'list',
@@ -53,7 +53,7 @@ export const asyncRoutes = [
         path: 'create',
         name: 'StudentCreate',
         component: () => import('@/views/student/create'),
-        meta: { title: 'Add Student', icon: 'el-icon-plus' }
+        meta: { title: 'Add Student', icon: 'el-icon-plus', roles: ['1'] } // 只有管理员可见
       },
       {
         path: 'edit/:id',
@@ -313,6 +313,16 @@ addAsyncRoutes()
 
 // Route guard
 router.beforeEach(async (to, from, next) => {
+  // 对于特定页面，防止发送多余后端请求
+  if (to.path === '/student/create' || to.path === '/course-selection/create') {
+    const hasToken = getToken()
+    const hasRoles = store.state.user && store.state.user.role
+    if (hasToken && hasRoles) {
+      next()
+      return
+    }
+  }
+
   // Get token
   const hasToken = getToken()
 

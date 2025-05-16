@@ -13,7 +13,8 @@
             filterable 
             placeholder="Select student" 
             @change="handleStudentChange"
-            style="width: 100%">
+            style="width: 100%"
+            @click="handleStudentClick">
             <el-option
               v-for="item in studentOptions"
               :key="item.studentId"
@@ -31,7 +32,8 @@
             filterable 
             placeholder="Select course" 
             @change="handleCourseChange"
-            style="width: 100%">
+            style="width: 100%"
+            @click="handleCourseClick">
             <el-option
               v-for="item in courseOptions"
               :key="item.courseId"
@@ -115,7 +117,8 @@ export default {
         selectionYear: [
           { required: true, message: 'Please select a year', trigger: 'change' }
         ]
-      }
+      },
+      dataLoaded: false
     }
   },
   computed: {
@@ -123,17 +126,23 @@ export default {
       return this.selectionForm.studentId && this.selectionForm.courseId
     }
   },
-  created() {
-    this.fetchStudents()
-    this.fetchCourses()
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // 在组件实例创建后可进行操作，但不触发自动请求
+    })
+  },
+  mounted() {
+    // 挂载时只准备界面，不发送请求
   },
   methods: {
     ...mapActions('courseSelection', ['addCourseSelection']),
     ...mapActions('student', ['getStudents']),
     ...mapActions('course', ['getCourses']),
     
-    // Get student list
+    // 只在需要时获取学生列表
     fetchStudents() {
+      if (this.studentOptions.length > 0) return; // 如果已经有数据，不重复请求
+      
       this.getStudents({ size: 1000 })
         .then(data => {
           this.studentOptions = data.records || []
@@ -143,8 +152,10 @@ export default {
         })
     },
     
-    // Get course list
+    // 只在需要时获取课程列表
     fetchCourses() {
+      if (this.courseOptions.length > 0) return; // 如果已经有数据，不重复请求
+      
       this.getCourses({ size: 1000 })
         .then(data => {
           this.courseOptions = data.records || []
@@ -152,6 +163,15 @@ export default {
         .catch(() => {
           this.$message.error('Failed to get course list')
         })
+    },
+    
+    // 调整为点击选择框时加载数据
+    handleStudentClick() {
+      this.fetchStudents()
+    },
+    
+    handleCourseClick() {
+      this.fetchCourses()
     },
     
     // Student selection change

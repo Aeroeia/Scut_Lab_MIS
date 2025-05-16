@@ -5,55 +5,45 @@
         <span>Profile Information</span>
       </div>
       
-      <el-row :gutter="20">
-        <el-col :span="8">
-          <el-card shadow="hover" class="avatar-card">
-            <div class="avatar-wrapper">
-              <el-avatar :size="120" :src="userAvatar" icon="el-icon-user-solid"></el-avatar>
-            </div>
-            <div class="user-info">
-              <h3>{{ userInfo.name || userInfo.realId }}</h3>
-              <p>{{ userInfo.roleName }}</p>
-            </div>
-          </el-card>
-        </el-col>
-        
-        <el-col :span="16">
-          <el-card shadow="hover">
-            <el-descriptions title="Basic Information" :column="2" border>
-              <el-descriptions-item label="ID">{{ userInfo.realId }}</el-descriptions-item>
-              <el-descriptions-item label="Role">{{ userInfo.roleName }}</el-descriptions-item>
-              <el-descriptions-item label="Username">{{ userInfo.username }}</el-descriptions-item>
-              <el-descriptions-item label="Login Time">{{ loginTime }}</el-descriptions-item>
-            </el-descriptions>
-            
-            <el-divider></el-divider>
-            
-            <el-form ref="passwordForm" :model="passwordForm" :rules="passwordRules" label-width="120px" class="password-form">
-              <h3>Change Password</h3>
-              <el-form-item label="Old Password" prop="oldPassword">
-                <el-input v-model="passwordForm.oldPassword" type="password" show-password></el-input>
-              </el-form-item>
-              <el-form-item label="New Password" prop="newPassword">
-                <el-input v-model="passwordForm.newPassword" type="password" show-password></el-input>
-              </el-form-item>
-              <el-form-item label="Confirm Password" prop="confirmPassword">
-                <el-input v-model="passwordForm.confirmPassword" type="password" show-password></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="submitForm">Update Password</el-button>
-                <el-button @click="resetForm">Reset</el-button>
-              </el-form-item>
-            </el-form>
-          </el-card>
-        </el-col>
-      </el-row>
+      <div v-if="userInfoLoaded" class="content-centered">
+        <el-card shadow="hover" class="profile-card">
+          <el-descriptions title="Basic Information" :column="2" border>
+            <el-descriptions-item label="ID">{{ userInfo.realId }}</el-descriptions-item>
+            <el-descriptions-item label="Role">{{ userInfo.roleName }}</el-descriptions-item>
+            <el-descriptions-item label="Username">{{ userInfo.username }}</el-descriptions-item>
+            <el-descriptions-item label="Login Time">{{ loginTime }}</el-descriptions-item>
+          </el-descriptions>
+          
+          <el-divider></el-divider>
+          
+          <el-form ref="passwordForm" :model="passwordForm" :rules="passwordRules" label-width="120px" class="password-form">
+            <h3>Change Password</h3>
+            <el-form-item label="Old Password" prop="oldPassword">
+              <el-input v-model="passwordForm.oldPassword" type="password" show-password></el-input>
+            </el-form-item>
+            <el-form-item label="New Password" prop="newPassword">
+              <el-input v-model="passwordForm.newPassword" type="password" show-password></el-input>
+            </el-form-item>
+            <el-form-item label="Confirm" prop="confirmPassword">
+              <el-input v-model="passwordForm.confirmPassword" type="password" show-password></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submitForm" :loading="loading">Update Password</el-button>
+              <el-button @click="resetForm">Reset</el-button>
+            </el-form-item>
+          </el-form>
+        </el-card>
+      </div>
+      
+      <div v-else class="loading-container">
+        <el-skeleton :rows="6" animated />
+      </div>
     </el-card>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'Profile',
@@ -68,8 +58,10 @@ export default {
     }
     
     return {
+      userInfoLoaded: false,
       userAvatar: '',
       loginTime: new Date().toLocaleString(),
+      loading: false,
       passwordForm: {
         oldPassword: '',
         newPassword: '',
@@ -92,29 +84,79 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'userInfo'
-    ])
+    ...mapGetters(['userInfo'])
+  },
+  created() {
+    // Ensure user information is loaded
+    this.checkUserInfo()
   },
   methods: {
+    ...mapActions('user', ['getUserInfo', 'updatePassword']),
+    
+    // Check if user information is loaded
+    checkUserInfo() {
+      console.log('Current userInfo:', this.userInfo)
+      // First check if userInfo is already valid
+      if (this.userInfo && this.userInfo.realId) {
+        this.userInfoLoaded = true
+      } else {
+        // If there's no valid user info, try to load it
+        this.getUserInfo()
+          .then((data) => {
+            console.log('Loaded user info:', data)
+            this.userInfoLoaded = true
+            this.$message({
+              message: '用户信息加载成功',
+              type: 'success'
+            })
+          })
+          .catch(error => {
+            console.error('Failed to load user information', error)
+            this.$message({
+              message: '加载用户信息失败，请重新登录',
+              type: 'error'
+            })
+          })
+      }
+    },
+    
     // Submit password change form
     submitForm() {
       this.$refs.passwordForm.validate(valid => {
         if (valid) {
-          this.$message({
-            message: 'Password updated successfully',
-            type: 'success'
-          })
-          this.resetForm()
+          this.loading = true;
+          
+          // 调用store的action修改密码
+          const passwordData = {
+            password: this.passwordForm.newPassword
+          };
+          
+          this.updatePassword(passwordData)
+            .then(response => {
+              this.$message({
+                message: '密码修改成功',
+                type: 'success'
+              });
+              this.resetForm();
+            })
+            .catch(error => {
+              this.$message({
+                message: '密码修改失败: ' + (error.message || '未知错误'),
+                type: 'error'
+              });
+            })
+            .finally(() => {
+              this.loading = false;
+            });
         } else {
-          return false
+          return false;
         }
-      })
+      });
     },
     
     // Reset form
     resetForm() {
-      this.$refs.passwordForm.resetFields()
+      this.$refs.passwordForm.resetFields();
     }
   }
 }
@@ -124,25 +166,22 @@ export default {
 .container {
   padding: 20px;
 }
-.avatar-card {
-  text-align: center;
-  padding: 20px;
+.content-centered {
+  display: flex;
+  justify-content: center;
+  width: 100%;
 }
-.avatar-wrapper {
-  margin-bottom: 20px;
-}
-.user-info {
-  margin-top: 20px;
-}
-.user-info h3 {
-  margin: 10px 0;
-  font-size: 18px;
-}
-.user-info p {
-  color: #909399;
+.profile-card {
+  width: 80%;
+  max-width: 800px;
 }
 .password-form {
   max-width: 500px;
-  margin-top: 20px;
+  margin: 20px auto;
+}
+.loading-container {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
 }
 </style> 

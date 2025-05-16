@@ -1,12 +1,30 @@
 import { login, logout, getUserInfo as fetchUserInfo } from '@/api/auth'
-import { getToken, setToken, removeToken, getRole, setRole, getRealId, setRealId, getRoleName, setRoleName } from '@/utils/auth'
+import { updatePassword } from '@/api/user'
+import {
+    getToken,
+    setToken,
+    removeToken,
+    getRole,
+    setRole,
+    getRealId,
+    setRealId,
+    getRoleName,
+    setRoleName,
+    getUserName, setUserName
+} from '@/utils/auth'
 
 const state = {
   token: getToken(),
   role: getRole(),
   realId: getRealId(),
   roleName: getRoleName(),
-  name: ''
+  name:getUserName(),
+  userInfo: {
+    username: getUserName() || '',
+    realId: getRealId() || '',
+    role: getRole() || '',
+    roleName: getRoleName() || '',
+  }
 }
 
 const mutations = {
@@ -15,15 +33,22 @@ const mutations = {
   },
   SET_ROLE: (state, role) => {
     state.role = role
+    state.userInfo.role = role
   },
   SET_REAL_ID: (state, realId) => {
     state.realId = realId
+    state.userInfo.realId = realId
   },
   SET_ROLE_NAME: (state, roleName) => {
     state.roleName = roleName
+    state.userInfo.roleName = roleName
   },
   SET_NAME: (state, name) => {
     state.name = name
+    state.userInfo.username = name
+  },
+  SET_USER_INFO: (state, userInfo) => {
+    state.userInfo = userInfo
   }
 }
 
@@ -38,13 +63,33 @@ const actions = {
           commit('SET_TOKEN', data.token)
           commit('SET_ROLE', data.role.toString())
           commit('SET_REAL_ID', data.realId)
-          commit('SET_ROLE_NAME', data.roleName)
+          // 这里 roleName 应该是根据 role 设置的角色名称
+          let roleName = 'User'
+          if (data.role === 1) {
+            roleName = 'Admin'
+          } else if (data.role === 2) {
+            roleName = 'Teacher'
+          } else if (data.role === 3) {
+            roleName = 'Student'
+          }
+          
+          commit('SET_ROLE_NAME', roleName)
+          commit('SET_NAME', username)
+          
+          // Update the complete userInfo object
+          const completeUserInfo = {
+            username: data.roleName,
+            realId: data.realId,
+            role: data.role.toString(),
+            roleName: roleName,
+          }
+          commit('SET_USER_INFO', completeUserInfo)
           
           setToken(data.token)
           setRole(data.role.toString())
           setRealId(data.realId)
-          setRoleName(data.roleName)
-          
+          setRoleName(roleName)
+          setUserName(username)
           resolve()
         })
         .catch(error => {
@@ -58,48 +103,15 @@ const actions = {
     return new Promise((resolve, reject) => {
       // If role information already exists, return directly
       if (state.role) {
-        resolve({
-          role: state.role,
+        const userInfo = {
+          username: state.name,
           realId: state.realId,
-          roleName: state.roleName
-        })
-        return
+          role: state.role,
+          roleName: state.roleName,
+        }
+        commit('SET_USER_INFO', userInfo)
+        resolve(userInfo)
       }
-      
-      // Otherwise fetch user information from server
-      fetchUserInfo()
-        .then(response => {
-          const { data } = response
-          
-          if (!data) {
-            reject(new Error('Verification failed, please login again'))
-            return
-          }
-          
-          const { role, realId, roleName, name } = data
-          
-          // Verify the returned role is not empty
-          if (!role) {
-            reject(new Error('Failed to get user role'))
-            return
-          }
-          
-          // Set user information
-          commit('SET_ROLE', role.toString())
-          commit('SET_REAL_ID', realId)
-          commit('SET_ROLE_NAME', roleName)
-          commit('SET_NAME', name || '')
-          
-          // Sync to cookies
-          setRole(role.toString())
-          setRealId(realId)
-          setRoleName(roleName)
-          
-          resolve(data)
-        })
-        .catch(error => {
-          reject(error)
-        })
     })
   },
 
@@ -112,7 +124,12 @@ const actions = {
           commit('SET_ROLE', '')
           commit('SET_REAL_ID', '')
           commit('SET_ROLE_NAME', '')
-          commit('SET_NAME', '')
+          commit('SET_USER_INFO', {
+            username: '',
+            realId: '',
+            role: '',
+            roleName: '',
+          })
           
           removeToken()
           resolve()
@@ -130,23 +147,36 @@ const actions = {
       commit('SET_ROLE', '')
       commit('SET_REAL_ID', '')
       commit('SET_ROLE_NAME', '')
-      commit('SET_NAME', '')
+      commit('SET_USER_INFO', {
+        username: '',
+        realId: '',
+        role: '',
+        roleName: '',
+      })
       
       removeToken()
       resolve()
+    })
+  },
+
+  // 修改密码
+  updatePassword({ commit, state }, passwordData) {
+    return new Promise((resolve, reject) => {
+      updatePassword(state.realId, passwordData)
+        .then(response => {
+          resolve(response)
+        })
+        .catch(error => {
+          reject(error)
+        })
     })
   }
 }
 
 const getters = {
   userInfo: state => {
-    return {
-      username: state.realId,
-      realId: state.realId,
-      role: state.role,
-      roleName: state.roleName,
-      name: state.name
-    }
+    // 直接返回 state 中的 userInfo 对象
+    return state.userInfo
   }
 }
 

@@ -1,6 +1,7 @@
 package com.mis.backend.controller;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.mis.backend.anootation.NoAuth;
 import com.mis.backend.dto.StudentDTO;
 import com.mis.backend.dto.StudentPageQueryDTO;
 import com.mis.backend.entity.Student;
@@ -24,6 +25,7 @@ public class StudentController {
     private IStudentService studentService;
 
     //获取学生列表
+    @NoAuth
     @GetMapping
     public Result<PageQueryVO<StudentVO>> list(@RequestParam(value = "class",required = false) String clazz,@ModelAttribute StudentPageQueryDTO studentPageQueryDTO){
         studentPageQueryDTO.setClazz(clazz);
@@ -36,10 +38,10 @@ public class StudentController {
     public Result post(@RequestBody StudentDTO studentDTO){
         log.info("Student: {}", studentDTO);
         studentService.add(studentDTO);
-
         return Result.success(studentDTO);
     }
     //获取学生详情
+    @NoAuth
     @GetMapping("/{studentId}")
     public Result<StudentVO> getDetails(@PathVariable String studentId,Integer year){
         log.info("StudentId: {}", studentId);

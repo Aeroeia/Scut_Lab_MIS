@@ -99,6 +99,11 @@ export default {
       }
     }
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      // 在组件实例创建后可以进行操作，但不触发请求
+    })
+  },
   methods: {
     ...mapActions('student', ['addStudent']),
     

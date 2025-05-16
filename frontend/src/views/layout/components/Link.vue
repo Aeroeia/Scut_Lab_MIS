@@ -1,5 +1,5 @@
 <template>
-  <component :is="type" v-bind="linkProps(to)">
+  <component :is="type" v-bind="linkProps(to)" @click.native="handleClick">
     <slot />
   </component>
 </template>
@@ -34,6 +34,13 @@ export default {
       }
       return {
         to: url
+      }
+    },
+    handleClick(e) {
+      // 阻止特定页面的默认请求行为
+      if (this.to === '/student/create' || this.to === '/course-selection/create') {
+        // 阻止可能的默认行为，让Vue Router自己处理跳转
+        e.preventDefault();
       }
     }
   }
