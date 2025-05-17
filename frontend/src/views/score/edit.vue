@@ -30,6 +30,8 @@
             <el-descriptions-item label="Course Name">{{ courseInfo.courseName }}</el-descriptions-item>
             <el-descriptions-item label="Teacher">{{ courseInfo.teacherName }}</el-descriptions-item>
             <el-descriptions-item label="Credits">{{ courseInfo.credit }}</el-descriptions-item>
+            <el-descriptions-item label="Hours" v-if="courseInfo.hours">{{ courseInfo.hours }}</el-descriptions-item>
+            <el-descriptions-item label="Semester" v-if="courseInfo.semester">{{ courseInfo.semester }}</el-descriptions-item>
           </el-descriptions>
         </el-card>
         
@@ -86,6 +88,7 @@ export default {
       scoreId: '',
       studentId: '',
       courseId: '',
+      teacherId: '',
       studentInfo: {},
       courseInfo: {},
       originalScore: null,
@@ -108,9 +111,10 @@ export default {
   },
   created() {
     // Get route parameters
-    this.scoreId = this.$route.params.id
+    this.scoreId = this.$route.query.id || ''
     this.studentId = this.$route.query.studentId || ''
     this.courseId = this.$route.query.courseId || ''
+    this.teacherId = this.$route.query.teacherId || ''
     
     if (!this.studentId || !this.courseId) {
       this.$message.error('Missing student ID or course ID parameters')
@@ -131,38 +135,81 @@ export default {
     fetchData() {
       this.loading = true
       
-      // Get student information
-      const studentPromise = this.getStudentDetail(this.studentId)
-        .then(data => {
-          this.studentInfo = data
-        })
+      // 创建Promise数组
+      const promises = []
       
-      // Get course information
-      const coursePromise = this.getCourseDetail(this.courseId)
-        .then(data => {
-          this.courseInfo = data
+      // 获取学生信息 - 修复传参格式
+      if (this.studentId) {
+        const studentPromise = this.getStudentDetail({
+          studentId: this.studentId,
+          params: {}
+        }).then(data => {
+          this.studentInfo = data || {}
+        }).catch(error => {
+          console.error('获取学生信息失败:', error)
+          this.$message.error('获取学生信息失败')
         })
+        
+        promises.push(studentPromise)
+      }
       
-      // Get current score information
-      const scorePromise = this.getScores({
-        studentId: this.studentId,
-        courseId: this.courseId
-      }).then(data => {
-        if (data.records && data.records.length > 0) {
-          const scoreData = data.records[0]
-          this.scoreId = scoreData.id
-          this.originalScore = scoreData.score
-          this.scoreForm.score = scoreData.score
-          this.scoreForm.comment = scoreData.comment || ''
-        }
-      })
-      
-      // Wait for all requests to complete
-      Promise.all([studentPromise, coursePromise, scorePromise])
-        .catch(() => {
-          this.$message.error('Failed to fetch data')
-          this.goBack()
+      // 获取课程信息 - 必须传递teacherId参数
+      if (this.courseId) {
+        const coursePromise = this.getCourseDetail({
+          courseId: this.courseId,
+          teacherId: this.teacherId
+        }).then(data => {
+          this.courseInfo = data || {}
+        }).catch(error => {
+          console.error('获取课程信息失败:', error)
+          this.$message.error('获取课程信息失败')
         })
+        
+        promises.push(coursePromise)
+      }
+      
+      // 获取当前成绩信息
+      if (this.studentId && this.courseId) {
+        const scorePromise = this.getScores({
+          studentId: this.studentId,
+          courseId: this.courseId
+        }).then(data => {
+          console.log('后端返回的原始数据:', data)
+          
+          // Vuex store中的getScores action已经处理了response.data，所以这里直接使用
+          // 判断数据格式并处理 - 可能是 {score: 85.5, scoreId: 151} 或者 records 数组
+          
+          if (data && data.score !== undefined && data.scoreId !== undefined) {
+            // 直接返回的成绩对象格式
+            this.scoreId = data.scoreId || this.scoreId
+            this.originalScore = data.score
+            this.scoreForm.score = data.score
+            this.scoreForm.comment = data.comment || ''
+          } else if (data && data.records && data.records.length > 0) {
+            // records数组格式
+            const scoreData = data.records[0]
+            this.scoreId = scoreData.id || this.scoreId
+            this.originalScore = scoreData.score
+            this.scoreForm.score = scoreData.score 
+            this.scoreForm.comment = scoreData.comment || ''
+          }
+          
+          console.log('处理后的成绩数据:', {
+            scoreId: this.scoreId,
+            originalScore: this.originalScore,
+            currentScore: this.scoreForm.score,
+            comment: this.scoreForm.comment
+          })
+        }).catch(error => {
+          console.error('获取成绩信息失败:', error)
+          this.$message.error('获取成绩信息失败')
+        })
+        
+        promises.push(scorePromise)
+      }
+      
+      // 等待所有请求完成
+      Promise.all(promises)
         .finally(() => {
           this.loading = false
         })
@@ -173,26 +220,42 @@ export default {
         if (valid) {
           this.submitting = true
           
-          // Check if scoreId exists
+          // 检查scoreId是否存在，如果从query参数获取，则使用它
+          if (this.$route.query.id && !this.scoreId) {
+            this.scoreId = this.$route.query.id
+          }
+          
+          // 再次检查scoreId
           if (!this.scoreId) {
-            this.$message.error('Course selection ID does not exist, cannot update score')
+            this.$message.error('找不到选课记录ID，无法更新成绩')
             this.submitting = false
             return
           }
           
+          const scoreData = {
+            score: this.scoreForm.score,
+          }
+          
+          console.log('准备提交的数据:', {
+            id: this.scoreId,
+            scoreData: scoreData
+          })
+          
           this.updateScore({
             id: this.scoreId,
-            data: this.scoreForm
+            data: scoreData
           })
             .then(() => {
-              this.$message.success(`Score ${this.isEdit ? 'updated' : 'entered'} successfully`)
+              this.$message.success(`成绩${this.isEdit ? '更新' : '录入'}成功`)
               this.goBack()
             })
-            .catch(() => {
+            .catch(error => {
+              console.error('更新成绩失败：', error)
+              this.$message.error(`成绩${this.isEdit ? '更新' : '录入'}失败：${error.message || '未知错误'}`)
               this.submitting = false
             })
         } else {
-          this.$message.error('Please fill out the form correctly')
+          this.$message.error('请正确填写表单')
           return false
         }
       })
@@ -204,8 +267,8 @@ export default {
     },
     
     goBack() {
-      // Return to score list page
-      this.$router.push('/score/list')
+      // 返回到选课列表页面而不是成绩列表
+      this.$router.push('/course-selection/list')
     },
     
     // Return different tag type based on score

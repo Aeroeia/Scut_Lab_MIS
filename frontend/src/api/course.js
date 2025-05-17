@@ -11,6 +11,11 @@ export function getCourses(params) {
 
 // 获取课程详情
 export function getCourseById(courseId, teacherId) {
+  if (!teacherId) {
+    console.error('getCourseById: 缺少必要参数teacherId')
+    return Promise.reject(new Error('获取课程详情需要提供教师ID'))
+  }
+  
   return request({
     url: `/courses/${courseId}`,
     method: 'get',

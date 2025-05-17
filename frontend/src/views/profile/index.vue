@@ -133,9 +133,9 @@ export default {
           
           this.updatePassword(passwordData)
             .then(response => {
-              this.$message({
+          this.$message({
                 message: '密码修改成功',
-                type: 'success'
+            type: 'success'
               });
               this.resetForm();
             })

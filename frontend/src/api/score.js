@@ -11,6 +11,11 @@ export function getScores(params) {
 
 // 更新学生成绩
 export function updateScore(id, data) {
+  // 确保id不是undefined
+  if (!id) {
+    return Promise.reject(new Error('缺少选课ID参数'))
+  }
+  
   return request({
     url: `/scores/${id}`,
     method: 'put',

@@ -106,6 +106,7 @@
 <script>
 import { getRole, getRoleName } from '@/utils/auth'
 import { isAdmin, isTeacher, isStudent } from '@/utils/auth'
+import { getDashboardStats } from '@/api/statistics'
 
 export default {
   name: 'Dashboard',
@@ -237,15 +238,24 @@ export default {
       this.$router.push(path)
     },
     fetchDashboardStats() {
-      // This should call backend API to get statistics
-      // Using mock data for simplification
-      setTimeout(() => {
-        this.stats = {
-          studentCount: 1200,
-          courseCount: 86,
-          averageScore: 82.5
-        }
-      }, 500)
+      this.$message({
+        message: '正在加载统计数据...',
+        type: 'info',
+        duration: 1000
+      })
+      
+      getDashboardStats()
+        .then(response => {
+          if (response.code === 200 && response.data) {
+            this.stats = response.data
+          } else {
+            this.$message.error('获取统计数据失败')
+          }
+        })
+        .catch(error => {
+          console.error('获取Dashboard统计数据失败:', error)
+          this.$message.error('获取统计数据失败')
+        })
     }
   }
 }

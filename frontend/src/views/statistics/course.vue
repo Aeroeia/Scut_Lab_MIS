@@ -238,7 +238,7 @@ export default {
     }
   },
   mounted() {
-    this.fetchCourses()
+    this.fetchCourseList()
     window.addEventListener('resize', this.resizeCharts)
   },
   beforeDestroy() {
@@ -258,15 +258,15 @@ export default {
     ...mapActions('statistics', ['getCourseAverageScore']),
     
     // 获取课程列表
-    fetchCourses() {
+    fetchCourseList() {
       this.getCourses({ size: 1000 })
         .then(data => {
           this.courseOptions = data.records || []
           
-          // 如果路由传入了课程参数，自动设置
-          if (this.$route.query.courseId) {
-            this.searchForm.courseId = this.$route.query.courseId
-            this.handleCourseChange(this.searchForm.courseId)
+          // 如果课程列表不为空，默认选择第一个课程
+          if (this.courseOptions.length > 0) {
+            this.searchForm.courseId = this.courseOptions[0].courseId
+            this.handleCourseChange()
           }
         })
         .catch(() => {

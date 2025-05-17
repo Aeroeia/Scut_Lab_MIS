@@ -218,7 +218,7 @@ export default {
     }
   },
   mounted() {
-    this.fetchStudents()
+    this.fetchStudentList()
     window.addEventListener('resize', this.resizeCharts)
   },
   beforeDestroy() {
@@ -235,10 +235,16 @@ export default {
     ...mapActions('statistics', ['getStudentAverageScore']),
     
     // Get student list
-    fetchStudents() {
+    fetchStudentList() {
       this.getStudents({ size: 1000 })
         .then(data => {
           this.studentOptions = data.records || []
+          
+          // 如果学生列表不为空，默认选择第一个学生
+          if (this.studentOptions.length > 0) {
+            this.searchForm.studentId = this.studentOptions[0].studentId
+            this.handleStudentChange()
+          }
           
           // If student parameter is passed in route, set it automatically
           if (this.$route.query.studentId) {

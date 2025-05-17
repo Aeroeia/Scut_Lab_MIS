@@ -59,6 +59,13 @@
             </el-button>
             <el-button 
               type="text" 
+              size="small"
+              v-else
+              @click="handleInputScore(scope.row)">
+              Score Edit
+            </el-button>
+            <el-button 
+              type="text" 
               size="small" 
               class="danger-text" 
               v-if="isAdmin"
@@ -201,7 +208,9 @@ export default {
         path: '/score/edit',
         query: {
           studentId: row.studentId,
-          courseId: row.courseId
+          courseId: row.courseId,
+          id: row.id,
+          teacherId: row.teacherId || ''
         }
       })
     },

@@ -2,6 +2,7 @@ package com.mis.backend.controller;
 
 import com.mis.backend.dto.CourseSelectionDTO;
 import com.mis.backend.dto.CourseSelectionPageQueryDTO;
+import com.mis.backend.entity.CourseSelection;
 import com.mis.backend.result.Result;
 import com.mis.backend.service.ICourseSelectionService;
 import com.mis.backend.vo.CourseSelectionVO;
@@ -27,6 +28,12 @@ public class CourseSelectionController {
     public Result add(@RequestBody CourseSelectionDTO courseSelectionDTO){
         log.info("CourseSelectionController add:{}", courseSelectionDTO);
         courseSelectionService.add(courseSelectionDTO);
+        return Result.success();
+    }
+    @DeleteMapping("/{id}")
+    public Result delete(@PathVariable String id){
+        log.info("CourseSelectionController delete:{}", id);
+        courseSelectionService.lambdaUpdate().eq(CourseSelection::getId,id).remove();
         return Result.success();
     }
 }

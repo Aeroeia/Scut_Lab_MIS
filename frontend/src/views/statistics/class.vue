@@ -197,6 +197,12 @@ export default {
           const classList = [...new Set(data.records.map(item => item.class))].filter(Boolean)
           this.classOptions = classList.sort()
           
+          // 如果班级列表不为空，默认选择第一个班级
+          if (this.classOptions.length > 0) {
+            this.searchForm.className = this.classOptions[0]
+            this.handleClassChange()
+          }
+          
           // If class parameter is passed in route, set it automatically
           if (this.$route.query.className) {
             this.searchForm.className = this.$route.query.className

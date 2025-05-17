@@ -196,6 +196,8 @@ export default {
     }
   },
   mounted() {
+    // 默认选择第一个学期
+    this.searchForm.semester = "1"
     this.fetchData()
     window.addEventListener('resize', this.resizeCharts)
   },

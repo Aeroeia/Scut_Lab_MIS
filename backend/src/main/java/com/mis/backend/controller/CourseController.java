@@ -34,6 +34,7 @@ public class CourseController {
     public Result<CourseVO> getDetails(@PathVariable String courseId,@RequestParam String teacherId){
         log.info("courseId: {}", courseId);
         CourseVO courseVO = courseService.getDetails(courseId,teacherId);
+        log.info("courseVO: {}", courseVO);
         return Result.success(courseVO);
     }
     @PutMapping("/{courseId}")

@@ -170,20 +170,14 @@ export const asyncRoutes = [
   {
     path: '/score',
     component: () => import('@/views/layout/index'),
-    redirect: '/score/list',
-    meta: { title: 'Grade Manage', icon: 'el-icon-s-data', roles: ['1', '2', '3'] }, // 所有角色可见
+    redirect: '/score/edit',
+    meta: { title: 'Grade Manage', icon: 'el-icon-s-data', roles: ['2'] }, // 只有教师可见
     children: [
       {
-        path: 'list',
-        name: 'ScoreList',
-        component: () => import('@/views/score/list'),
-        meta: { title: 'Grade List', icon: 'el-icon-document-checked' }
-      },
-      {
-        path: 'edit/:id',
+        path: 'edit',
         name: 'ScoreEdit',
         component: () => import('@/views/score/edit'),
-        meta: { title: 'Edit Grade', icon: 'el-icon-edit', activeMenu: '/score/list', roles: ['2'] }, // 只有教师可编辑成绩
+        meta: { title: 'Edit Grade', icon: 'el-icon-edit', roles: ['2'] }, // 只有教师可编辑成绩
         hidden: true
       }
     ]
