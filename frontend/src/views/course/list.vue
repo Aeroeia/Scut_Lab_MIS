@@ -133,7 +133,10 @@ export default {
     },
     
     handleEdit(row) {
-      this.$router.push(`/course/edit/${row.courseId}`)
+      this.$router.push({
+        path: `/course/edit/${row.courseId}`,
+        query: { teacherId: row.teacherId }
+      })
     },
     
     handleDetail(row) {

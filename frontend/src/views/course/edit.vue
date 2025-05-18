@@ -100,9 +100,12 @@ export default {
     }
   },
   created() {
-    this.courseId = this.$route.params.id
+    // 从路由参数中获取courseId和teacherId
+    this.courseId = this.$route.params.courseId || this.$route.path.split('/').pop()
+    const teacherId = this.$route.query.teacherId
+    
     this.fetchTeachers().then(() => {
-      this.getCourseInfo()
+      this.getCourseInfo(teacherId)
     })
   },
   methods: {
@@ -121,19 +124,31 @@ export default {
     },
     
     // Get course information
-    getCourseInfo() {
+    getCourseInfo(teacherId) {
       if (!this.courseId) {
         this.$message.error('Course ID cannot be empty')
         this.goBack()
         return
       }
       
+      if (!teacherId) {
+        this.$message.error('Teacher ID is required to get course information')
+        this.goBack()
+        return
+      }
+      
       this.pageLoading = true
-      this.getCourseDetail(this.courseId)
+      console.log('Fetching course with ID:', this.courseId, 'and teacherId:', teacherId)
+      this.getCourseDetail({
+        courseId: this.courseId,
+        teacherId: teacherId
+      })
         .then(data => {
+          console.log('Course data received:', data)
           this.courseForm = { ...data }
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error('Failed to get course information:', error)
           this.$message.error('Failed to get course information')
           this.goBack()
         })

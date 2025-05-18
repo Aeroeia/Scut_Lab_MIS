@@ -47,9 +47,23 @@
     <!-- Admin Functions -->
     <div v-if="isAdmin" class="dashboard-panels">
       <h2 class="panel-title"><i class="el-icon-menu"></i> System Management</h2>
-      <el-row :gutter="20">
-        <el-col :span="8" v-for="(item, index) in adminMenus" :key="index">
-          <el-card shadow="hover" class="dashboard-card">
+      <el-row :gutter="20" class="admin-row">
+        <el-col :span="8" v-for="(item, index) in adminMenus.slice(0, 3)" :key="'admin1-'+index">
+          <el-card shadow="hover" class="dashboard-card admin-card">
+            <div class="card-header">
+              <i :class="item.icon"></i>
+              <span>{{ item.title }}</span>
+            </div>
+            <div class="dashboard-content">
+              <p>{{ item.description }}</p>
+              <el-button type="primary" @click="goTo(item.path)">{{ item.buttonText }}</el-button>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" class="admin-row" type="flex" justify="center">
+        <el-col :span="8" v-for="(item, index) in adminMenus.slice(3)" :key="'admin2-'+index">
+          <el-card shadow="hover" class="dashboard-card admin-card">
             <div class="card-header">
               <i :class="item.icon"></i>
               <span>{{ item.title }}</span>
@@ -149,13 +163,6 @@ export default {
           buttonText: 'Manage'
         },
         {
-          title: 'Grade Management',
-          icon: 'el-icon-s-data',
-          description: 'Manage student grades and view grade list',
-          path: '/score/list',
-          buttonText: 'Manage'
-        },
-        {
           title: 'Statistics',
           icon: 'el-icon-pie-chart',
           description: 'View school-wide grade statistics and analysis',
@@ -170,13 +177,6 @@ export default {
           description: 'View course selections for your taught courses',
           path: '/course-selection/list',
           buttonText: 'View'
-        },
-        {
-          title: 'Grade Management',
-          icon: 'el-icon-s-data',
-          description: 'Manage student grades and enter scores',
-          path: '/score/list',
-          buttonText: 'Manage'
         },
         {
           title: 'Class Statistics',
@@ -393,5 +393,71 @@ export default {
 
 .dashboard-content .el-button {
   width: 100%;
+}
+
+.admin-row {
+  margin-bottom: 30px;
+}
+
+.admin-card {
+  height: 180px;
+  margin-bottom: 20px;
+  transition: all 0.3s;
+  overflow: hidden;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.admin-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(24, 144, 255, 0.2);
+}
+
+.admin-card .card-header {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1890ff;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  position: relative;
+}
+
+.admin-card .card-header::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 50px;
+  background: linear-gradient(90deg, #1890ff, #36cfc9);
+}
+
+.admin-card .card-header i {
+  margin-right: 10px;
+  font-size: 20px;
+  background: linear-gradient(135deg, #1890ff, #36cfc9);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.admin-card .dashboard-content p {
+  margin-bottom: 20px;
+  color: #5a5e66;
+  height: 40px;
+  line-height: 20px;
+}
+
+.admin-card .dashboard-content .el-button {
+  width: 100%;
+  border-radius: 4px;
+  transition: all 0.3s;
+  border: none;
+  background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);
+}
+
+.admin-card .dashboard-content .el-button:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
 }
 </style> 

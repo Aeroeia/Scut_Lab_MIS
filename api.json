@@ -1,58 +1,72 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "SCUT School of Computer Science Course & Grade Management System API",
-    "description": "API文档 - 统计模块",
+    "title": "学生管理系统API",
+    "description": "提供学生、班级、课程和全校统计数据的API",
     "version": "1.0.0"
   },
   "servers": [
     {
       "url": "/api",
-      "description": "API服务器"
+      "description": "开发服务器"
+    }
+  ],
+  "tags": [
+    {
+      "name": "student",
+      "description": "学生相关接口"
+    },
+    {
+      "name": "statistics",
+      "description": "统计数据相关接口"
+    },
+    {
+      "name": "course",
+      "description": "课程相关接口"
     }
   ],
   "paths": {
-    "/statistics/dashboard": {
+    "/student/list": {
       "get": {
-        "summary": "获取Dashboard统计数据",
-        "description": "获取系统概览统计数据，包括学生总数、课程总数和平均分数",
-        "tags": ["统计"],
-        "responses": {
-          "200": {
-            "description": "操作成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    { "$ref": "#/components/schemas/ApiResponse" },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/DashboardStats"
-                        }
-                      }
-                    }
-                  ]
-                },
-                "example": {
-                  "code": 200,
-                  "message": "操作成功",
-                  "data": {
-                    "studentCount": 1500,
-                    "courseCount": 120,
-                    "averageScore": 82.6
-                  }
-                }
-              }
+        "tags": ["student"],
+        "summary": "获取学生列表",
+        "description": "分页获取学生列表数据",
+        "operationId": "getStudents",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码，从1开始",
+            "schema": {
+              "type": "integer",
+              "default": 1
             }
           },
-          "500": {
-            "description": "服务器错误",
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页记录数",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "搜索关键词",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorResponse"
+                  "$ref": "#/components/schemas/StudentPageResult"
                 }
               }
             }
@@ -62,9 +76,10 @@
     },
     "/statistics/student/{studentId}": {
       "get": {
-        "summary": "获取学生平均成绩",
-        "description": "根据学生ID获取该学生的平均成绩统计数据",
-        "tags": ["统计"],
+        "tags": ["statistics"],
+        "summary": "获取学生成绩统计数据",
+        "description": "根据学生ID获取其成绩统计数据",
+        "operationId": "getStudentAverageScore",
         "parameters": [
           {
             "name": "studentId",
@@ -76,17 +91,9 @@
             }
           },
           {
-            "name": "semester",
+            "name": "year",
             "in": "query",
-            "description": "学期",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "academicYear",
-            "in": "query",
-            "description": "学年",
+            "description": "学年，如：2023",
             "schema": {
               "type": "string"
             }
@@ -94,73 +101,11 @@
         ],
         "responses": {
           "200": {
-            "description": "操作成功",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    { "$ref": "#/components/schemas/ApiResponse" },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/StudentStats"
-                        }
-                      }
-                    }
-                  ]
-                },
-                "example": {
-                  "code": 200,
-                  "message": "操作成功",
-                  "data": {
-                    "studentId": "2020XXXX",
-                    "studentName": "张三",
-                    "averageScore": 85.5,
-                    "courseScores": [
-                      {
-                        "courseName": "高等数学",
-                        "courseId": "MATH101",
-                        "score": 90
-                      },
-                      {
-                        "courseName": "数据结构",
-                        "courseId": "CS201",
-                        "score": 85
-                      }
-                    ],
-                    "totalCourses": 10,
-                    "scoreDistribution": {
-                      "excellent": 5,
-                      "good": 3,
-                      "average": 2,
-                      "poor": 0
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "未找到学生",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiErrorResponse"
-                },
-                "example": {
-                  "code": 404,
-                  "message": "未找到该学生"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "服务器错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiErrorResponse"
+                  "$ref": "#/components/schemas/StudentStatisticsResult"
                 }
               }
             }
@@ -170,9 +115,10 @@
     },
     "/statistics/class/{className}": {
       "get": {
-        "summary": "获取班级平均成绩",
-        "description": "根据班级名称获取该班级的平均成绩统计数据",
-        "tags": ["统计"],
+        "tags": ["statistics"],
+        "summary": "获取班级成绩统计数据",
+        "description": "根据班级名称获取班级成绩统计数据",
+        "operationId": "getClassAverageScore",
         "parameters": [
           {
             "name": "className",
@@ -184,25 +130,9 @@
             }
           },
           {
-            "name": "semester",
+            "name": "year",
             "in": "query",
-            "description": "学期",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "academicYear",
-            "in": "query",
-            "description": "学年",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "courseId",
-            "in": "query",
-            "description": "课程ID",
+            "description": "学年，如：2023",
             "schema": {
               "type": "string"
             }
@@ -210,84 +140,59 @@
         ],
         "responses": {
           "200": {
-            "description": "操作成功",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    { "$ref": "#/components/schemas/ApiResponse" },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/ClassStats"
-                        }
-                      }
-                    }
-                  ]
-                },
-                "example": {
-                  "code": 200,
-                  "message": "操作成功",
-                  "data": {
-                    "className": "计算机科学与技术2020级1班",
-                    "averageScore": 83.2,
-                    "studentCount": 40,
-                    "topStudents": [
-                      {
-                        "studentId": "2020XXXX",
-                        "studentName": "李四",
-                        "averageScore": 92.5
-                      },
-                      {
-                        "studentId": "2020YYYY",
-                        "studentName": "王五",
-                        "averageScore": 91.8
-                      }
-                    ],
-                    "courseAverages": [
-                      {
-                        "courseName": "计算机网络",
-                        "courseId": "CS301",
-                        "averageScore": 84.5
-                      },
-                      {
-                        "courseName": "操作系统",
-                        "courseId": "CS302",
-                        "averageScore": 82.1
-                      }
-                    ],
-                    "scoreDistribution": {
-                      "excellent": 12,
-                      "good": 18,
-                      "average": 8,
-                      "poor": 2
-                    }
-                  }
+                  "$ref": "#/components/schemas/ClassStatisticsResult"
                 }
               }
             }
-          },
-          "404": {
-            "description": "未找到班级",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiErrorResponse"
-                },
-                "example": {
-                  "code": 404,
-                  "message": "未找到该班级"
-                }
-              }
+          }
+        }
+      }
+    },
+    "/course/list": {
+      "get": {
+        "tags": ["course"],
+        "summary": "获取课程列表",
+        "description": "分页获取课程列表数据",
+        "operationId": "getCourses",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码，从1开始",
+            "schema": {
+              "type": "integer",
+              "default": 1
             }
           },
-          "500": {
-            "description": "服务器错误",
+          {
+            "name": "size",
+            "in": "query",
+            "description": "每页记录数",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "keyword",
+            "in": "query",
+            "description": "搜索关键词",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ApiErrorResponse"
+                  "$ref": "#/components/schemas/CoursePageResult"
                 }
               }
             }
@@ -297,9 +202,10 @@
     },
     "/statistics/course/{courseId}": {
       "get": {
-        "summary": "获取课程平均成绩",
-        "description": "根据课程ID获取该课程的平均成绩统计数据",
-        "tags": ["统计"],
+        "tags": ["statistics"],
+        "summary": "获取课程成绩统计数据",
+        "description": "根据课程ID获取其成绩统计数据",
+        "operationId": "getCourseAverageScore",
         "parameters": [
           {
             "name": "courseId",
@@ -311,25 +217,9 @@
             }
           },
           {
-            "name": "semester",
+            "name": "year",
             "in": "query",
-            "description": "学期",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "academicYear",
-            "in": "query",
-            "description": "学年",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "className",
-            "in": "query",
-            "description": "班级名称",
+            "description": "学年，如：2023",
             "schema": {
               "type": "string"
             }
@@ -337,206 +227,11 @@
         ],
         "responses": {
           "200": {
-            "description": "操作成功",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    { "$ref": "#/components/schemas/ApiResponse" },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/CourseStats"
-                        }
-                      }
-                    }
-                  ]
-                },
-                "example": {
-                  "code": 200,
-                  "message": "操作成功",
-                  "data": {
-                    "courseId": "CS201",
-                    "courseName": "数据结构",
-                    "averageScore": 78.6,
-                    "studentCount": 120,
-                    "teacherName": "赵教授",
-                    "highestScore": 98,
-                    "lowestScore": 45,
-                    "passingRate": 92.5,
-                    "classAverages": [
-                      {
-                        "className": "计算机科学与技术2020级1班",
-                        "averageScore": 80.2
-                      },
-                      {
-                        "className": "计算机科学与技术2020级2班",
-                        "averageScore": 77.3
-                      }
-                    ],
-                    "scoreDistribution": {
-                      "excellent": 25,
-                      "good": 45,
-                      "average": 35,
-                      "poor": 15
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "未找到课程",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiErrorResponse"
-                },
-                "example": {
-                  "code": 404,
-                  "message": "未找到该课程"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "服务器错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/statistics/students": {
-      "get": {
-        "summary": "获取所有学生平均成绩",
-        "description": "获取所有学生的平均成绩统计数据",
-        "tags": ["统计"],
-        "parameters": [
-          {
-            "name": "semester",
-            "in": "query",
-            "description": "学期",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "academicYear",
-            "in": "query",
-            "description": "学年",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "className",
-            "in": "query",
-            "description": "班级名称",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "页码",
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "每页数量",
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "sortBy",
-            "in": "query",
-            "description": "排序字段",
-            "schema": {
-              "type": "string",
-              "enum": ["averageScore", "studentId", "studentName"]
-            }
-          },
-          {
-            "name": "sortOrder",
-            "in": "query",
-            "description": "排序方式",
-            "schema": {
-              "type": "string",
-              "enum": ["asc", "desc"]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "操作成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    { "$ref": "#/components/schemas/ApiResponse" },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/AllStudentsStats"
-                        }
-                      }
-                    }
-                  ]
-                },
-                "example": {
-                  "code": 200,
-                  "message": "操作成功",
-                  "data": {
-                    "total": 1500,
-                    "page": 1,
-                    "pageSize": 10,
-                    "students": [
-                      {
-                        "studentId": "2020XXXX",
-                        "studentName": "张三",
-                        "className": "计算机科学与技术2020级1班",
-                        "averageScore": 88.5
-                      },
-                      {
-                        "studentId": "2020YYYY",
-                        "studentName": "李四",
-                        "className": "计算机科学与技术2020级2班",
-                        "averageScore": 86.3
-                      }
-                    ],
-                    "schoolAverageScore": 82.6,
-                    "scoreDistribution": {
-                      "excellent": 480,
-                      "good": 680,
-                      "average": 290,
-                      "poor": 50
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "服务器错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiErrorResponse"
+                  "$ref": "#/components/schemas/CourseStatisticsResult"
                 }
               }
             }
@@ -546,107 +241,36 @@
     },
     "/statistics/all": {
       "get": {
-        "summary": "获取所有统计数据",
-        "description": "获取系统所有统计数据的综合信息",
-        "tags": ["统计"],
+        "tags": ["statistics"],
+        "summary": "获取全校统计数据",
+        "description": "获取全校成绩统计数据",
+        "operationId": "getAllStatistics",
         "parameters": [
           {
-            "name": "semester",
+            "name": "year",
             "in": "query",
-            "description": "学期",
+            "description": "学年，如：2023",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "academicYear",
+            "name": "semester",
             "in": "query",
-            "description": "学年",
+            "description": "学期，如：1表示第一学期，2表示第二学期",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": ["1", "2"]
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "操作成功",
+            "description": "成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "allOf": [
-                    { "$ref": "#/components/schemas/ApiResponse" },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "data": {
-                          "$ref": "#/components/schemas/AllStatistics"
-                        }
-                      }
-                    }
-                  ]
-                },
-                "example": {
-                  "code": 200,
-                  "message": "操作成功",
-                  "data": {
-                    "studentCount": 1500,
-                    "courseCount": 120,
-                    "teacherCount": 80,
-                    "classCount": 40,
-                    "overallAverageScore": 82.6,
-                    "courseStatistics": {
-                      "highestAverageCourse": {
-                        "courseId": "CS401",
-                        "courseName": "软件工程",
-                        "averageScore": 89.3
-                      },
-                      "lowestAverageCourse": {
-                        "courseId": "MATH201",
-                        "courseName": "高等数学II",
-                        "averageScore": 72.1
-                      }
-                    },
-                    "classStatistics": {
-                      "highestAverageClass": {
-                        "className": "软件工程2019级3班",
-                        "averageScore": 87.2
-                      },
-                      "lowestAverageClass": {
-                        "className": "网络工程2020级2班",
-                        "averageScore": 75.8
-                      }
-                    },
-                    "scoreDistribution": {
-                      "excellent": 480,
-                      "good": 680,
-                      "average": 290,
-                      "poor": 50
-                    },
-                    "yearlyTrend": [
-                      {
-                        "year": "2018-2019",
-                        "averageScore": 81.2
-                      },
-                      {
-                        "year": "2019-2020",
-                        "averageScore": 82.1
-                      },
-                      {
-                        "year": "2020-2021",
-                        "averageScore": 82.6
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "服务器错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiErrorResponse"
+                  "$ref": "#/components/schemas/AllStatisticsResult"
                 }
               }
             }
@@ -657,207 +281,169 @@
   },
   "components": {
     "schemas": {
-      "ApiResponse": {
+      "CommonResult": {
         "type": "object",
         "properties": {
           "code": {
             "type": "integer",
-            "description": "响应状态码",
-            "example": 200
+            "description": "状态码，200表示成功"
           },
           "message": {
             "type": "string",
-            "description": "响应消息",
-            "example": "操作成功"
+            "description": "消息"
           },
           "data": {
             "type": "object",
-            "description": "响应数据"
+            "description": "数据"
           }
         }
       },
-      "ApiErrorResponse": {
+      "PageResult": {
         "type": "object",
         "properties": {
-          "code": {
+          "total": {
             "type": "integer",
-            "description": "错误状态码",
-            "example": 500
+            "description": "总记录数"
           },
-          "message": {
+          "records": {
+            "type": "array",
+            "description": "数据列表"
+          },
+          "size": {
+            "type": "integer",
+            "description": "每页大小"
+          },
+          "current": {
+            "type": "integer",
+            "description": "当前页码"
+          },
+          "pages": {
+            "type": "integer",
+            "description": "总页数"
+          }
+        }
+      },
+      "StudentInfo": {
+        "type": "object",
+        "properties": {
+          "studentId": {
             "type": "string",
-            "description": "错误消息",
-            "example": "服务器内部错误"
+            "description": "学生ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "学生姓名"
+          },
+          "gender": {
+            "type": "string",
+            "description": "性别"
+          },
+          "class": {
+            "type": "string",
+            "description": "班级"
+          },
+          "enrollmentYear": {
+            "type": "string",
+            "description": "入学年份"
+          },
+          "ageAtEnrollment": {
+            "type": "integer",
+            "description": "入学时年龄"
           }
         }
       },
-      "ScoreDistribution": {
+      "CourseInfo": {
         "type": "object",
-        "description": "分数分布统计",
         "properties": {
-          "excellent": {
-            "type": "integer",
-            "description": "优秀成绩数量（90分以上）",
-            "example": 12
+          "courseId": {
+            "type": "string",
+            "description": "课程ID"
           },
-          "good": {
-            "type": "integer",
-            "description": "良好成绩数量（80-89分）",
-            "example": 18
+          "courseName": {
+            "type": "string",
+            "description": "课程名称"
           },
-          "average": {
-            "type": "integer",
-            "description": "中等成绩数量（70-79分）",
-            "example": 8
+          "teacherName": {
+            "type": "string",
+            "description": "教师姓名"
           },
-          "poor": {
+          "credit": {
+            "type": "number",
+            "description": "学分"
+          },
+          "hours": {
             "type": "integer",
-            "description": "较差成绩数量（60分以下）",
-            "example": 2
+            "description": "课时"
+          },
+          "semester": {
+            "type": "string",
+            "description": "学期"
           }
         }
       },
       "CourseScore": {
         "type": "object",
-        "description": "课程成绩信息",
         "properties": {
           "courseId": {
             "type": "string",
-            "description": "课程ID",
-            "example": "CS201"
+            "description": "课程ID"
           },
           "courseName": {
             "type": "string",
-            "description": "课程名称",
-            "example": "数据结构"
+            "description": "课程名称"
+          },
+          "teacherName": {
+            "type": "string",
+            "description": "教师姓名"
+          },
+          "credit": {
+            "type": "number",
+            "description": "学分"
           },
           "score": {
             "type": "number",
-            "format": "float",
-            "description": "课程成绩",
-            "example": 85
+            "description": "成绩"
+          },
+          "semester": {
+            "type": "string",
+            "description": "学期"
           }
         }
       },
-      "StudentBrief": {
+      "StudentStatisticsResult": {
         "type": "object",
-        "description": "学生简要信息",
         "properties": {
           "studentId": {
             "type": "string",
-            "description": "学生ID",
-            "example": "2020XXXX"
-          },
-          "studentName": {
-            "type": "string",
-            "description": "学生姓名",
-            "example": "张三"
+            "description": "学生ID"
           },
           "averageScore": {
             "type": "number",
-            "format": "float",
-            "description": "平均成绩",
-            "example": 88.5
-          }
-        }
-      },
-      "ClassAverage": {
-        "type": "object",
-        "description": "班级平均成绩信息",
-        "properties": {
-          "className": {
-            "type": "string",
-            "description": "班级名称",
-            "example": "计算机科学与技术2020级1班"
+            "description": "平均分"
           },
-          "averageScore": {
+          "highestScore": {
             "type": "number",
-            "format": "float",
-            "description": "平均成绩",
-            "example": 80.2
-          }
-        }
-      },
-      "CourseAverage": {
-        "type": "object", 
-        "description": "课程平均成绩信息",
-        "properties": {
-          "courseId": {
-            "type": "string",
-            "description": "课程ID",
-            "example": "CS301"
+            "description": "最高分"
           },
-          "courseName": {
-            "type": "string",
-            "description": "课程名称",
-            "example": "计算机网络"
-          },
-          "averageScore": {
+          "lowestScore": {
             "type": "number",
-            "format": "float",
-            "description": "平均成绩",
-            "example": 84.5
-          }
-        }
-      },
-      "YearlyTrend": {
-        "type": "object",
-        "description": "年度成绩趋势",
-        "properties": {
-          "year": {
-            "type": "string",
-            "description": "学年",
-            "example": "2020-2021"
+            "description": "最低分"
           },
-          "averageScore": {
+          "totalCredits": {
             "type": "number",
-            "format": "float",
-            "description": "平均成绩",
-            "example": 82.6
-          }
-        }
-      },
-      "DashboardStats": {
-        "type": "object",
-        "description": "Dashboard统计数据",
-        "properties": {
-          "studentCount": {
-            "type": "integer",
-            "description": "学生总数",
-            "example": 1500
+            "description": "已获学分"
           },
           "courseCount": {
             "type": "integer",
-            "description": "课程总数",
-            "example": 120
+            "description": "课程数量"
           },
-          "averageScore": {
-            "type": "number",
-            "format": "float",
-            "description": "平均成绩",
-            "example": 82.6
-          }
-        }
-      },
-      "StudentStats": {
-        "type": "object",
-        "description": "学生统计数据",
-        "properties": {
-          "studentId": {
-            "type": "string",
-            "description": "学生ID",
-            "example": "2020XXXX"
+          "classRank": {
+            "type": "integer",
+            "description": "班级排名"
           },
-          "studentName": {
-            "type": "string",
-            "description": "学生姓名",
-            "example": "张三"
-          },
-          "averageScore": {
-            "type": "number",
-            "format": "float",
-            "description": "平均成绩",
-            "example": 85.5
+          "classTotal": {
+            "type": "integer",
+            "description": "班级总人数"
           },
           "courseScores": {
             "type": "array",
@@ -865,284 +451,334 @@
             "items": {
               "$ref": "#/components/schemas/CourseScore"
             }
-          },
-          "totalCourses": {
-            "type": "integer",
-            "description": "总课程数",
-            "example": 10
-          },
-          "scoreDistribution": {
-            "$ref": "#/components/schemas/ScoreDistribution"
           }
         }
       },
-      "ClassStats": {
+      "StudentScore": {
         "type": "object",
-        "description": "班级统计数据",
         "properties": {
-          "className": {
+          "studentId": {
             "type": "string",
-            "description": "班级名称",
-            "example": "计算机科学与技术2020级1班"
+            "description": "学生ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "学生姓名"
+          },
+          "gender": {
+            "type": "string",
+            "description": "性别"
           },
           "averageScore": {
             "type": "number",
-            "format": "float",
-            "description": "平均成绩",
-            "example": 83.2
+            "description": "平均分"
           },
-          "studentCount": {
+          "rank": {
             "type": "integer",
-            "description": "学生人数",
-            "example": 40
-          },
-          "topStudents": {
-            "type": "array",
-            "description": "成绩最好的学生",
-            "items": {
-              "$ref": "#/components/schemas/StudentBrief"
-            }
-          },
-          "courseAverages": {
-            "type": "array",
-            "description": "各课程平均成绩",
-            "items": {
-              "$ref": "#/components/schemas/CourseAverage"
-            }
-          },
-          "scoreDistribution": {
-            "$ref": "#/components/schemas/ScoreDistribution"
+            "description": "排名"
           }
         }
       },
-      "CourseStats": {
+      "ClassStatisticsResult": {
         "type": "object",
-        "description": "课程统计数据",
         "properties": {
-          "courseId": {
-            "type": "string",
-            "description": "课程ID",
-            "example": "CS201"
-          },
-          "courseName": {
-            "type": "string",
-            "description": "课程名称",
-            "example": "数据结构"
-          },
           "averageScore": {
             "type": "number",
-            "format": "float",
-            "description": "平均成绩",
-            "example": 78.6
+            "description": "班级平均分"
           },
           "studentCount": {
             "type": "integer",
-            "description": "选课学生数",
-            "example": 120
-          },
-          "teacherName": {
-            "type": "string",
-            "description": "任课教师",
-            "example": "赵教授"
+            "description": "学生人数"
           },
           "highestScore": {
             "type": "number",
-            "format": "float",
-            "description": "最高分",
-            "example": 98
+            "description": "最高分"
           },
           "lowestScore": {
             "type": "number",
-            "format": "float",
-            "description": "最低分",
-            "example": 45
+            "description": "最低分"
           },
-          "passingRate": {
+          "excellentRate": {
             "type": "number",
-            "format": "float",
-            "description": "及格率(%)",
-            "example": 92.5
+            "description": "优秀率(0-1之间的小数)"
+          },
+          "studentScores": {
+            "type": "array",
+            "description": "学生成绩列表",
+            "items": {
+              "$ref": "#/components/schemas/StudentScore"
+            }
+          }
+        }
+      },
+      "CourseStudentScore": {
+        "type": "object",
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "description": "学生ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "学生姓名"
+          },
+          "class": {
+            "type": "string",
+            "description": "班级"
+          },
+          "score": {
+            "type": "number",
+            "description": "成绩"
+          },
+          "rank": {
+            "type": "integer",
+            "description": "排名"
+          }
+        }
+      },
+      "ClassScoreInfo": {
+        "type": "object",
+        "properties": {
+          "className": {
+            "type": "string",
+            "description": "班级名称"
+          },
+          "averageScore": {
+            "type": "number",
+            "description": "平均分"
+          },
+          "passRate": {
+            "type": "number",
+            "description": "通过率(0-1之间的小数)"
+          }
+        }
+      },
+      "CourseStatisticsResult": {
+        "type": "object",
+        "properties": {
+          "averageScore": {
+            "type": "number",
+            "description": "课程平均分"
+          },
+          "studentCount": {
+            "type": "integer",
+            "description": "学生人数"
+          },
+          "highestScore": {
+            "type": "number",
+            "description": "最高分"
+          },
+          "lowestScore": {
+            "type": "number",
+            "description": "最低分"
+          },
+          "passRate": {
+            "type": "number",
+            "description": "通过率(0-1之间的小数)"
+          },
+          "excellentRate": {
+            "type": "number",
+            "description": "优秀率(0-1之间的小数)"
+          },
+          "studentScores": {
+            "type": "array",
+            "description": "学生成绩列表",
+            "items": {
+              "$ref": "#/components/schemas/CourseStudentScore"
+            }
+          },
+          "classScores": {
+            "type": "array",
+            "description": "班级成绩列表",
+            "items": {
+              "$ref": "#/components/schemas/ClassScoreInfo"
+            }
+          }
+        }
+      },
+      "ScoreRangeDistribution": {
+        "type": "object",
+        "properties": {
+          "range": {
+            "type": "string",
+            "description": "分数段，如：'90-100'"
+          },
+          "count": {
+            "type": "integer",
+            "description": "该分数段人数"
+          }
+        }
+      },
+      "LevelDistribution": {
+        "type": "object",
+        "properties": {
+          "level": {
+            "type": "string",
+            "description": "等级，如：'优秀'"
+          },
+          "count": {
+            "type": "integer",
+            "description": "该等级人数"
+          }
+        }
+      },
+      "ClassAverage": {
+        "type": "object",
+        "properties": {
+          "className": {
+            "type": "string",
+            "description": "班级名称"
+          },
+          "averageScore": {
+            "type": "number",
+            "description": "平均分"
+          },
+          "passRate": {
+            "type": "number",
+            "description": "通过率(0-1之间的小数)"
+          }
+        }
+      },
+      "CourseRanking": {
+        "type": "object",
+        "properties": {
+          "courseId": {
+            "type": "string",
+            "description": "课程ID"
+          },
+          "courseName": {
+            "type": "string",
+            "description": "课程名称"
+          },
+          "averageScore": {
+            "type": "number",
+            "description": "平均分"
+          }
+        }
+      },
+      "AllStatisticsResult": {
+        "type": "object",
+        "properties": {
+          "averageScore": {
+            "type": "number",
+            "description": "全校平均分"
+          },
+          "passRate": {
+            "type": "number",
+            "description": "通过率(0-1之间的小数)"
+          },
+          "excellentRate": {
+            "type": "number",
+            "description": "优秀率(0-1之间的小数)"
+          },
+          "studentCount": {
+            "type": "integer",
+            "description": "学生总数"
+          },
+          "courseCount": {
+            "type": "integer",
+            "description": "课程总数"
+          },
+          "scoreCount": {
+            "type": "integer",
+            "description": "成绩记录总数"
+          },
+          "scoreRangeDistribution": {
+            "type": "array",
+            "description": "分数段分布",
+            "items": {
+              "$ref": "#/components/schemas/ScoreRangeDistribution"
+            }
+          },
+          "levelDistribution": {
+            "type": "array",
+            "description": "等级分布",
+            "items": {
+              "$ref": "#/components/schemas/LevelDistribution"
+            }
           },
           "classAverages": {
             "type": "array",
-            "description": "各班级平均成绩",
+            "description": "班级平均分列表",
             "items": {
               "$ref": "#/components/schemas/ClassAverage"
             }
           },
-          "scoreDistribution": {
-            "$ref": "#/components/schemas/ScoreDistribution"
-          }
-        }
-      },
-      "StudentListItem": {
-        "type": "object",
-        "description": "学生列表项",
-        "properties": {
-          "studentId": {
-            "type": "string",
-            "description": "学生ID",
-            "example": "2020XXXX"
-          },
-          "studentName": {
-            "type": "string",
-            "description": "学生姓名",
-            "example": "张三"
-          },
-          "className": {
-            "type": "string",
-            "description": "班级名称",
-            "example": "计算机科学与技术2020级1班"
-          },
-          "averageScore": {
-            "type": "number",
-            "format": "float",
-            "description": "平均成绩",
-            "example": 88.5
-          }
-        }
-      },
-      "AllStudentsStats": {
-        "type": "object",
-        "description": "所有学生统计数据",
-        "properties": {
-          "total": {
-            "type": "integer",
-            "description": "总学生数",
-            "example": 1500
-          },
-          "page": {
-            "type": "integer",
-            "description": "当前页码",
-            "example": 1
-          },
-          "pageSize": {
-            "type": "integer",
-            "description": "每页数量",
-            "example": 10
-          },
-          "students": {
+          "topCourses": {
             "type": "array",
-            "description": "学生列表",
+            "description": "平均分最高的10门课程",
             "items": {
-              "$ref": "#/components/schemas/StudentListItem"
+              "$ref": "#/components/schemas/CourseRanking"
             }
           },
-          "schoolAverageScore": {
-            "type": "number",
-            "format": "float",
-            "description": "全校平均分",
-            "example": 82.6
-          },
-          "scoreDistribution": {
-            "$ref": "#/components/schemas/ScoreDistribution"
+          "bottomCourses": {
+            "type": "array",
+            "description": "平均分最低的10门课程",
+            "items": {
+              "$ref": "#/components/schemas/CourseRanking"
+            }
           }
         }
       },
-      "CourseStatItem": {
-        "type": "object",
-        "description": "课程统计项",
-        "properties": {
-          "courseId": {
-            "type": "string",
-            "description": "课程ID",
-            "example": "CS401"
+      "StudentPageResult": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CommonResult"
           },
-          "courseName": {
-            "type": "string",
-            "description": "课程名称",
-            "example": "软件工程"
-          },
-          "averageScore": {
-            "type": "number",
-            "format": "float",
-            "description": "平均成绩",
-            "example": 89.3
-          }
-        }
-      },
-      "ClassStatItem": {
-        "type": "object",
-        "description": "班级统计项",
-        "properties": {
-          "className": {
-            "type": "string",
-            "description": "班级名称",
-            "example": "软件工程2019级3班"
-          },
-          "averageScore": {
-            "type": "number",
-            "format": "float",
-            "description": "平均成绩",
-            "example": 87.2
-          }
-        }
-      },
-      "AllStatistics": {
-        "type": "object",
-        "description": "所有统计数据",
-        "properties": {
-          "studentCount": {
-            "type": "integer",
-            "description": "学生总数",
-            "example": 1500
-          },
-          "courseCount": {
-            "type": "integer",
-            "description": "课程总数",
-            "example": 120
-          },
-          "teacherCount": {
-            "type": "integer",
-            "description": "教师总数",
-            "example": 80
-          },
-          "classCount": {
-            "type": "integer",
-            "description": "班级总数",
-            "example": 40
-          },
-          "overallAverageScore": {
-            "type": "number",
-            "format": "float",
-            "description": "整体平均成绩",
-            "example": 82.6
-          },
-          "courseStatistics": {
+          {
             "type": "object",
-            "description": "课程统计",
             "properties": {
-              "highestAverageCourse": {
-                "$ref": "#/components/schemas/CourseStatItem"
-              },
-              "lowestAverageCourse": {
-                "$ref": "#/components/schemas/CourseStatItem"
+              "data": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/PageResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "records": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/StudentInfo"
+                        }
+                      }
+                    }
+                  }
+                ]
               }
             }
+          }
+        ]
+      },
+      "CoursePageResult": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/CommonResult"
           },
-          "classStatistics": {
+          {
             "type": "object",
-            "description": "班级统计",
             "properties": {
-              "highestAverageClass": {
-                "$ref": "#/components/schemas/ClassStatItem"
-              },
-              "lowestAverageClass": {
-                "$ref": "#/components/schemas/ClassStatItem"
+              "data": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/PageResult"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "records": {
+                        "type": "array",
+                        "items": {
+                          "$ref": "#/components/schemas/CourseInfo"
+                        }
+                      }
+                    }
+                  }
+                ]
               }
             }
-          },
-          "scoreDistribution": {
-            "$ref": "#/components/schemas/ScoreDistribution"
-          },
-          "yearlyTrend": {
-            "type": "array",
-            "description": "年度成绩趋势",
-            "items": {
-              "$ref": "#/components/schemas/YearlyTrend"
-            }
           }
-        }
+        ]
       }
     }
   }
