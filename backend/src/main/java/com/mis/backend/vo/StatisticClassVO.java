@@ -1,14 +1,18 @@
 package com.mis.backend.vo;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
 @Builder
-public class StatisticClassDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+public class StatisticClassVO {
     private BigDecimal averageScore;
     private Integer studentCount;
     private BigDecimal highestScore;

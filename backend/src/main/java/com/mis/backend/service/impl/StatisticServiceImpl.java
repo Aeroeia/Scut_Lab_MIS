@@ -13,14 +13,13 @@ import com.mis.backend.service.ICourseService;
 import com.mis.backend.service.IStudentService;
 import com.mis.backend.service.StatisticService;
 import com.mis.backend.vo.DashboardVO;
+import com.mis.backend.vo.StatisticClassVO;
 import com.mis.backend.vo.StatisticStudentVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -119,5 +118,76 @@ public class StatisticServiceImpl implements StatisticService {
                 .build();
         studentVO.setScoreDistributions(scoreDistribution);
         return studentVO;
+    }
+
+    @Override
+    public StatisticClassVO getstatisticClass(String className, Integer year) {
+        List<Student> students = studentService.lambdaQuery().eq(Student::getClazz, className).list();
+        Map<String, Student> studentMap = students.stream().collect(Collectors.toMap(Student::getStudentId, o -> o));
+        List<CourseSelection> courseSelections = courseSelectionService.lambdaQuery()
+                .in(CourseSelection::getStudentId, studentMap.keySet())
+                .eq(year!=null,CourseSelection::getSelectionYear,year)
+                .list();
+        Map<String, List<CourseSelection>> collect = courseSelections.stream().collect(Collectors.groupingBy(CourseSelection::getStudentId));
+        Map<String, BigDecimal> scoreMap = courseSelections.stream().collect(Collectors.toMap(
+                CourseSelection::getStudentId,
+                CourseSelection::getScore,
+                BigDecimal::add
+        ));
+        Integer studentCount = collect.size();
+        if(collect.size()==0||students.size()==0){
+            return StatisticClassVO.builder()
+                    .excellentRate(BigDecimal.ZERO)
+                    .studentCount(students.size())
+                    .highestScore(BigDecimal.ZERO)
+                    .lowestScore(BigDecimal.ZERO)
+                    .averageScore(BigDecimal.ZERO)
+                    .studentScores(List.of())
+                    .build();
+        }
+        Map<String,BigDecimal> avgScores= new HashMap<>();
+        for(var entry:scoreMap.entrySet()){
+            String studentId = entry.getKey();
+            BigDecimal sum = entry.getValue();
+            int total = collect.get(studentId).size();
+            avgScores.put(studentId,sum.divide(BigDecimal.valueOf(total),1,BigDecimal.ROUND_HALF_UP));
+        }
+        List<String> studentArray = new ArrayList<>(avgScores.keySet());
+        Collections.sort(studentArray,(o1,o2)->avgScores.get(o2).compareTo(avgScores.get(o1)));
+        BigDecimal sum = BigDecimal.ZERO;
+        for(var entry:avgScores.entrySet()){
+            sum = sum.add(entry.getValue());
+        }
+        BigDecimal classAvg = sum.divide(BigDecimal.valueOf(avgScores.size()),1,BigDecimal.ROUND_HALF_UP);
+        int index = 0;
+        while(index<studentCount&&avgScores.get(studentArray.get(index)).compareTo(BigDecimal.valueOf(90))>=0){
+            index++;
+        }
+        BigDecimal excellentRate = BigDecimal.valueOf(index).divide(BigDecimal.valueOf(studentCount),1,BigDecimal.ROUND_HALF_UP);
+        StatisticClassVO statisticClassVO = StatisticClassVO.builder()
+                .averageScore(classAvg)
+                .studentCount(studentCount)
+                .highestScore(avgScores.get(studentArray.get(0)))
+                .lowestScore(avgScores.get(studentArray.get(studentCount - 1)))
+                .excellentRate(excellentRate)
+                .build();
+        List<StatisticClassVO.StudentScores> studentScores = new ArrayList<>();
+        for(int i = 0;i<studentCount;i++){
+            Student student = studentMap.get(studentArray.get(i));
+            String studentId = student.getStudentId();
+            String name = student.getName();
+            String gender = student.getGender();
+            BigDecimal avgScore = avgScores.get(studentId);
+            StatisticClassVO.StudentScores studentScore = StatisticClassVO.StudentScores.builder()
+                    .studentId(studentArray.get(i))
+                    .name(name)
+                    .gender(gender)
+                    .averageScore(avgScore)
+                    .rank(i + 1)
+                    .build();
+            studentScores.add(studentScore);
+        }
+        statisticClassVO.setStudentScores(studentScores);
+        return statisticClassVO;
     }
 }
