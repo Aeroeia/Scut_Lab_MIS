@@ -27,7 +27,8 @@
             v-model="searchForm.year"
             type="year"
             value-format="yyyy"
-            placeholder="Select year">
+            placeholder="Select year"
+            @change="fetchData">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
@@ -116,16 +117,6 @@
               </template>
             </el-table-column>
             <el-table-column prop="rank" label="Class Ranking" width="100" align="center"></el-table-column>
-            <el-table-column label="Actions" width="120" align="center">
-              <template slot-scope="scope">
-                <el-button 
-                  type="text" 
-                  size="small" 
-                  @click="viewStudentDetail(scope.row)">
-                  Detailed Scores
-                </el-button>
-              </template>
-            </el-table-column>
           </el-table>
         </el-card>
         
@@ -200,7 +191,9 @@ export default {
           // 如果班级列表不为空，默认选择第一个班级
           if (this.classOptions.length > 0) {
             this.searchForm.className = this.classOptions[0]
-            this.handleClassChange()
+            this.$nextTick(() => {
+              this.fetchData()
+            })
           }
           
           // If class parameter is passed in route, set it automatically

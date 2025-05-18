@@ -76,7 +76,7 @@ public class StatisticServiceImpl implements StatisticService {
         BigDecimal sum = scores.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal avg = sum.divide(BigDecimal.valueOf(scores.size()), 1, BigDecimal.ROUND_HALF_UP);
         studentVO.setAverageScore(avg);
-        Map<String, String> courseMap = courseService.lambdaQuery().list().stream().collect(Collectors.toMap(Course::getCourseId, Course::getName));
+        Map<String, Course> collect = courseService.lambdaQuery().list().stream().collect(Collectors.toMap(Course::getCourseId, o -> o));
         List<StatisticStudentVO.CourseScores> courseScores = new ArrayList<>();
         int excellent = 0;
         int good = 0;
@@ -85,11 +85,13 @@ public class StatisticServiceImpl implements StatisticService {
         for(var entry:scoreMap.entrySet()){
             String courseId = entry.getKey();
             BigDecimal score = entry.getValue();
-            String courseName = courseMap.get(courseId);
+            Course course = collect.get(courseId);
             StatisticStudentVO.CourseScores build = StatisticStudentVO.CourseScores.builder()
                     .score(score)
                     .courseId(courseId)
-                    .courseName(courseName)
+                    .courseName(course.getName())
+                    .credit(course.getCredit())
+                    .semester(course.getSemester())
                     .build();
             courseScores.add(build);
             BigDecimal e = BigDecimal.valueOf(90);

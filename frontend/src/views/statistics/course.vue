@@ -29,7 +29,8 @@
             v-model="searchForm.year"
             type="year"
             value-format="yyyy"
-            placeholder="Select year">
+            placeholder="Select year"
+            @change="fetchData">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
@@ -177,16 +178,6 @@
               </template>
             </el-table-column>
             <el-table-column prop="rank" label="Ranking" width="100" align="center"></el-table-column>
-            <el-table-column label="Actions" width="120" align="center">
-              <template slot-scope="scope">
-                <el-button 
-                  type="text" 
-                  size="small" 
-                  @click="viewStudentDetail(scope.row)">
-                  Student Details
-                </el-button>
-              </template>
-            </el-table-column>
           </el-table>
         </el-card>
         
@@ -227,8 +218,17 @@ export default {
     }
   },
   computed: {
+    courseInfo() {
+      return this.currentCourse || {}
+    },
     showCourseInfo() {
       return this.searchForm.courseId && Object.keys(this.currentCourse).length > 0
+    },
+    showScoreInfo() {
+      return this.statisticsData && this.statisticsData.averageScore > 0
+    },
+    showClassChart() {
+      return this.statisticsData.classScores && this.statisticsData.classScores.length > 0
     },
     showCharts() {
       return this.statisticsData.studentScores && this.statisticsData.studentScores.length > 0
@@ -266,7 +266,10 @@ export default {
           // 如果课程列表不为空，默认选择第一个课程
           if (this.courseOptions.length > 0) {
             this.searchForm.courseId = this.courseOptions[0].courseId
-            this.handleCourseChange()
+            this.currentCourse = this.courseOptions.find(item => item.courseId === this.searchForm.courseId) || {}
+            this.$nextTick(() => {
+              this.fetchData()
+            })
           }
         })
         .catch(() => {

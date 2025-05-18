@@ -25,6 +25,8 @@ public class StatisticStudentVO {
         private String courseId;
         private String courseName;
         private BigDecimal score;
+        private BigDecimal credit;
+        private Integer semester;
     }
     @Data
     @Builder

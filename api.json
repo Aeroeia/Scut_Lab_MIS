@@ -1,1934 +1,166 @@
 {
-  "openapi": "3.0.3",
+  "openapi": "3.0.0",
   "info": {
-    "title": "华南理工大学计算机学院课程与成绩管理系统API",
-    "description": "用于管理课程和成绩信息的管理信息系统API接口文档",
-    "version": "1.0.0",
-    "contact": {
-      "name": "SCUT MIS Team"
-    }
+    "title": "SCUT School of Computer Science Course & Grade Management System API",
+    "description": "API文档 - 统计模块",
+    "version": "1.0.0"
   },
   "servers": [
     {
-      "url": "http://localhost:8080/api",
-      "description": "开发环境"
-    }
-  ],
-  "tags": [
-    {
-      "name": "auth",
-      "description": "用户认证相关接口"
-    },
-    {
-      "name": "student",
-      "description": "学生信息管理接口"
-    },
-    {
-      "name": "teacher",
-      "description": "教师信息管理接口"
-    },
-    {
-      "name": "course",
-      "description": "课程信息管理接口"
-    },
-    {
-      "name": "course-selection",
-      "description": "选课信息管理接口"
-    },
-    {
-      "name": "score",
-      "description": "成绩管理接口"
-    },
-    {
-      "name": "statistics",
-      "description": "统计分析接口"
+      "url": "/api",
+      "description": "API服务器"
     }
   ],
   "paths": {
-    "/auth/login": {
-      "post": {
-        "tags": ["auth"],
-        "summary": "用户登录",
-        "description": "用户登录系统获取认证令牌",
-        "operationId": "login",
-        "requestBody": {
-          "description": "登录信息",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "登录成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LoginResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "用户名或密码错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/auth/logout": {
-      "post": {
-        "tags": ["auth"],
-        "summary": "用户登出",
-        "description": "用户登出系统",
-        "operationId": "logout",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "登出成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/students": {
+    "/statistics/dashboard": {
       "get": {
-        "tags": ["student"],
-        "summary": "获取学生列表",
-        "description": "分页获取学生列表信息",
-        "operationId": "getStudents",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "页码",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "size",
-            "in": "query",
-            "description": "每页条数",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "description": "学生姓名",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "class",
-            "in": "query",
-            "description": "班级",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
+        "summary": "获取Dashboard统计数据",
+        "description": "获取系统概览统计数据，包括学生总数、课程总数和平均分数",
+        "tags": ["统计"],
         "responses": {
           "200": {
-            "description": "查询成功",
+            "description": "操作成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/StudentPageResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["student"],
-        "summary": "添加学生",
-        "description": "添加新学生信息",
-        "operationId": "addStudent",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "学生信息",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StudentRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "创建成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StudentResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "参数错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/students/{studentId}": {
-      "get": {
-        "tags": ["student"],
-        "summary": "获取学生详情",
-        "description": "根据学号获取学生详细信息",
-        "operationId": "getStudentById",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "studentId",
-            "in": "path",
-            "description": "学号",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "查询成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StudentDetailResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "学生不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": ["student"],
-        "summary": "修改学生信息",
-        "description": "修改指定学号的学生信息",
-        "operationId": "updateStudent",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "studentId",
-            "in": "path",
-            "description": "学号",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "学生信息",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/StudentRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "修改成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StudentResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "参数错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "学生不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["student"],
-        "summary": "删除学生",
-        "description": "删除指定学号的学生信息",
-        "operationId": "deleteStudent",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "studentId",
-            "in": "path",
-            "description": "学号",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "删除成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "学生不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/students/{studentId}/courses": {
-      "get": {
-        "tags": ["student", "course-selection"],
-        "summary": "获取学生选课信息",
-        "description": "获取指定学生的选课信息",
-        "operationId": "getStudentCourses",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "studentId",
-            "in": "path",
-            "description": "学号",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "year",
-            "in": "query",
-            "description": "选课年份",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "查询成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StudentCourseResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "学生不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/teachers": {
-      "get": {
-        "tags": ["teacher"],
-        "summary": "获取教师列表",
-        "description": "分页获取教师列表信息",
-        "operationId": "getTeachers",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "页码",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "size",
-            "in": "query",
-            "description": "每页条数",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "description": "教师姓名",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "查询成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TeacherPageResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["teacher"],
-        "summary": "添加教师",
-        "description": "添加新教师信息",
-        "operationId": "addTeacher",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "教师信息",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TeacherRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "创建成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TeacherResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "参数错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/teachers/{teacherId}": {
-      "get": {
-        "tags": ["teacher"],
-        "summary": "获取教师详情",
-        "description": "根据教师编号获取教师详细信息",
-        "operationId": "getTeacherById",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "teacherId",
-            "in": "path",
-            "description": "教师编号",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "查询成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TeacherDetailResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "教师不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": ["teacher"],
-        "summary": "修改教师信息",
-        "description": "修改指定教师编号的教师信息",
-        "operationId": "updateTeacher",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "teacherId",
-            "in": "path",
-            "description": "教师编号",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "教师信息",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TeacherRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "修改成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TeacherResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "参数错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "教师不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["teacher"],
-        "summary": "删除教师",
-        "description": "删除指定教师编号的教师信息",
-        "operationId": "deleteTeacher",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "teacherId",
-            "in": "path",
-            "description": "教师编号",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "删除成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "教师不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "/teachers/{teacherId}/courses": {
-        "get": {
-          "tags": ["teacher", "course"],
-          "summary": "获取教师可教授课程",
-          "description": "获取指定教师可教授的课程列表",
-          "operationId": "getTeacherCourses",
-          "security": [
-            {
-              "bearerAuth": []
-            }
-          ],
-          "parameters": [
-            {
-              "name": "teacherId",
-              "in": "path",
-              "description": "教师编号",
-              "required": true,
-              "schema": {
-                "type": "string"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "查询成功",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/TeacherCourseResponse"
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "未授权",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "教师不存在",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
+                  "allOf": [
+                    { "$ref": "#/components/schemas/ApiResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/DashboardStats"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "code": 200,
+                  "message": "操作成功",
+                  "data": {
+                    "studentCount": 1500,
+                    "courseCount": 120,
+                    "averageScore": 82.6
                   }
                 }
               }
             }
+          },
+          "500": {
+            "description": "服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/courses": {
+    "/statistics/student/{studentId}": {
       "get": {
-        "tags": ["course"],
-        "summary": "获取课程列表",
-        "description": "分页获取课程列表信息",
-        "operationId": "getCourses",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "页码",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "size",
-            "in": "query",
-            "description": "每页条数",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "description": "课程名称",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "courseId",
-            "in": "query",
-            "description": "课程编号",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "查询成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CoursePageResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["course"],
-        "summary": "添加课程",
-        "description": "添加新课程信息",
-        "operationId": "addCourse",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "课程信息",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CourseRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "创建成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CourseResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "参数错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/courses/{courseId}": {
-      "get": {
-        "tags": ["course"],
-        "summary": "获取课程详情",
-        "description": "根据课程编号获取课程详细信息",
-        "operationId": "getCourseById",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "courseId",
-            "in": "path",
-            "description": "课程编号",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "查询成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CourseDetailResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "课程不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": ["course"],
-        "summary": "修改课程信息",
-        "description": "修改指定课程编号的课程信息",
-        "operationId": "updateCourse",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "courseId",
-            "in": "path",
-            "description": "课程编号",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "课程信息",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CourseRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "修改成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CourseResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "参数错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "课程不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["course"],
-        "summary": "删除课程",
-        "description": "删除指定课程编号的课程信息",
-        "operationId": "deleteCourse",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "courseId",
-            "in": "path",
-            "description": "课程编号",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "删除成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "课程不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "/courses/{courseId}/students": {
-        "get": {
-          "tags": ["course", "course-selection"],
-          "summary": "获取选修课程的学生列表",
-          "description": "获取选修指定课程的学生列表",
-          "operationId": "getCourseStudents",
-          "security": [
-            {
-              "bearerAuth": []
-            }
-          ],
-          "parameters": [
-            {
-              "name": "courseId",
-              "in": "path",
-              "description": "课程编号",
-              "required": true,
-              "schema": {
-                "type": "string"
-              }
-            },
-            {
-              "name": "year",
-              "in": "query",
-              "description": "选课年份",
-              "required": false,
-              "schema": {
-                "type": "integer"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": "查询成功",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/CourseStudentResponse"
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "未授权",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  }
-                }
-              }
-            },
-            "404": {
-              "description": "课程不存在",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ErrorResponse"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/course-selections": {
-      "get": {
-        "tags": ["course-selection"],
-        "summary": "获取选课列表",
-        "description": "分页获取选课列表信息",
-        "operationId": "getCourseSelections",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "页码",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 1
-            }
-          },
-          {
-            "name": "size",
-            "in": "query",
-            "description": "每页条数",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "default": 10
-            }
-          },
-          {
-            "name": "studentId",
-            "in": "query",
-            "description": "学号",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "courseId",
-            "in": "query",
-            "description": "课程编号",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "teacherId",
-            "in": "query",
-            "description": "教师编号",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "year",
-            "in": "query",
-            "description": "选课年份",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "查询成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CourseSelectionPageResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": ["course-selection"],
-        "summary": "添加选课",
-        "description": "添加新选课信息",
-        "operationId": "addCourseSelection",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "requestBody": {
-          "description": "选课信息",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CourseSelectionRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "创建成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CourseSelectionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "参数错误或选课条件不满足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/course-selections/{id}": {
-      "get": {
-        "tags": ["course-selection"],
-        "summary": "获取选课详情",
-        "description": "根据选课ID获取选课详细信息",
-        "operationId": "getCourseSelectionById",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "选课ID",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "查询成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CourseSelectionDetailResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "选课记录不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": ["course-selection"],
-        "summary": "修改选课信息",
-        "description": "修改指定选课ID的选课信息",
-        "operationId": "updateCourseSelection",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "选课ID",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "选课信息",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CourseSelectionRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "修改成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CourseSelectionResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "参数错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "选课记录不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": ["course-selection"],
-        "summary": "删除选课",
-        "description": "删除指定选课ID的选课信息",
-        "operationId": "deleteCourseSelection",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "选课ID",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "删除成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SuccessResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "选课记录不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/scores": {
-      "get": {
-        "tags": ["score"],
-        "summary": "获取成绩列表",
-        "description": "获取成绩列表信息",
-        "operationId": "getScores",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "studentId",
-            "in": "query",
-            "description": "学号",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "studentName",
-            "in": "query",
-            "description": "学生姓名",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "courseId",
-            "in": "query",
-            "description": "课程编号",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "courseName",
-            "in": "query",
-            "description": "课程名称",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "year",
-            "in": "query",
-            "description": "选课年份",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "查询成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ScorePageResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/scores/{id}": {
-      "put": {
-        "tags": ["score"],
-        "summary": "修改学生成绩",
-        "description": "修改学生指定课程的成绩",
-        "operationId": "updateScore",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "选课ID",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "成绩信息",
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ScoreRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "修改成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ScoreResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "参数错误",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "权限不足",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "选课记录不存在",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/statistics/student/{studentId}/average": {
-      "get": {
-        "tags": ["statistics"],
         "summary": "获取学生平均成绩",
-        "description": "获取指定学生的所有课程平均成绩",
-        "operationId": "getStudentAverageScore",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "根据学生ID获取该学生的平均成绩统计数据",
+        "tags": ["统计"],
         "parameters": [
           {
             "name": "studentId",
             "in": "path",
-            "description": "学号",
             "required": true,
+            "description": "学生ID",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "year",
+            "name": "semester",
             "in": "query",
-            "description": "选课年份",
-            "required": false,
+            "description": "学期",
             "schema": {
-              "type": "integer"
+              "type": "string"
+            }
+          },
+          {
+            "name": "academicYear",
+            "in": "query",
+            "description": "学年",
+            "schema": {
+              "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "查询成功",
+            "description": "操作成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AverageScoreResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "allOf": [
+                    { "$ref": "#/components/schemas/ApiResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/StudentStats"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "code": 200,
+                  "message": "操作成功",
+                  "data": {
+                    "studentId": "2020XXXX",
+                    "studentName": "张三",
+                    "averageScore": 85.5,
+                    "courseScores": [
+                      {
+                        "courseName": "高等数学",
+                        "courseId": "MATH101",
+                        "score": 90
+                      },
+                      {
+                        "courseName": "数据结构",
+                        "courseId": "CS201",
+                        "score": 85
+                      }
+                    ],
+                    "totalCourses": 10,
+                    "scoreDistribution": {
+                      "excellent": 5,
+                      "good": 3,
+                      "average": 2,
+                      "poor": 0
+                    }
+                  }
                 }
               }
             }
           },
           "404": {
-            "description": "学生不存在",
+            "description": "未找到学生",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                },
+                "example": {
+                  "code": 404,
+                  "message": "未找到该学生"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
                 }
               }
             }
@@ -1936,41 +168,41 @@
         }
       }
     },
-    "/statistics/class/{className}/average": {
+    "/statistics/class/{className}": {
       "get": {
-        "tags": ["statistics"],
         "summary": "获取班级平均成绩",
-        "description": "获取指定班级学生的平均成绩",
-        "operationId": "getClassAverageScore",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "根据班级名称获取该班级的平均成绩统计数据",
+        "tags": ["统计"],
         "parameters": [
           {
             "name": "className",
             "in": "path",
-            "description": "班级",
             "required": true,
+            "description": "班级名称",
             "schema": {
               "type": "string"
             }
           },
           {
-            "name": "year",
+            "name": "semester",
             "in": "query",
-            "description": "选课年份",
-            "required": false,
+            "description": "学期",
             "schema": {
-              "type": "integer"
+              "type": "string"
+            }
+          },
+          {
+            "name": "academicYear",
+            "in": "query",
+            "description": "学年",
+            "schema": {
+              "type": "string"
             }
           },
           {
             "name": "courseId",
             "in": "query",
-            "description": "课程编号",
-            "required": false,
+            "description": "课程ID",
             "schema": {
               "type": "string"
             }
@@ -1978,86 +210,84 @@
         ],
         "responses": {
           "200": {
-            "description": "查询成功",
+            "description": "操作成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AverageScoreResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/statistics/course/{courseId}/average": {
-      "get": {
-        "tags": ["statistics"],
-        "summary": "获取课程平均成绩",
-        "description": "获取指定课程的平均成绩",
-        "operationId": "getCourseAverageScore",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "courseId",
-            "in": "path",
-            "description": "课程编号",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "year",
-            "in": "query",
-            "description": "选课年份",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "查询成功",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AverageScoreResponse"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "未授权",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "allOf": [
+                    { "$ref": "#/components/schemas/ApiResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/ClassStats"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "code": 200,
+                  "message": "操作成功",
+                  "data": {
+                    "className": "计算机科学与技术2020级1班",
+                    "averageScore": 83.2,
+                    "studentCount": 40,
+                    "topStudents": [
+                      {
+                        "studentId": "2020XXXX",
+                        "studentName": "李四",
+                        "averageScore": 92.5
+                      },
+                      {
+                        "studentId": "2020YYYY",
+                        "studentName": "王五",
+                        "averageScore": 91.8
+                      }
+                    ],
+                    "courseAverages": [
+                      {
+                        "courseName": "计算机网络",
+                        "courseId": "CS301",
+                        "averageScore": 84.5
+                      },
+                      {
+                        "courseName": "操作系统",
+                        "courseId": "CS302",
+                        "averageScore": 82.1
+                      }
+                    ],
+                    "scoreDistribution": {
+                      "excellent": 12,
+                      "good": 18,
+                      "average": 8,
+                      "poor": 2
+                    }
+                  }
                 }
               }
             }
           },
           "404": {
-            "description": "课程不存在",
+            "description": "未找到班级",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                },
+                "example": {
+                  "code": 404,
+                  "message": "未找到该班级"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
                 }
               }
             }
@@ -2065,45 +295,358 @@
         }
       }
     },
-    "/statistics/all/average": {
+    "/statistics/course/{courseId}": {
       "get": {
-        "tags": ["statistics"],
-        "summary": "获取所有学生平均成绩",
-        "description": "获取所有学生的平均成绩",
-        "operationId": "getAllStudentsAverageScore",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "summary": "获取课程平均成绩",
+        "description": "根据课程ID获取该课程的平均成绩统计数据",
+        "tags": ["统计"],
         "parameters": [
           {
-            "name": "year",
-            "in": "query",
-            "description": "选课年份",
-            "required": false,
+            "name": "courseId",
+            "in": "path",
+            "required": true,
+            "description": "课程ID",
             "schema": {
-              "type": "integer"
+              "type": "string"
+            }
+          },
+          {
+            "name": "semester",
+            "in": "query",
+            "description": "学期",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "academicYear",
+            "in": "query",
+            "description": "学年",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "className",
+            "in": "query",
+            "description": "班级名称",
+            "schema": {
+              "type": "string"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "查询成功",
+            "description": "操作成功",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AllStudentsAverageScoreResponse"
+                  "allOf": [
+                    { "$ref": "#/components/schemas/ApiResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/CourseStats"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "code": 200,
+                  "message": "操作成功",
+                  "data": {
+                    "courseId": "CS201",
+                    "courseName": "数据结构",
+                    "averageScore": 78.6,
+                    "studentCount": 120,
+                    "teacherName": "赵教授",
+                    "highestScore": 98,
+                    "lowestScore": 45,
+                    "passingRate": 92.5,
+                    "classAverages": [
+                      {
+                        "className": "计算机科学与技术2020级1班",
+                        "averageScore": 80.2
+                      },
+                      {
+                        "className": "计算机科学与技术2020级2班",
+                        "averageScore": 77.3
+                      }
+                    ],
+                    "scoreDistribution": {
+                      "excellent": 25,
+                      "good": 45,
+                      "average": 35,
+                      "poor": 15
+                    }
+                  }
                 }
               }
             }
           },
-          "401": {
-            "description": "未授权",
+          "404": {
+            "description": "未找到课程",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                },
+                "example": {
+                  "code": 404,
+                  "message": "未找到该课程"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/statistics/students": {
+      "get": {
+        "summary": "获取所有学生平均成绩",
+        "description": "获取所有学生的平均成绩统计数据",
+        "tags": ["统计"],
+        "parameters": [
+          {
+            "name": "semester",
+            "in": "query",
+            "description": "学期",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "academicYear",
+            "in": "query",
+            "description": "学年",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "className",
+            "in": "query",
+            "description": "班级名称",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "页码",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "description": "每页数量",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "排序字段",
+            "schema": {
+              "type": "string",
+              "enum": ["averageScore", "studentId", "studentName"]
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "排序方式",
+            "schema": {
+              "type": "string",
+              "enum": ["asc", "desc"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/ApiResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AllStudentsStats"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "code": 200,
+                  "message": "操作成功",
+                  "data": {
+                    "total": 1500,
+                    "page": 1,
+                    "pageSize": 10,
+                    "students": [
+                      {
+                        "studentId": "2020XXXX",
+                        "studentName": "张三",
+                        "className": "计算机科学与技术2020级1班",
+                        "averageScore": 88.5
+                      },
+                      {
+                        "studentId": "2020YYYY",
+                        "studentName": "李四",
+                        "className": "计算机科学与技术2020级2班",
+                        "averageScore": 86.3
+                      }
+                    ],
+                    "schoolAverageScore": 82.6,
+                    "scoreDistribution": {
+                      "excellent": 480,
+                      "good": 680,
+                      "average": 290,
+                      "poor": 50
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/statistics/all": {
+      "get": {
+        "summary": "获取所有统计数据",
+        "description": "获取系统所有统计数据的综合信息",
+        "tags": ["统计"],
+        "parameters": [
+          {
+            "name": "semester",
+            "in": "query",
+            "description": "学期",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "academicYear",
+            "in": "query",
+            "description": "学年",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "操作成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/ApiResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "$ref": "#/components/schemas/AllStatistics"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "example": {
+                  "code": 200,
+                  "message": "操作成功",
+                  "data": {
+                    "studentCount": 1500,
+                    "courseCount": 120,
+                    "teacherCount": 80,
+                    "classCount": 40,
+                    "overallAverageScore": 82.6,
+                    "courseStatistics": {
+                      "highestAverageCourse": {
+                        "courseId": "CS401",
+                        "courseName": "软件工程",
+                        "averageScore": 89.3
+                      },
+                      "lowestAverageCourse": {
+                        "courseId": "MATH201",
+                        "courseName": "高等数学II",
+                        "averageScore": 72.1
+                      }
+                    },
+                    "classStatistics": {
+                      "highestAverageClass": {
+                        "className": "软件工程2019级3班",
+                        "averageScore": 87.2
+                      },
+                      "lowestAverageClass": {
+                        "className": "网络工程2020级2班",
+                        "averageScore": 75.8
+                      }
+                    },
+                    "scoreDistribution": {
+                      "excellent": 480,
+                      "good": 680,
+                      "average": 290,
+                      "poor": 50
+                    },
+                    "yearlyTrend": [
+                      {
+                        "year": "2018-2019",
+                        "averageScore": 81.2
+                      },
+                      {
+                        "year": "2019-2020",
+                        "averageScore": 82.1
+                      },
+                      {
+                        "year": "2020-2021",
+                        "averageScore": 82.6
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "服务器错误",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
                 }
               }
             }
@@ -2114,1123 +657,492 @@
   },
   "components": {
     "schemas": {
-      "LoginRequest": {
-        "type": "object",
-        "required": ["username", "password"],
-        "properties": {
-          "username": {
-            "type": "string",
-            "description": "用户名"
-          },
-          "password": {
-            "type": "string",
-            "description": "密码"
-          }
-        }
-      },
-      "LoginResponse": {
+      "ApiResponse": {
         "type": "object",
         "properties": {
           "code": {
             "type": "integer",
-            "description": "状态码",
+            "description": "响应状态码",
             "example": 200
           },
           "message": {
             "type": "string",
-            "description": "消息",
-            "example": "登录成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "token": {
-                "type": "string",
-                "description": "认证令牌"
-              },
-              "role": {
-                "type": "integer",
-                "description": "角色ID",
-                "example": 1
-              },
-              "roleName": {
-                "type": "string",
-                "description": "角色名称",
-                "example": "admin"
-              },
-              "realId": {
-                "type": "string",
-                "description": "实际ID (学生学号/教师编号)",
-                "example": "T00001"
-              }
-            }
-          }
-        }
-      },
-      "ErrorResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "错误代码"
-          },
-          "message": {
-            "type": "string",
-            "description": "错误消息"
-          }
-        }
-      },
-      "SuccessResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
+            "description": "响应消息",
             "example": "操作成功"
           },
           "data": {
             "type": "object",
-            "description": "数据",
-            "nullable": true
+            "description": "响应数据"
           }
         }
       },
-      "StudentRequest": {
+      "ApiErrorResponse": {
         "type": "object",
-        "required": ["studentId", "name", "gender", "ageAtEnrollment", "enrollmentYear", "class"],
         "properties": {
-          "studentId": {
-            "type": "string",
-            "description": "学号",
-            "example": "2023001001"
-          },
-          "name": {
-            "type": "string",
-            "description": "姓名",
-            "example": "张三"
-          },
-          "gender": {
-            "type": "string",
-            "description": "性别",
-            "enum": ["男", "女"],
-            "example": "男"
-          },
-          "ageAtEnrollment": {
+          "code": {
             "type": "integer",
-            "description": "入学年龄",
-            "minimum": 10,
-            "maximum": 50,
+            "description": "错误状态码",
+            "example": 500
+          },
+          "message": {
+            "type": "string",
+            "description": "错误消息",
+            "example": "服务器内部错误"
+          }
+        }
+      },
+      "ScoreDistribution": {
+        "type": "object",
+        "description": "分数分布统计",
+        "properties": {
+          "excellent": {
+            "type": "integer",
+            "description": "优秀成绩数量（90分以上）",
+            "example": 12
+          },
+          "good": {
+            "type": "integer",
+            "description": "良好成绩数量（80-89分）",
             "example": 18
           },
-          "enrollmentYear": {
+          "average": {
             "type": "integer",
-            "description": "入学年份",
-            "example": 2023
+            "description": "中等成绩数量（70-79分）",
+            "example": 8
           },
-          "class": {
-            "type": "string",
-            "description": "班级",
-            "example": "计科2301"
+          "poor": {
+            "type": "integer",
+            "description": "较差成绩数量（60分以下）",
+            "example": 2
           }
         }
       },
-      "StudentResponse": {
+      "CourseScore": {
         "type": "object",
+        "description": "课程成绩信息",
         "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "操作成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "studentId": {
-                "type": "string",
-                "description": "学号",
-                "example": "2023001001"
-              },
-              "name": {
-                "type": "string",
-                "description": "姓名",
-                "example": "张三"
-              },
-              "gender": {
-                "type": "string",
-                "description": "性别",
-                "example": "男"
-              },
-              "ageAtEnrollment": {
-                "type": "integer",
-                "description": "入学年龄",
-                "example": 18
-              },
-              "enrollmentYear": {
-                "type": "integer",
-                "description": "入学年份",
-                "example": 2023
-              },
-              "class": {
-                "type": "string",
-                "description": "班级",
-                "example": "计科2301"
-              }
-            }
-          }
-        }
-      },
-      "StudentPageResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "查询成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "total": {
-                "type": "integer",
-                "description": "总记录数",
-                "example": 100
-              },
-              "pages": {
-                "type": "integer",
-                "description": "总页数",
-                "example": 10
-              },
-              "current": {
-                "type": "integer",
-                "description": "当前页码",
-                "example": 1
-              },
-              "size": {
-                "type": "integer",
-                "description": "每页大小",
-                "example": 10
-              },
-              "records": {
-                "type": "array",
-                "description": "记录列表",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "studentId": {
-                      "type": "string",
-                      "description": "学号",
-                      "example": "2023001001"
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "姓名",
-                      "example": "张三"
-                    },
-                    "gender": {
-                      "type": "string",
-                      "description": "性别",
-                      "example": "男"
-                    },
-                    "class": {
-                      "type": "string",
-                      "description": "班级",
-                      "example": "计科2301"
-                    },
-                    "enrollmentYear": {
-                      "type": "integer",
-                      "description": "入学年份",
-                      "example": 2023
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "StudentDetailResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "查询成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "studentId": {
-                "type": "string",
-                "description": "学号",
-                "example": "2023001001"
-              },
-              "name": {
-                "type": "string",
-                "description": "姓名",
-                "example": "张三"
-              },
-              "gender": {
-                "type": "string",
-                "description": "性别",
-                "example": "男"
-              },
-              "ageAtEnrollment": {
-                "type": "integer",
-                "description": "入学年龄",
-                "example": 18
-              },
-              "enrollmentYear": {
-                "type": "integer",
-                "description": "入学年份",
-                "example": 2023
-              },
-              "class": {
-                "type": "string",
-                "description": "班级",
-                "example": "计科2301"
-              },
-              "courses": {
-                "type": "array",
-                "description": "选课信息",
-                "items": {
-                  "$ref": "#/components/schemas/CourseSelectionInfo"
-                }
-              }
-            }
-          }
-        }
-      },
-      "StudentCourseResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "查询成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "studentId": {
-                "type": "string",
-                "description": "学号",
-                "example": "2023001001"
-              },
-              "name": {
-                "type": "string",
-                "description": "姓名",
-                "example": "张三"
-              },
-              "courses": {
-                "type": "array",
-                "description": "选课信息",
-                "items": {
-                  "$ref": "#/components/schemas/CourseSelectionInfo"
-                }
-              }
-            }
-          }
-        }
-      },
-      "CourseSelectionInfo": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "description": "选课ID",
-            "example": 1
-          },
           "courseId": {
             "type": "string",
-            "description": "课程编号",
-            "example": "CS10001"
+            "description": "课程ID",
+            "example": "CS201"
           },
           "courseName": {
             "type": "string",
             "description": "课程名称",
             "example": "数据结构"
           },
-          "teacherId": {
-            "type": "string",
-            "description": "教师编号",
-            "example": "T0001"
-          },
-          "teacherName": {
-            "type": "string",
-            "description": "教师姓名",
-            "example": "李四"
-          },
-          "credit": {
-            "type": "number",
-            "format": "float",
-            "description": "学分",
-            "example": 3.0
-          },
-          "selectionYear": {
-            "type": "integer",
-            "description": "选课年份",
-            "example": 2023
-          },
           "score": {
             "type": "number",
             "format": "float",
-            "description": "成绩",
-            "example": 85.5,
-            "nullable": true
+            "description": "课程成绩",
+            "example": 85
           }
         }
       },
-      "TeacherRequest": {
+      "StudentBrief": {
         "type": "object",
-        "required": ["teacherId", "name"],
-        "properties": {
-          "teacherId": {
-            "type": "string",
-            "description": "教师编号",
-            "example": "T0001"
-          },
-          "name": {
-            "type": "string",
-            "description": "姓名",
-            "example": "李四"
-          },
-          "courses": {
-            "type": "array",
-            "description": "可教授的课程",
-            "items": {
-              "type": "string",
-              "description": "课程编号",
-              "example": "CS10001"
-            }
-          }
-        }
-      },
-      "TeacherResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "操作成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "teacherId": {
-                "type": "string",
-                "description": "教师编号",
-                "example": "T0001"
-              },
-              "name": {
-                "type": "string",
-                "description": "姓名",
-                "example": "李四"
-              }
-            }
-          }
-        }
-      },
-      "TeacherPageResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "查询成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "total": {
-                "type": "integer",
-                "description": "总记录数",
-                "example": 50
-              },
-              "pages": {
-                "type": "integer",
-                "description": "总页数",
-                "example": 5
-              },
-              "current": {
-                "type": "integer",
-                "description": "当前页码",
-                "example": 1
-              },
-              "size": {
-                "type": "integer",
-                "description": "每页大小",
-                "example": 10
-              },
-              "records": {
-                "type": "array",
-                "description": "记录列表",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "teacherId": {
-                      "type": "string",
-                      "description": "教师编号",
-                      "example": "T0001"
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "姓名",
-                      "example": "李四"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "TeacherDetailResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "查询成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "teacherId": {
-                "type": "string",
-                "description": "教师编号",
-                "example": "T0001"
-              },
-              "name": {
-                "type": "string",
-                "description": "姓名",
-                "example": "李四"
-              },
-              "courses": {
-                "type": "array",
-                "description": "可教授的课程",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "courseId": {
-                      "type": "string",
-                      "description": "课程编号",
-                      "example": "CS10001"
-                    },
-                    "courseName": {
-                      "type": "string",
-                      "description": "课程名称",
-                      "example": "数据结构"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "TeacherCourseResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "查询成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "teacherId": {
-                "type": "string",
-                "description": "教师编号",
-                "example": "T0001"
-              },
-              "courses": {
-                "type": "array",
-                "description": "可教授的课程",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "courseId": {
-                      "type": "string",
-                      "description": "课程编号",
-                      "example": "CS10001"
-                    },
-                    "courseName": {
-                      "type": "string",
-                      "description": "课程名称",
-                      "example": "数据结构"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "CoursePageResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "查询成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "total": {
-                "type": "integer",
-                "description": "总记录数",
-                "example": 100
-              },
-              "pages": {
-                "type": "integer",
-                "description": "总页数",
-                "example": 10
-              },
-              "current": {
-                "type": "integer",
-                "description": "当前页码",
-                "example": 1
-              },
-              "size": {
-                "type": "integer",
-                "description": "每页大小",
-                "example": 10
-              },
-              "records": {
-                "type": "array",
-                "description": "记录列表",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "courseId": {
-                      "type": "string",
-                      "description": "课程编号",
-                      "example": "CS10001"
-                    },
-                    "name": {
-                      "type": "string",
-                      "description": "课程名称",
-                      "example": "数据结构"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "CourseDetailResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "查询成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "courseId": {
-                "type": "string",
-                "description": "课程编号",
-                "example": "CS10001"
-              },
-              "name": {
-                "type": "string",
-                "description": "课程名称",
-                "example": "数据结构"
-              },
-              "credit": {
-                "type": "number",
-                "format": "float",
-                "description": "学分",
-                "example": 3.0
-              },
-              "description": {
-                "type": "string",
-                "description": "课程描述"
-              },
-              "teacherId": {
-                "type": "string",
-                "description": "教师编号",
-                "example": "T0001"
-              },
-              "teacherName": {
-                "type": "string",
-                "description": "教师姓名",
-                "example": "李四"
-              },
-              "students": {
-                "type": "array",
-                "description": "选课学生列表",
-                "items": {
-                  "$ref": "#/components/schemas/CourseSelectionInfo"
-                }
-              }
-            }
-          }
-        }
-      },
-      "CourseStudentResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "查询成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "courseId": {
-                "type": "string",
-                "description": "课程编号",
-                "example": "CS10001"
-              },
-              "name": {
-                "type": "string",
-                "description": "课程名称",
-                "example": "数据结构"
-              },
-              "students": {
-                "type": "array",
-                "description": "选课学生列表",
-                "items": {
-                  "$ref": "#/components/schemas/CourseSelectionInfo"
-                }
-              }
-            }
-          }
-        }
-      },
-      "CourseSelectionRequest": {
-        "type": "object",
-        "required": ["studentId", "courseId"],
+        "description": "学生简要信息",
         "properties": {
           "studentId": {
             "type": "string",
-            "description": "学生学号"
+            "description": "学生ID",
+            "example": "2020XXXX"
           },
-          "courseId": {
+          "studentName": {
             "type": "string",
-            "description": "课程编号"
-          }
-        }
-      },
-      "CourseSelectionResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
+            "description": "学生姓名",
+            "example": "张三"
           },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "选课添加成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "integer",
-                "description": "选课ID"
-              },
-              "studentId": {
-                "type": "string",
-                "description": "学生学号"
-              },
-              "courseId": {
-                "type": "string",
-                "description": "课程编号"
-              }
-            }
-          }
-        }
-      },
-      "CourseSelectionPageResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "查询成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "total": {
-                "type": "integer",
-                "description": "总记录数",
-                "example": 100
-              },
-              "pages": {
-                "type": "integer",
-                "description": "总页数",
-                "example": 10
-              },
-              "current": {
-                "type": "integer",
-                "description": "当前页码",
-                "example": 1
-              },
-              "size": {
-                "type": "integer",
-                "description": "每页大小",
-                "example": 10
-              },
-              "records": {
-                "type": "array",
-                "description": "记录列表",
-                "items": {
-                  "$ref": "#/components/schemas/CourseSelectionDetailResponse"
-                }
-              }
-            }
-          }
-        }
-      },
-      "CourseSelectionDetailResponse": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
-            "type": "string",
-            "description": "消息",
-            "example": "查询成功"
-          },
-          "data": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "integer",
-                "description": "选课ID"
-              },
-              "studentId": {
-                "type": "string",
-                "description": "学生学号"
-              },
-              "courseId": {
-                "type": "string",
-                "description": "课程编号"
-              },
-              "courseName": {
-                "type": "string",
-                "description": "课程名称"
-              },
-              "teacherId": {
-                "type": "string",
-                "description": "教师编号"
-              },
-              "teacherName": {
-                "type": "string",
-                "description": "教师姓名"
-              },
-              "credit": {
-                "type": "number",
-                "format": "float",
-                "description": "学分"
-              },
-              "selectionYear": {
-                "type": "integer",
-                "description": "选课年份"
-              },
-              "score": {
-                "type": "number",
-                "format": "float",
-                "description": "成绩",
-                "nullable": true
-              }
-            }
-          }
-        }
-      },
-      "ScoreRequest": {
-        "type": "object",
-        "required": ["score"],
-        "properties": {
-          "score": {
+          "averageScore": {
             "type": "number",
             "format": "float",
-            "description": "成绩"
+            "description": "平均成绩",
+            "example": 88.5
           }
         }
       },
-      "ScoreResponse": {
+      "ClassAverage": {
         "type": "object",
+        "description": "班级平均成绩信息",
         "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
+          "className": {
             "type": "string",
-            "description": "消息",
-            "example": "成绩更新成功"
+            "description": "班级名称",
+            "example": "计算机科学与技术2020级1班"
           },
-          "data": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "integer",
-                "description": "选课ID"
-              },
-              "score": {
-                "type": "number",
-                "format": "float",
-                "description": "成绩"
-              }
-            }
+          "averageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "平均成绩",
+            "example": 80.2
           }
         }
       },
-      "ScorePageResponse": {
-        "type": "object",
+      "CourseAverage": {
+        "type": "object", 
+        "description": "课程平均成绩信息",
         "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
+          "courseId": {
             "type": "string",
-            "description": "消息",
-            "example": "查询成功"
+            "description": "课程ID",
+            "example": "CS301"
           },
-          "data": {
-            "type": "object",
-            "properties": {
-              "total": {
-                "type": "integer",
-                "description": "总记录数",
-                "example": 100
-              },
-              "pages": {
-                "type": "integer",
-                "description": "总页数",
-                "example": 10
-              },
-              "current": {
-                "type": "integer",
-                "description": "当前页码",
-                "example": 1
-              },
-              "size": {
-                "type": "integer",
-                "description": "每页大小",
-                "example": 10
-              },
-              "records": {
-                "type": "array",
-                "description": "记录列表",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "integer",
-                      "description": "选课ID"
-                    },
-                    "studentId": {
-                      "type": "string",
-                      "description": "学生学号"
-                    },
-                    "studentName": {
-                      "type": "string",
-                      "description": "学生姓名"
-                    },
-                    "courseId": {
-                      "type": "string",
-                      "description": "课程编号"
-                    },
-                    "courseName": {
-                      "type": "string",
-                      "description": "课程名称"
-                    },
-                    "score": {
-                      "type": "number",
-                      "format": "float",
-                      "description": "成绩"
-                    }
-                  }
-                }
-              }
-            }
+          "courseName": {
+            "type": "string",
+            "description": "课程名称",
+            "example": "计算机网络"
+          },
+          "averageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "平均成绩",
+            "example": 84.5
           }
         }
       },
-      "AverageScoreResponse": {
+      "YearlyTrend": {
         "type": "object",
+        "description": "年度成绩趋势",
         "properties": {
-          "code": {
-            "type": "integer",
-            "description": "状态码",
-            "example": 200
-          },
-          "message": {
+          "year": {
             "type": "string",
-            "description": "消息",
-            "example": "查询成功"
+            "description": "学年",
+            "example": "2020-2021"
           },
-          "data": {
-            "type": "object",
-            "properties": {
-              "target": {
-                "type": "string",
-                "description": "统计对象(学生/课程/班级)",
-                "example": "学生张三(2023001001)"
-              },
-              "averageScore": {
-                "type": "number",
-                "format": "float",
-                "description": "平均成绩",
-                "example": 85.5
-              },
-              "year": {
-                "type": "integer",
-                "description": "统计年份",
-                "example": 2023,
-                "nullable": true
-              }
-            }
+          "averageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "平均成绩",
+            "example": 82.6
           }
         }
       },
-      "AllStudentsAverageScoreResponse": {
+      "DashboardStats": {
         "type": "object",
+        "description": "Dashboard统计数据",
         "properties": {
-          "code": {
+          "studentCount": {
             "type": "integer",
-            "description": "状态码",
-            "example": 200
+            "description": "学生总数",
+            "example": 1500
           },
-          "message": {
+          "courseCount": {
+            "type": "integer",
+            "description": "课程总数",
+            "example": 120
+          },
+          "averageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "平均成绩",
+            "example": 82.6
+          }
+        }
+      },
+      "StudentStats": {
+        "type": "object",
+        "description": "学生统计数据",
+        "properties": {
+          "studentId": {
             "type": "string",
-            "description": "消息",
-            "example": "查询成功"
+            "description": "学生ID",
+            "example": "2020XXXX"
           },
-          "data": {
+          "studentName": {
+            "type": "string",
+            "description": "学生姓名",
+            "example": "张三"
+          },
+          "averageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "平均成绩",
+            "example": 85.5
+          },
+          "courseScores": {
+            "type": "array",
+            "description": "课程成绩列表",
+            "items": {
+              "$ref": "#/components/schemas/CourseScore"
+            }
+          },
+          "totalCourses": {
+            "type": "integer",
+            "description": "总课程数",
+            "example": 10
+          },
+          "scoreDistribution": {
+            "$ref": "#/components/schemas/ScoreDistribution"
+          }
+        }
+      },
+      "ClassStats": {
+        "type": "object",
+        "description": "班级统计数据",
+        "properties": {
+          "className": {
+            "type": "string",
+            "description": "班级名称",
+            "example": "计算机科学与技术2020级1班"
+          },
+          "averageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "平均成绩",
+            "example": 83.2
+          },
+          "studentCount": {
+            "type": "integer",
+            "description": "学生人数",
+            "example": 40
+          },
+          "topStudents": {
+            "type": "array",
+            "description": "成绩最好的学生",
+            "items": {
+              "$ref": "#/components/schemas/StudentBrief"
+            }
+          },
+          "courseAverages": {
+            "type": "array",
+            "description": "各课程平均成绩",
+            "items": {
+              "$ref": "#/components/schemas/CourseAverage"
+            }
+          },
+          "scoreDistribution": {
+            "$ref": "#/components/schemas/ScoreDistribution"
+          }
+        }
+      },
+      "CourseStats": {
+        "type": "object",
+        "description": "课程统计数据",
+        "properties": {
+          "courseId": {
+            "type": "string",
+            "description": "课程ID",
+            "example": "CS201"
+          },
+          "courseName": {
+            "type": "string",
+            "description": "课程名称",
+            "example": "数据结构"
+          },
+          "averageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "平均成绩",
+            "example": 78.6
+          },
+          "studentCount": {
+            "type": "integer",
+            "description": "选课学生数",
+            "example": 120
+          },
+          "teacherName": {
+            "type": "string",
+            "description": "任课教师",
+            "example": "赵教授"
+          },
+          "highestScore": {
+            "type": "number",
+            "format": "float",
+            "description": "最高分",
+            "example": 98
+          },
+          "lowestScore": {
+            "type": "number",
+            "format": "float",
+            "description": "最低分",
+            "example": 45
+          },
+          "passingRate": {
+            "type": "number",
+            "format": "float",
+            "description": "及格率(%)",
+            "example": 92.5
+          },
+          "classAverages": {
+            "type": "array",
+            "description": "各班级平均成绩",
+            "items": {
+              "$ref": "#/components/schemas/ClassAverage"
+            }
+          },
+          "scoreDistribution": {
+            "$ref": "#/components/schemas/ScoreDistribution"
+          }
+        }
+      },
+      "StudentListItem": {
+        "type": "object",
+        "description": "学生列表项",
+        "properties": {
+          "studentId": {
+            "type": "string",
+            "description": "学生ID",
+            "example": "2020XXXX"
+          },
+          "studentName": {
+            "type": "string",
+            "description": "学生姓名",
+            "example": "张三"
+          },
+          "className": {
+            "type": "string",
+            "description": "班级名称",
+            "example": "计算机科学与技术2020级1班"
+          },
+          "averageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "平均成绩",
+            "example": 88.5
+          }
+        }
+      },
+      "AllStudentsStats": {
+        "type": "object",
+        "description": "所有学生统计数据",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "总学生数",
+            "example": 1500
+          },
+          "page": {
+            "type": "integer",
+            "description": "当前页码",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "integer",
+            "description": "每页数量",
+            "example": 10
+          },
+          "students": {
+            "type": "array",
+            "description": "学生列表",
+            "items": {
+              "$ref": "#/components/schemas/StudentListItem"
+            }
+          },
+          "schoolAverageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "全校平均分",
+            "example": 82.6
+          },
+          "scoreDistribution": {
+            "$ref": "#/components/schemas/ScoreDistribution"
+          }
+        }
+      },
+      "CourseStatItem": {
+        "type": "object",
+        "description": "课程统计项",
+        "properties": {
+          "courseId": {
+            "type": "string",
+            "description": "课程ID",
+            "example": "CS401"
+          },
+          "courseName": {
+            "type": "string",
+            "description": "课程名称",
+            "example": "软件工程"
+          },
+          "averageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "平均成绩",
+            "example": 89.3
+          }
+        }
+      },
+      "ClassStatItem": {
+        "type": "object",
+        "description": "班级统计项",
+        "properties": {
+          "className": {
+            "type": "string",
+            "description": "班级名称",
+            "example": "软件工程2019级3班"
+          },
+          "averageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "平均成绩",
+            "example": 87.2
+          }
+        }
+      },
+      "AllStatistics": {
+        "type": "object",
+        "description": "所有统计数据",
+        "properties": {
+          "studentCount": {
+            "type": "integer",
+            "description": "学生总数",
+            "example": 1500
+          },
+          "courseCount": {
+            "type": "integer",
+            "description": "课程总数",
+            "example": 120
+          },
+          "teacherCount": {
+            "type": "integer",
+            "description": "教师总数",
+            "example": 80
+          },
+          "classCount": {
+            "type": "integer",
+            "description": "班级总数",
+            "example": 40
+          },
+          "overallAverageScore": {
+            "type": "number",
+            "format": "float",
+            "description": "整体平均成绩",
+            "example": 82.6
+          },
+          "courseStatistics": {
             "type": "object",
+            "description": "课程统计",
             "properties": {
-              "year": {
-                "type": "integer",
-                "description": "统计年份",
-                "example": 2023,
-                "nullable": true
+              "highestAverageCourse": {
+                "$ref": "#/components/schemas/CourseStatItem"
               },
-              "averageScore": {
-                "type": "number",
-                "format": "float",
-                "description": "总平均成绩",
-                "example": 82.5
-              },
-              "studentAverages": {
-                "type": "array",
-                "description": "学生平均成绩列表",
-                "items": {
-                  "type": "object",
-                  "properties": {
-                    "studentId": {
-                      "type": "string",
-                      "description": "学号",
-                      "example": "2023001001"
-                    },
-                    "studentName": {
-                      "type": "string",
-                      "description": "学生姓名",
-                      "example": "张三"
-                    },
-                    "averageScore": {
-                      "type": "number",
-                      "format": "float",
-                      "description": "平均成绩",
-                      "example": 85.5
-                    }
-                  }
-                }
+              "lowestAverageCourse": {
+                "$ref": "#/components/schemas/CourseStatItem"
               }
+            }
+          },
+          "classStatistics": {
+            "type": "object",
+            "description": "班级统计",
+            "properties": {
+              "highestAverageClass": {
+                "$ref": "#/components/schemas/ClassStatItem"
+              },
+              "lowestAverageClass": {
+                "$ref": "#/components/schemas/ClassStatItem"
+              }
+            }
+          },
+          "scoreDistribution": {
+            "$ref": "#/components/schemas/ScoreDistribution"
+          },
+          "yearlyTrend": {
+            "type": "array",
+            "description": "年度成绩趋势",
+            "items": {
+              "$ref": "#/components/schemas/YearlyTrend"
             }
           }
         }
-      }
-    },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer",
-        "bearerFormat": "JWT"
       }
     }
   }

@@ -29,7 +29,8 @@
             v-model="searchForm.year"
             type="year"
             value-format="yyyy"
-            placeholder="Select year">
+            placeholder="Select year"
+            @change="fetchData">
           </el-date-picker>
         </el-form-item>
         <el-form-item>
@@ -51,61 +52,6 @@
           <el-descriptions-item label="Enrollment Year">{{ studentInfo.enrollmentYear }}</el-descriptions-item>
           <el-descriptions-item label="Age at Enrollment">{{ studentInfo.ageAtEnrollment }}</el-descriptions-item>
         </el-descriptions>
-      </el-card>
-      
-      <!-- Score Statistics Display -->
-      <el-card v-if="showScoreInfo" class="mb-20">
-        <div slot="header" class="clearfix">
-          <span>Score Statistics</span>
-        </div>
-        <el-row :gutter="20">
-          <el-col :span="8">
-            <div class="stat-card">
-              <div class="stat-title">Average Score</div>
-              <div class="stat-value" :class="getScoreClass(statisticsData.averageScore)">
-                {{ statisticsData.averageScore ? statisticsData.averageScore.toFixed(1) : '-' }}
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="stat-card">
-              <div class="stat-title">Highest Score</div>
-              <div class="stat-value score-excellent">
-                {{ statisticsData.highestScore || '-' }}
-              </div>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="stat-card">
-              <div class="stat-title">Lowest Score</div>
-              <div class="stat-value" :class="statisticsData.lowestScore && statisticsData.lowestScore < 60 ? 'score-fail' : ''">
-                {{ statisticsData.lowestScore || '-' }}
-              </div>
-            </div>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20" class="mt-20">
-          <el-col :span="8">
-            <div class="stat-card">
-              <div class="stat-title">Credits Obtained</div>
-              <div class="stat-value">{{ statisticsData.totalCredits || 0 }}</div>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="stat-card">
-              <div class="stat-title">Courses Enrolled</div>
-              <div class="stat-value">{{ statisticsData.courseCount || 0 }}</div>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="stat-card">
-              <div class="stat-title">Class Ranking</div>
-              <div class="stat-value">
-                {{ statisticsData.classRank ? `${statisticsData.classRank}/${statisticsData.classTotal}` : '-' }}
-              </div>
-            </div>
-          </el-col>
-        </el-row>
       </el-card>
       
       <!-- Score Statistics Charts -->
@@ -154,26 +100,15 @@
             style="width: 100%">
             <el-table-column prop="courseId" label="Course ID" width="120" align="center"></el-table-column>
             <el-table-column prop="courseName" label="Course Name" min-width="150" align="center"></el-table-column>
-            <el-table-column prop="teacherName" label="Teacher" width="120" align="center"></el-table-column>
-            <el-table-column prop="credit" label="Credits" width="80" align="center"></el-table-column>
-            <el-table-column prop="score" label="Score" width="100" align="center">
+            <el-table-column prop="credit" label="Credits" width="120" align="center"></el-table-column>
+            <el-table-column prop="score" label="Score" width="130" align="center">
               <template slot-scope="scope">
                 <span :class="getScoreClass(scope.row.score)">
                   {{ scope.row.score !== null ? scope.row.score : 'Not entered' }}
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="semester" label="Semester" width="180" align="center"></el-table-column>
-            <el-table-column label="Actions" width="120" align="center">
-              <template slot-scope="scope">
-                <el-button 
-                  type="text" 
-                  size="small" 
-                  @click="viewCourseDetail(scope.row)">
-                  Course Details
-                </el-button>
-              </template>
-            </el-table-column>
+            <el-table-column prop="semester" label="Semester" width="130" align="center"></el-table-column>
           </el-table>
         </el-card>
         
@@ -195,7 +130,7 @@ export default {
       studentOptions: [],
       currentStudent: {},
       barChart: null,
-      pieChart: null,
+      radarChart: null,
       searchForm: {
         studentId: '',
         year: new Date().getFullYear().toString()
@@ -203,12 +138,13 @@ export default {
       statisticsData: {
         averageScore: 0,
         courseScores: []
-      }
+      },
+      studentInfo: {}
     }
   },
   computed: {
     showStudentInfo() {
-      return this.searchForm.studentId && Object.keys(this.currentStudent).length > 0
+      return this.searchForm.studentId && Object.keys(this.studentInfo).length > 0
     },
     showCharts() {
       return this.statisticsData.courseScores && this.statisticsData.courseScores.length > 0
@@ -226,8 +162,8 @@ export default {
     if (this.barChart) {
       this.barChart.dispose()
     }
-    if (this.pieChart) {
-      this.pieChart.dispose()
+    if (this.radarChart) {
+      this.radarChart.dispose()
     }
   },
   methods: {
@@ -236,26 +172,36 @@ export default {
     
     // Get student list
     fetchStudentList() {
+      console.log('开始获取学生列表...')
       this.getStudents({ size: 1000 })
         .then(data => {
+          console.log('获取到学生数据:', data)
           this.studentOptions = data.records || []
+          console.log('学生选项列表:', this.studentOptions)
           
           // 如果学生列表不为空，默认选择第一个学生
           if (this.studentOptions.length > 0) {
             this.searchForm.studentId = this.studentOptions[0].studentId
-            this.handleStudentChange()
+            this.currentStudent = this.studentOptions.find(item => item.studentId === this.searchForm.studentId) || {}
+            this.studentInfo = this.currentStudent;
+            console.log('自动选择了第一个学生:', this.currentStudent)
+            this.$nextTick(() => {
+              this.fetchData()
+            })
           }
           
           // If student parameter is passed in route, set it automatically
           if (this.$route.query.studentId) {
             this.searchForm.studentId = this.$route.query.studentId
             this.currentStudent = this.studentOptions.find(item => item.studentId === this.searchForm.studentId) || {}
+            this.studentInfo = this.currentStudent;
             if (this.searchForm.studentId) {
               this.fetchData()
             }
           }
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error('获取学生列表失败:', error)
           this.$message.error('Failed to get student list')
         })
     },
@@ -263,6 +209,7 @@ export default {
     // Student selection change
     handleStudentChange(studentId) {
       this.currentStudent = this.studentOptions.find(item => item.studentId === studentId) || {}
+      this.studentInfo = this.currentStudent;
       if (studentId) {
         this.fetchData()
       }
@@ -270,23 +217,35 @@ export default {
     
     // Get student score statistics data
     fetchData() {
+      console.log('开始获取成绩数据, 参数:', this.searchForm)
       if (!this.searchForm.studentId) {
         this.$message.warning('Please select a student')
         return
       }
       
       this.loading = true
+      
+      // 销毁图表但保留变量
+      if (this.barChart) {
+        this.barChart.dispose()
+      }
+      if (this.radarChart) {
+        this.radarChart.dispose()
+      }
+      
       this.getStudentAverageScore({
         studentId: this.searchForm.studentId,
         params: { year: this.searchForm.year }
       })
         .then(data => {
+          console.log('获取到成绩统计数据:', data)
           this.statisticsData = data
           this.$nextTick(() => {
             this.initCharts()
           })
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error('获取成绩统计数据失败:', error)
           this.$message.error('Failed to get score statistics data')
         })
         .finally(() => {
@@ -296,6 +255,9 @@ export default {
     
     // Reset search criteria
     resetSearch() {
+      // 先记住当前的学生选项
+      const currentOptions = [...this.studentOptions]
+      
       this.searchForm = {
         studentId: '',
         year: new Date().getFullYear().toString()
@@ -305,24 +267,32 @@ export default {
         averageScore: 0,
         courseScores: []
       }
+      
+      // 恢复学生选项
+      this.$nextTick(() => {
+        this.studentOptions = currentOptions
+      })
+      
       if (this.barChart) {
         this.barChart.dispose()
-        this.barChart = null
       }
-      if (this.pieChart) {
-        this.pieChart.dispose()
-        this.pieChart = null
+      if (this.radarChart) {
+        this.radarChart.dispose()
       }
     },
     
     // Initialize charts
     initCharts() {
       this.$nextTick(() => {
+        if (!this.$refs.barChart || !this.$refs.radarChart) {
+          return
+        }
+        
         // Initialize bar chart
         this.initBarChart()
         
-        // Initialize pie chart
-        this.initPieChart()
+        // Initialize radar chart
+        this.initRadarChart()
       })
     },
     
@@ -333,11 +303,32 @@ export default {
       }
       
       const chartDom = this.$refs.barChart
+      if (!chartDom) {
+        return;
+      }
+      
       this.barChart = echarts.init(chartDom)
       
       const { courseScores } = this.statisticsData
-      const courseNames = courseScores.map(item => item.courseName)
-      const scoreData = courseScores.map(item => item.score)
+      
+      // 确保有数据
+      if (!courseScores || courseScores.length === 0) {
+        this.barChart.setOption({
+          title: {
+            text: 'No course data available',
+            textStyle: {
+              color: '#909399',
+              fontSize: 14
+            },
+            left: 'center',
+            top: 'middle'
+          }
+        })
+        return;
+      }
+      
+      const courseNames = courseScores.map(item => item.courseName || 'Unknown')
+      const scoreData = courseScores.map(item => item.score || 0)
       
       const option = {
         tooltip: {
@@ -395,83 +386,79 @@ export default {
       this.barChart.setOption(option)
     },
     
-    // Initialize pie chart
-    initPieChart() {
-      if (this.pieChart) {
-        this.pieChart.dispose()
+    // Initialize radar chart
+    initRadarChart() {
+      if (this.radarChart) {
+        this.radarChart.dispose()
       }
       
-      const chartDom = this.$refs.pieChart
-      this.pieChart = echarts.init(chartDom)
+      const chartDom = this.$refs.radarChart
+      if (!chartDom) {
+        return;
+      }
+      
+      this.radarChart = echarts.init(chartDom)
       
       const { courseScores } = this.statisticsData
       
-      // Count grades
-      const levels = [
-        { name: 'Excellent (90-100 points)', value: 0, color: '#67C23A' },
-        { name: 'Good (80-89 points)', value: 0, color: '#409EFF' },
-        { name: 'Medium (70-79 points)', value: 0, color: '#E6A23C' },
-        { name: 'Pass (60-69 points)', value: 0, color: '#F56C6C' },
-        { name: 'Fail (0-59 points)', value: 0, color: '#909399' }
-      ]
+      // 确保有数据
+      if (!courseScores || courseScores.length === 0) {
+        this.radarChart.setOption({
+          title: {
+            text: 'No course data available',
+            textStyle: {
+              color: '#909399',
+              fontSize: 14
+            },
+            left: 'center',
+            top: 'middle'
+          }
+        })
+        return;
+      }
       
-      courseScores.forEach(item => {
-        const score = item.score
-        if (score >= 90) levels[0].value++
-        else if (score >= 80) levels[1].value++
-        else if (score >= 70) levels[2].value++
-        else if (score >= 60) levels[3].value++
-        else levels[4].value++
+      // 准备雷达图数据
+      const indicator = courseScores.map(item => {
+        return {
+          name: item.courseName || 'Unknown',
+          max: 100
+        }
       })
+      
+      const seriesData = [
+        {
+          value: courseScores.map(item => item.score || 0),
+          name: 'Score'
+        }
+      ]
       
       const option = {
         tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
+          trigger: 'item'
         },
-        legend: {
-          orient: 'vertical',
-          right: 10,
-          top: 'center',
-          data: levels.map(item => item.name)
+        radar: {
+          indicator: indicator,
+          radius: '65%'
         },
         series: [
           {
-            name: 'Score Level',
-            type: 'pie',
-            radius: ['40%', '70%'],
-            avoidLabelOverlap: false,
+            name: 'Subject Performance',
+            type: 'radar',
+            data: seriesData,
+            areaStyle: {
+              opacity: 0.3
+            },
+            lineStyle: {
+              width: 2
+            },
             itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2,
-              color: params => {
-                return levels[params.dataIndex].color
-              }
-            },
-            label: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '18',
-                fontWeight: 'bold'
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data: levels.map(item => ({
-              name: item.name,
-              value: item.value
-            }))
+              color: '#409EFF'
+            }
           }
         ]
       }
       
-      this.pieChart.setOption(option)
+      this.radarChart.setOption(option)
     },
     
     // Window size change redraw charts
@@ -479,8 +466,8 @@ export default {
       if (this.barChart) {
         this.barChart.resize()
       }
-      if (this.pieChart) {
-        this.pieChart.resize()
+      if (this.radarChart) {
+        this.radarChart.resize()
       }
     },
     
