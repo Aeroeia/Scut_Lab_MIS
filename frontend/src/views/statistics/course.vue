@@ -277,13 +277,13 @@ export default {
     ...mapActions('course', ['getCourses']),
     ...mapActions('statistics', ['getCourseAverageScore']),
     
-    // 获取课程列表
+    // Get course list
     fetchCourseList() {
       this.getCourses({ size: 1000 })
         .then(data => {
           this.courseOptions = data.records || []
           
-          // 如果课程列表不为空，默认选择第一个课程
+          // If the course list is not empty, select the first course by default
           if (this.courseOptions.length > 0) {
             this.searchForm.courseId = this.courseOptions[0].courseId
             this.currentCourse = this.courseOptions.find(item => item.courseId === this.searchForm.courseId) || {}
@@ -293,11 +293,11 @@ export default {
           }
         })
         .catch(() => {
-          this.$message.error('获取课程列表失败')
+          this.$message.error('Failed to get course list')
         })
     },
     
-    // 课程选择变更
+    // Course selection changed
     handleCourseChange(courseId) {
       this.currentCourse = this.courseOptions.find(item => item.courseId === courseId) || {}
       if (courseId) {
@@ -305,10 +305,10 @@ export default {
       }
     },
     
-    // 获取课程成绩统计数据
+    // Get course score statistics data
     fetchData() {
       if (!this.searchForm.courseId) {
-        this.$message.warning('请选择课程')
+        this.$message.warning('Please select a course')
         return
       }
       
@@ -324,14 +324,14 @@ export default {
           })
         })
         .catch(() => {
-          this.$message.error('获取课程成绩统计数据失败')
+          this.$message.error('Failed to get course statistics data')
         })
         .finally(() => {
           this.loading = false
         })
     },
     
-    // 重置搜索条件
+    // Reset search criteria
     resetSearch() {
       this.searchForm = {
         courseId: '',
@@ -362,23 +362,23 @@ export default {
       }
     },
     
-    // 初始化图表
+    // Initialize charts
     initCharts() {
       this.$nextTick(() => {
-        // 初始化柱状图
+        // Initialize bar chart
         this.initBarChart()
         
-        // 初始化饼图
+        // Initialize pie chart
         this.initPieChart()
         
-        // 初始化班级对比图
+        // Initialize class comparison chart
         if (this.statisticsData.classScores && this.statisticsData.classScores.length > 0) {
           this.initClassChart()
         }
       })
     },
     
-    // 初始化柱状图
+    // Initialize bar chart
     initBarChart() {
       if (this.barChart) {
         this.barChart.dispose()
@@ -387,7 +387,7 @@ export default {
       const chartDom = this.$refs.barChart
       this.barChart = echarts.init(chartDom)
       
-      // 计算成绩区间分布
+      // Calculate score range distribution
       const scoreRanges = [
         { range: '90-100', count: 0 },
         { range: '80-89', count: 0 },
@@ -429,12 +429,12 @@ export default {
           type: 'value',
           minInterval: 1,
           axisLabel: {
-            formatter: '{value} 人'
+            formatter: '{value} students'
           }
         },
         series: [
           {
-            name: '学生人数',
+            name: 'Number of Students',
             type: 'bar',
             data: scoreRanges.map(item => item.count),
             itemStyle: {
@@ -446,7 +446,7 @@ export default {
             label: {
               show: true,
               position: 'top',
-              formatter: '{c} 人'
+              formatter: '{c} students'
             }
           }
         ]
@@ -455,7 +455,7 @@ export default {
       this.barChart.setOption(option)
     },
     
-    // 初始化饼图
+    // Initialize pie chart
     initPieChart() {
       if (this.pieChart) {
         this.pieChart.dispose()
@@ -464,13 +464,13 @@ export default {
       const chartDom = this.$refs.pieChart
       this.pieChart = echarts.init(chartDom)
       
-      // 统计各等级成绩数量
+      // Count the number of each grade level
       const levels = [
-        { name: '优秀 (90-100分)', value: 0, color: '#67C23A' },
-        { name: '良好 (80-89分)', value: 0, color: '#409EFF' },
-        { name: '中等 (70-79分)', value: 0, color: '#E6A23C' },
-        { name: '及格 (60-69分)', value: 0, color: '#F56C6C' },
-        { name: '不及格 (0-59分)', value: 0, color: '#909399' }
+        { name: 'Excellent (90-100 points)', value: 0, color: '#67C23A' },
+        { name: 'Good (80-89 points)', value: 0, color: '#409EFF' },
+        { name: 'Medium (70-79 points)', value: 0, color: '#E6A23C' },
+        { name: 'Pass (60-69 points)', value: 0, color: '#F56C6C' },
+        { name: 'Fail (0-59 points)', value: 0, color: '#909399' }
       ]
       
       this.statisticsData.studentScores.forEach(student => {
@@ -532,7 +532,7 @@ export default {
       this.pieChart.setOption(option)
     },
     
-    // 初始化班级对比图
+    // Initialize class comparison chart
     initClassChart() {
       if (this.classChart) {
         this.classChart.dispose()
@@ -554,7 +554,7 @@ export default {
           }
         },
         legend: {
-          data: ['平均分', '通过率(%)']
+          data: ['Average Score', 'Pass Rate (%)']
         },
         grid: {
           left: '3%',
@@ -573,16 +573,16 @@ export default {
         yAxis: [
           {
             type: 'value',
-            name: '分数',
+            name: 'Score',
             min: 0,
             max: 100,
             axisLabel: {
-              formatter: '{value} 分'
+              formatter: '{value} points'
             }
           },
           {
             type: 'value',
-            name: '百分比',
+            name: 'Percentage',
             min: 0,
             max: 100,
             axisLabel: {
@@ -592,15 +592,15 @@ export default {
         ],
         series: [
           {
-            name: '平均分',
-            type: 'bar',
+            name: 'Average Score',
+            type: this.displayType === 'bar' ? 'bar' : 'line',
             data: averageScores,
             itemStyle: {
               color: '#409EFF'
             }
           },
           {
-            name: '通过率(%)',
+            name: 'Pass Rate (%)',
             type: 'line',
             yAxisIndex: 1,
             data: passRates,
@@ -614,7 +614,7 @@ export default {
       this.classChart.setOption(option)
     },
     
-    // 窗口大小变化时重绘图表
+    // Redraw charts when window size changes
     resizeCharts() {
       if (this.barChart) {
         this.barChart.resize()
@@ -627,7 +627,7 @@ export default {
       }
     },
     
-    // 查看学生详情
+    // View student details
     viewStudentDetail(student) {
       this.$router.push({
         path: '/statistics/student',
@@ -635,13 +635,13 @@ export default {
       })
     },
     
-    // 导出Excel
+    // Export Excel
     handleExport() {
-      // 这里仅为示例，实际导出功能需要调用后端API或使用前端导出库
+      // This is just an example, the actual export function needs to call the backend API or use a frontend export library
       this.$message.success('Grade table exported successfully')
     },
     
-    // 根据成绩返回不同的Tag类型
+    // Return different tag types based on score
     getScoreTagType(score) {
       if (score === null) return 'info'
       if (score >= 90) return 'success'
@@ -650,7 +650,7 @@ export default {
       return 'danger'
     },
     
-    // 根据成绩返回等级
+    // Return grade level based on score
     getScoreLevel(score) {
       if (score >= 90) return 'Excellent'
       if (score >= 80) return 'Good'
@@ -659,7 +659,7 @@ export default {
       return 'Fail'
     },
     
-    // 获取成绩颜色类
+    // Get score color class
     getScoreClass(score) {
       if (!score) return ''
       if (score >= 90) return 'score-excellent'

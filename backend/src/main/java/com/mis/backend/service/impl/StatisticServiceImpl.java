@@ -32,7 +32,7 @@ public class StatisticServiceImpl implements StatisticService {
         int studentCount = (int)studentService.count();
         int courseCount = (int)courseService.count();
         List<CourseSelection> courseSelections = courseSelectionService.list();
-        List<BigDecimal> scores = courseSelections.stream().filter(o->o.getScore().compareTo(BigDecimal.ZERO)>0).map(CourseSelection::getScore).toList();
+        List<BigDecimal> scores = courseSelections.stream().filter(o->o.getScore().compareTo(BigDecimal.ZERO)>0).map(CourseSelection::getScore).collect(Collectors.toList());
         if(CollUtil.isEmpty(scores)){
             return DashboardVO.builder()
                     .studentCount(studentCount)
@@ -200,7 +200,9 @@ public class StatisticServiceImpl implements StatisticService {
                 .eq(CourseSelection::getCourseId, courseId)
                 .eq(CourseSelection::getSelectionYear, year)
                 .list();
-
+        courseSelections = courseSelections.stream()
+                .filter(o->o.getScore().compareTo(BigDecimal.ZERO)>0)
+                .collect(Collectors.toList());
         int studentCount = courseSelections.size();
         if(studentCount==0){
             return StatisticCourseVO.builder()
