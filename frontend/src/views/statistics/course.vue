@@ -466,11 +466,11 @@ export default {
       
       // Count the number of each grade level
       const levels = [
-        { name: 'Excellent (90-100 points)', value: 0, color: '#67C23A' },
-        { name: 'Good (80-89 points)', value: 0, color: '#409EFF' },
-        { name: 'Medium (70-79 points)', value: 0, color: '#E6A23C' },
-        { name: 'Pass (60-69 points)', value: 0, color: '#F56C6C' },
-        { name: 'Fail (0-59 points)', value: 0, color: '#909399' }
+        { name: 'Excellent ', value: 0, color: '#67C23A' },
+        { name: 'Good ', value: 0, color: '#409EFF' },
+        { name: 'Medium ', value: 0, color: '#E6A23C' },
+        { name: 'Pass ', value: 0, color: '#F56C6C' },
+        { name: 'Fail ', value: 0, color: '#909399' }
       ]
       
       this.statisticsData.studentScores.forEach(student => {
