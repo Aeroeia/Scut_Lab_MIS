@@ -1,10 +1,6 @@
 package com.mis.backend.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.mis.backend.entity.Course;
 import com.mis.backend.entity.CourseSelection;
 import com.mis.backend.entity.Student;
@@ -14,6 +10,7 @@ import com.mis.backend.service.IStudentService;
 import com.mis.backend.service.StatisticService;
 import com.mis.backend.vo.DashboardVO;
 import com.mis.backend.vo.StatisticClassVO;
+import com.mis.backend.vo.StatisticCourseVO;
 import com.mis.backend.vo.StatisticStudentVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +32,7 @@ public class StatisticServiceImpl implements StatisticService {
         int studentCount = (int)studentService.count();
         int courseCount = (int)courseService.count();
         List<CourseSelection> courseSelections = courseSelectionService.list();
-        List<BigDecimal> scores = courseSelections.stream().map(CourseSelection::getScore).toList();
+        List<BigDecimal> scores = courseSelections.stream().filter(o->o.getScore().compareTo(BigDecimal.ZERO)>0).map(CourseSelection::getScore).toList();
         if(CollUtil.isEmpty(scores)){
             return DashboardVO.builder()
                     .studentCount(studentCount)
@@ -43,7 +40,7 @@ public class StatisticServiceImpl implements StatisticService {
                     .build();
         }
         BigDecimal sum = scores.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-        BigDecimal avg = sum.divide(BigDecimal.valueOf(courseSelections.size()), 1, BigDecimal.ROUND_HALF_UP);
+        BigDecimal avg = sum.divide(BigDecimal.valueOf(scores.size()), 1, BigDecimal.ROUND_HALF_UP);
         return DashboardVO.builder()
                 .studentCount(studentCount)
                 .courseCount(courseCount)
@@ -61,7 +58,11 @@ public class StatisticServiceImpl implements StatisticService {
                 .eq(CourseSelection::getStudentId, studentId)
                 .eq(academicYear!=null,CourseSelection::getSelectionYear, academicYear)
                 .list();
-        if(CollUtil.isEmpty(courseSelections)){
+        Map<String, BigDecimal> scoreMap = courseSelections.stream()
+                .filter(o->o.getScore().compareTo(BigDecimal.ZERO)>0)
+                .collect(Collectors.toMap(CourseSelection::getCourseId, CourseSelection::getScore));
+        List<BigDecimal> scores = new ArrayList<>(scoreMap.values());
+        if(scores.isEmpty()){
             return StatisticStudentVO.builder()
                     .studentName(student.getName())
                     .studentId(studentId)
@@ -70,8 +71,6 @@ public class StatisticServiceImpl implements StatisticService {
                     .averageScore(null)
                     .build();
         }
-        Map<String, BigDecimal> scoreMap = courseSelections.stream().collect(Collectors.toMap(CourseSelection::getCourseId, CourseSelection::getScore));
-        List<BigDecimal> scores = new ArrayList<>(scoreMap.values());
         BigDecimal sum = scores.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal avg = sum.divide(BigDecimal.valueOf(scores.size()), 1, BigDecimal.ROUND_HALF_UP);
         studentVO.setAverageScore(avg);
@@ -128,8 +127,12 @@ public class StatisticServiceImpl implements StatisticService {
                 .in(CourseSelection::getStudentId, studentMap.keySet())
                 .eq(year!=null,CourseSelection::getSelectionYear,year)
                 .list();
-        Map<String, List<CourseSelection>> collect = courseSelections.stream().collect(Collectors.groupingBy(CourseSelection::getStudentId));
-        Map<String, BigDecimal> scoreMap = courseSelections.stream().collect(Collectors.toMap(
+        Map<String, List<CourseSelection>> collect = courseSelections.stream()
+                .filter(o->o.getScore().compareTo(BigDecimal.ZERO)>0)
+                .collect(Collectors.groupingBy(CourseSelection::getStudentId));
+        Map<String, BigDecimal> scoreMap = courseSelections.stream()
+                .filter(o->o.getScore().compareTo(BigDecimal.ZERO)>0)
+                .collect(Collectors.toMap(
                 CourseSelection::getStudentId,
                 CourseSelection::getScore,
                 BigDecimal::add
@@ -189,5 +192,112 @@ public class StatisticServiceImpl implements StatisticService {
         }
         statisticClassVO.setStudentScores(studentScores);
         return statisticClassVO;
+    }
+
+    @Override
+    public StatisticCourseVO getCourse(String courseId, Integer year) {
+        List<CourseSelection> courseSelections = courseSelectionService.lambdaQuery()
+                .eq(CourseSelection::getCourseId, courseId)
+                .eq(CourseSelection::getSelectionYear, year)
+                .list();
+
+        int studentCount = courseSelections.size();
+        if(studentCount==0){
+            return StatisticCourseVO.builder()
+                    .studentCount(0)
+                    .averageScore(BigDecimal.ZERO)
+                    .passRate(BigDecimal.ZERO)
+                    .excellentRate(BigDecimal.ZERO)
+                    .highestScore(BigDecimal.ZERO)
+                    .lowestScore(BigDecimal.ZERO)
+                    .studentScores(List.of())
+                    .classScores(List.of())
+                    .build();
+        }
+        Collections.sort(courseSelections,(o1,o2)->
+                o2.getScore().compareTo(o1.getScore()));
+        BigDecimal sum = courseSelections.stream().map(o -> o.getScore()).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal courseAvg = sum.divide(BigDecimal.valueOf(studentCount),1,BigDecimal.ROUND_HALF_UP);
+        int edex = 0;
+        while(edex<studentCount&&courseSelections.get(edex).getScore().compareTo(BigDecimal.valueOf(90))>=0){
+            edex++;
+        }
+        BigDecimal excellentRate = BigDecimal.ZERO;
+        if(edex>0){
+            excellentRate = BigDecimal.valueOf(edex)
+                    .divide(BigDecimal.valueOf(studentCount),1,BigDecimal.ROUND_HALF_UP);
+        }
+        int pdex = 0;
+        while(pdex<studentCount&&courseSelections.get(pdex).getScore().compareTo(BigDecimal.valueOf(60))>=0){
+            pdex++;
+        }
+        BigDecimal passRate = BigDecimal.ZERO;
+        if(pdex>0){
+            passRate = BigDecimal.valueOf(pdex)
+                    .divide(BigDecimal.valueOf(studentCount),1,BigDecimal.ROUND_HALF_UP);
+        }
+        StatisticCourseVO statisticCourseVO = StatisticCourseVO.builder()
+                .excellentRate(excellentRate)
+                .averageScore(courseAvg)
+                .passRate(passRate)
+                .highestScore(courseSelections.get(0).getScore())
+                .lowestScore(courseSelections.get(courseSelections.size() - 1).getScore())
+                .studentCount(studentCount)
+                .build();
+        List<String> studentIds = courseSelections.stream().map(CourseSelection::getStudentId).toList();
+        List<Student> students = studentService.lambdaQuery()
+                .in(Student::getStudentId,studentIds)
+                .list();
+        Map<String, Student> studentMap = students.stream().collect(Collectors.toMap(Student::getStudentId, o -> o));
+        List<StatisticCourseVO.StudentScores> studentScores = new ArrayList<>();
+        for(int i = 0;i<studentCount;i++){
+            String studentId = courseSelections.get(i).getStudentId();
+            String name = studentMap.get(studentId).getName();
+            String clazz = studentMap.get(studentId).getClazz();
+            BigDecimal score = courseSelections.get(i).getScore();
+            int rank = i + 1;
+            StatisticCourseVO.StudentScores build = StatisticCourseVO.StudentScores.builder()
+                    .studentId(studentId)
+                    .name(name)
+                    .clazz(clazz)
+                    .rank(rank)
+                    .score(score)
+                    .build();
+            studentScores.add(build);
+        }
+        statisticCourseVO.setStudentScores(studentScores);
+        Map<String, BigDecimal> studentScoreMap = courseSelections.stream().collect(Collectors.toMap(CourseSelection::getStudentId, CourseSelection::getScore));
+        Map<String, List<Student>> classMap = students.stream().collect(Collectors.groupingBy(Student::getClazz));
+        List<StatisticCourseVO.ClassScores> classScores = new ArrayList<>();
+        for(var entry:classMap.entrySet()){
+            String className = entry.getKey();
+            List<Student> studentList = entry.getValue();
+            BigDecimal totalScore = BigDecimal.ZERO;
+            int passConunt = 0;
+            for(var student:studentList){
+                BigDecimal score = studentScoreMap.get(student.getStudentId());
+                totalScore = totalScore.add(score);
+                if(score.compareTo(BigDecimal.valueOf(60))>=0){
+                    passConunt++;
+                }
+            }
+            BigDecimal classPassRate = BigDecimal.ZERO;
+            BigDecimal averageScore = BigDecimal.ZERO;
+            if(passConunt>0){
+                classPassRate = BigDecimal.valueOf(passConunt)
+                        .divide(BigDecimal.valueOf(studentList.size()),1,BigDecimal.ROUND_HALF_UP);
+            }
+            if(totalScore.compareTo(BigDecimal.ZERO)>0){
+                averageScore = totalScore.divide(BigDecimal.valueOf(studentList.size()),1,BigDecimal.ROUND_HALF_UP);
+            }
+            StatisticCourseVO.ClassScores build = StatisticCourseVO.ClassScores.builder()
+                    .passRate(classPassRate)
+                    .averageScore(averageScore)
+                    .className(className)
+                    .build();
+            classScores.add(build);
+        }
+        statisticCourseVO.setClassScores(classScores);
+        return statisticCourseVO;
     }
 }

@@ -42,13 +42,4 @@ export function getAllStudentsAverageScore(params) {
     method: 'get',
     params
   })
-}
-
-// 获取所有统计数据
-export function getAllStatistics(params) {
-  return request({
-    url: '/statistics/all',
-    method: 'get',
-    params
-  })
 } 

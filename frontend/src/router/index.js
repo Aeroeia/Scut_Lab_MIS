@@ -207,12 +207,6 @@ export const asyncRoutes = [
         name: 'CourseStatistics',
         component: () => import('@/views/statistics/course'),
         meta: { title: 'Course Statistics', icon: 'el-icon-s-help' }
-      },
-      {
-        path: 'all',
-        name: 'AllStatistics',
-        component: () => import('@/views/statistics/all'),
-        meta: { title: 'Overall Statistics', icon: 'el-icon-data-line', roles: ['1', '2'] } // 管理员和教师可见
       }
     ]
   },

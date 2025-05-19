@@ -166,7 +166,7 @@ export default {
           title: 'Statistics',
           icon: 'el-icon-pie-chart',
           description: 'View school-wide grade statistics and analysis',
-          path: '/statistics/all',
+          path: '/statistics/student',
           buttonText: 'View Stats'
         }
       ],

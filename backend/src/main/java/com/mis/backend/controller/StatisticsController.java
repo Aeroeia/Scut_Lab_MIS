@@ -4,6 +4,7 @@ import com.mis.backend.result.Result;
 import com.mis.backend.service.StatisticService;
 import com.mis.backend.vo.DashboardVO;
 import com.mis.backend.vo.StatisticClassVO;
+import com.mis.backend.vo.StatisticCourseVO;
 import com.mis.backend.vo.StatisticStudentVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,5 +37,12 @@ public class StatisticsController {
         StatisticClassVO statisticClassVO = statisticService.getstatisticClass(className,year);
         log.info("Class statistics: {}", statisticClassVO);
         return Result.success(statisticClassVO);
+    }
+    @GetMapping("/course/{courseId}")
+    public Result<StatisticCourseVO> getCourse(@PathVariable String courseId,@RequestParam Integer year){
+        log.info("Course statistics: {}", courseId);
+        log.info("Academic year: {}", year);
+        StatisticCourseVO statisticCourseVO = statisticService.getCourse(courseId,year);
+        return Result.success(statisticCourseVO);
     }
 }

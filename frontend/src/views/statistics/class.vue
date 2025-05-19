@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <el-card>
+    <el-card class="main-card">
       <div slot="header" class="clearfix">
-        <span>Class Statistics</span>
+        <span class="card-title">Class Statistics</span>
       </div>
       
       <!-- Search Criteria -->
@@ -32,13 +32,13 @@
           </el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="fetchData">Search</el-button>
-          <el-button @click="resetSearch">Reset</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="fetchData">Search</el-button>
+          <el-button icon="el-icon-refresh" @click="resetSearch">Reset</el-button>
         </el-form-item>
       </el-form>
       
       <!-- Class Information Display -->
-      <el-card v-if="showClassInfo" class="mb-20">
+      <el-card v-if="showClassInfo" class="mb-20 info-card">
         <div slot="header" class="clearfix">
           <span>Class Statistics Summary</span>
         </div>
@@ -63,8 +63,8 @@
       </el-card>
       
       <!-- Score Statistics Charts -->
-      <div v-loading="loading">
-        <el-row :gutter="20" v-if="showCharts">
+      <div v-loading="loading" class="statistics-container">
+        <el-row :gutter="24" v-if="showCharts">
           <!-- Score Distribution Bar Chart -->
           <el-col :span="12">
             <el-card class="chart-card">
@@ -91,32 +91,51 @@
         </el-row>
         
         <!-- Student Score Table -->
-        <el-card class="mt-20" v-if="showTable">
+        <el-card class="mt-20 table-card" v-if="showTable">
           <div slot="header" class="clearfix">
             <span>Class Student Score List</span>
-            <el-button
-              style="float: right; padding: 3px 0"
-              type="text"
-              @click="handleExport"
-              :disabled="!showTable">
-              Export Excel
-            </el-button>
+            <el-tooltip content="Export to Excel file" placement="top">
+              <el-button
+                style="float: right; padding: 3px 0"
+                type="text"
+                icon="el-icon-download"
+                @click="handleExport"
+                :disabled="!showTable">
+                Export Excel
+              </el-button>
+            </el-tooltip>
+          </div>
+          <div class="table-hint">
+            <i class="el-icon-info"></i> Click on a row to view student's detailed statistics
           </div>
           <el-table
             :data="statisticsData.studentScores"
             border
-            style="width: 100%">
+            style="width: 100%"
+            @row-click="viewStudentDetail"
+            class="student-table">
             <el-table-column prop="studentId" label="Student ID" width="120" align="center"></el-table-column>
             <el-table-column prop="name" label="Name" width="120" align="center"></el-table-column>
             <el-table-column prop="gender" label="Gender" width="80" align="center"></el-table-column>
-            <el-table-column prop="averageScore" label="Average Score" width="100" align="center">
+            <el-table-column prop="averageScore" label="Average Score" min-width="120" align="center">
               <template slot-scope="scope">
                 <span :class="getScoreClass(scope.row.averageScore)">
                   {{ scope.row.averageScore ? scope.row.averageScore.toFixed(1) : '-' }}
                 </span>
               </template>
             </el-table-column>
-            <el-table-column prop="rank" label="Class Ranking" width="100" align="center"></el-table-column>
+            <el-table-column prop="rank" label="Class Ranking" min-width="120" align="center"></el-table-column>
+            <el-table-column label="Actions" align="center" width="120">
+              <template slot-scope="scope">
+                <el-button
+                  type="text"
+                  size="small"
+                  icon="el-icon-view"
+                  @click.stop="viewStudentDetail(scope.row)">
+                  View Details
+                </el-button>
+              </template>
+            </el-table-column>
           </el-table>
         </el-card>
         
@@ -479,17 +498,44 @@ export default {
 .container {
   padding: 20px;
 }
+.main-card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+.card-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #303133;
+}
 .mb-20 {
   margin-bottom: 20px;
 }
 .mt-20 {
   margin-top: 20px;
 }
+.info-card {
+  background-color: #f9fafb;
+  border: 1px solid #ebeef5;
+  transition: all 0.3s;
+}
+.info-card:hover {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
 .chart-card {
-  height: 400px;
+  height: 420px;
+  transition: all 0.3s;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+.chart-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 .chart-container {
-  height: 310px;
+  height: 330px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .chart {
   width: 100%;
@@ -513,5 +559,30 @@ export default {
 }
 .score-fail {
   color: #909399;
+}
+.statistics-container {
+  margin-top: 20px;
+}
+.table-card {
+  border-radius: 6px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+.table-hint {
+  color: #909399;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.student-table {
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+}
+.student-table /deep/ .el-table__row {
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.student-table /deep/ .el-table__row:hover {
+  background-color: #f0f9ff;
 }
 </style> 

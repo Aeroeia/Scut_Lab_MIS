@@ -1,11 +1,10 @@
-import { getStudentAverageScore, getClassAverageScore, getCourseAverageScore, getAllStudentsAverageScore, getAllStatistics } from '@/api/statistics'
+import { getStudentAverageScore, getClassAverageScore, getCourseAverageScore, getAllStudentsAverageScore } from '@/api/statistics'
 
 const state = {
   studentAverage: null,
   classAverage: null,
   courseAverage: null,
-  allStudentsAverage: null,
-  allStatistics: null
+  allStudentsAverage: null
 }
 
 const mutations = {
@@ -20,9 +19,6 @@ const mutations = {
   },
   SET_ALL_STUDENTS_AVERAGE: (state, data) => {
     state.allStudentsAverage = data
-  },
-  SET_ALL_STATISTICS: (state, data) => {
-    state.allStatistics = data
   }
 }
 
@@ -79,21 +75,6 @@ const actions = {
         .then(response => {
           const { data } = response
           commit('SET_ALL_STUDENTS_AVERAGE', data)
-          resolve(data)
-        })
-        .catch(error => {
-          reject(error)
-        })
-    })
-  },
-  
-  // 获取全校统计数据
-  getAllStatistics({ commit }, params) {
-    return new Promise((resolve, reject) => {
-      getAllStatistics(params)
-        .then(response => {
-          const { data } = response
-          commit('SET_ALL_STATISTICS', data)
           resolve(data)
         })
         .catch(error => {
